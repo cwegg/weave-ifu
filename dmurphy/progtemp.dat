@@ -1,0 +1,64 @@
+#PROGTEMP
+1____: observation:obs_type=MOS programme:spectrograph:red_Arm:resolution=low programme:spectrograph:red_Arm:VPH=VPH1 programme:spectrograph:blue_Arm:resolution=low programme:spectrograph:blue_Arm:VPH=VPH1
+2____: observation:obs_type=MOS programme:spectrograph:red_Arm:resolution=high programme:spectrograph:red_Arm:VPH=VPH2 programme:spectrograph:blue_Arm:resolution=high programme:spectrograph:blue_Arm:VPH=VPH2
+3____: observation:obs_type=MOS programme:spectrograph:red_Arm:resolution=high programme:spectrograph:red_Arm:VPH=VPH2 programme:spectrograph:blue_Arm:resolution=high programme:spectrograph:blue_Arm:VPH=VPH3
+4____: observation:obs_type=LIFU programme:spectrograph:red_Arm:resolution=low programme:spectrograph:red_Arm:VPH=VPH1 programme:spectrograph:blue_Arm:resolution=low programme:spectrograph:blue_Arm:VPH=VPH1
+5____: observation:obs_type=LIFU programme:spectrograph:red_Arm:resolution=high programme:spectrograph:red_Arm:VPH=VPH2 programme:spectrograph:blue_Arm:resolution=high programme:spectrograph:blue_Arm:VPH=VPH2
+6____: observation:obs_type=LIFU programme:spectrograph:red_Arm:resolution=high programme:spectrograph:red_Arm:VPH=VPH2 programme:spectrograph:blue_Arm:resolution=high programme:spectrograph:blue_Arm:VPH=VPH3
+7____: observation:obs_type=mIFU programme:spectrograph:red_Arm:resolution=low programme:spectrograph:red_Arm:VPH=VPH1 programme:spectrograph:blue_Arm:resolution=low programme:spectrograph:blue_Arm:VPH=VPH1
+8____: observation:obs_type=mIFU programme:spectrograph:red_Arm:resolution=high programme:spectrograph:red_Arm:VPH=VPH2 programme:spectrograph:blue_Arm:resolution=high programme:spectrograph:blue_Arm:VPH=VPH2
+9____: observation:obs_type=mIFU programme:spectrograph:red_Arm:resolution=high programme:spectrograph:red_Arm:VPH=VPH2 programme:spectrograph:blue_Arm:resolution=high programme:spectrograph:blue_Arm:VPH=VPH3
+_0___:
+	_000_: {1 Exposures:exposure:exp_time=1620 Exposures:exposure:arm=both}
+	_00__: {1 Exposures:exposure:exp_time=1620 Exposures:exposure:arm=red}
+	_0_0_: {1 Exposures:exposure:exp_time=1620 Exposures:exposure:arm=blue}
+	_044_: {2 Exposures:exposure:exp_time=720 Exposures:exposure:arm=both}
+	_04__: {2 Exposures:exposure:exp_time=720 Exposures:exposure:arm=red}
+	_0_4_: {2 Exposures:exposure:exp_time=720 Exposures:exposure:arm=blue}	
+	_066_: {3 Exposures:exposure:exp_time=420 Exposures:exposure:arm=both}	
+	_06__: {3 Exposures:exposure:exp_time=420 Exposures:exposure:arm=red}
+	_0_6_: {3 Exposures:exposure:exp_time=420 Exposures:exposure:arm=blue}		
+_1___:
+	_100_: {1 Exposures:exposure:exp_time=3420 Exposures:exposure:arm=both}
+	_10__: {1 Exposures:exposure:exp_time=3420 Exposures:exposure:arm=red}
+	_1_0_: {1 Exposures:exposure:exp_time=3420 Exposures:exposure:arm=blue}
+	_122_: {2 Exposures:exposure:exp_time=1620 Exposures:exposure:arm=both}
+	_12__: {2 Exposures:exposure:exp_time=1620 Exposures:exposure:arm=red}
+	_1_2_: {2 Exposures:exposure:exp_time=1620 Exposures:exposure:arm=blue}
+	_133_: {3 Exposures:exposure:exp_time=1020 Exposures:exposure:arm=both}
+	_13__: {3 Exposures:exposure:exp_time=1020 Exposures:exposure:arm=red}
+	_1_3_: {3 Exposures:exposure:exp_time=1020 Exposures:exposure:arm=blue}
+	_144_: {4 Exposures:exposure:exp_time=720 Exposures:exposure:arm=both}
+	_14__: {4 Exposures:exposure:exp_time=720 Exposures:exposure:arm=red}
+	_1_4_: {4 Exposures:exposure:exp_time=720 Exposures:exposure:arm=blue}
+	_166_: {6 Exposures:exposure:exp_time=420 Exposures:exposure:arm=both}
+	_16__: {6 Exposures:exposure:exp_time=420 Exposures:exposure:arm=red}
+	_1_6_: {6 Exposures:exposure:exp_time=420 Exposures:exposure:arm=blue}	
+_2___:
+	_200_: {1 Exposures:exposure:exp_time=7020 Exposures:exposure:arm=both}
+	_20__: {1 Exposures:exposure:exp_time=7020 Exposures:exposure:arm=red}
+	_2_0_: {1 Exposures:exposure:exp_time=7020 Exposures:exposure:arm=blue}
+	_211_: {2 Exposures:exposure:exp_time=3420 Exposures:exposure:arm=both}
+	_21__: {2 Exposures:exposure:exp_time=3420 Exposures:exposure:arm=red}
+	_2_1_: {2 Exposures:exposure:exp_time=3420 Exposures:exposure:arm=blue}
+	_222_: {4 Exposures:exposure:exp_time=1620 Exposures:exposure:arm=both}
+	_22__: {4 Exposures:exposure:exp_time=1620 Exposures:exposure:arm=red}
+	_2_2_: {4 Exposures:exposure:exp_time=1620 Exposures:exposure:arm=blue}
+	_233_: {6 Exposures:exposure:exp_time=1020 Exposures:exposure:arm=both}
+	_23__: {6 Exposures:exposure:exp_time=1020 Exposures:exposure:arm=red}
+	_2_3_: {6 Exposures:exposure:exp_time=1020 Exposures:exposure:arm=blue}
+	_244_: {8 Exposures:exposure:exp_time=720 Exposures:exposure:arm=both}
+	_24__: {8 Exposures:exposure:exp_time=720 Exposures:exposure:arm=red}
+	_2_4_: {8 Exposures:exposure:exp_time=720 Exposures:exposure:arm=blue}
+	_266_: {12 Exposures:exposure:exp_time=420 Exposures:exposure:arm=both}
+	_26__: {12 Exposures:exposure:exp_time=420 Exposures:exposure:arm=red}
+	_2_6_: {12 Exposures:exposure:exp_time=420 Exposures:exposure:arm=blue}	
+
+____1: programme:spectrograph:red_Arm:binning_Y=1 programme:spectrograph:blue_Arm:binning_Y=1
+____2: programme:spectrograph:red_Arm:binning_Y=2 programme:spectrograph:blue_Arm:binning_Y=2
+____3: programme:spectrograph:red_Arm:binning_Y=3 programme:spectrograph:blue_Arm:binning_Y=3
+____4: programme:spectrograph:red_Arm:binning_Y=4 programme:spectrograph:blue_Arm:binning_Y=4
+
+
+
+FORBIDDEN: _120_ _102_ _220_ _202_ ____0 ____5 ____6 ____7 ____8 ____9 _3___ _4___ _5___ _6___ _7___ _8___ _9___ __5__ __7__ __8__ __9__ ___5_ ___7__ ___8__ ___9_
