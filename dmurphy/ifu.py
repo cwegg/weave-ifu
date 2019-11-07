@@ -1,4 +1,4 @@
-#!/usr/bin/env OBpython
+#!/usr/bin/env python
 from astropy.io import fits as pyfits
 import os
 from numpy import unique, arange, random, where
@@ -541,21 +541,18 @@ if __name__ =='__main__':
     input_fits = './WA_FITS_catalogue_180608-143105ex2.fits'
     input_fits = './scipLFG108.2-00.6.fits'
     input_fits = './WC_S4.fits'
-
+    input_fits = '../test_data/WA_FITS_catalogue_180608-143105ex2.fits'
     import sys
     try:
-#        input_fits = sys.argv[1]
-#        input_fits = './SCIP_S4.fits'
-        input_fits = './WC_S4.fits'
-        input_fits = './SCIP_S4.fits'
-        
         assert os.path.isfile(input_fits)
     except:
         print 'Please supply valid FITS catalogue name'
         print 'Usage: ./ifu.py filename'
         raise SystemExit(0)
+
+
     
-    mylifu = lifu(input_fits,res='LR',binning='1')
+    mylifu = lifu(input_fits,res='HR',binning='1')
     centrals,groups = mylifu.get_central_spaxels(dither_group=True)
     mylifu.new_xml()
     mylifu.generate()
