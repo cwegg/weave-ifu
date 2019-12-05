@@ -131,11 +131,13 @@
    <exposure arm="blue" cal_lamp="1" cal_lamp_filter_A="1" cal_lamp_filter_B="1" exp_time="20" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="1" type="flat" />
    <exposure arm="red" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="2" type="arc" />
    <exposure arm="blue" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="2" type="arc" />
-   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="3" type="science" />
-   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="4" type="science" />
-   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="5" type="science" />
-   <exposure arm="red" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="6" type="arc" />
-   <exposure arm="blue" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="6" type="arc" />      
+   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="540" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="3" type="science" />
+   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="540" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="4" type="science" />
+   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="540" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="5" type="science" />
+   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="540" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="6" type="science" />
+   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="540" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="7" type="science" />
+   <exposure arm="red" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="8" type="arc" />
+   <exposure arm="blue" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="9" type="arc" />      
 
       <!--
 	What do these values specifically mean?  
