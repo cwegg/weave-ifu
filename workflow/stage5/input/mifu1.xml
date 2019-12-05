@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8" ?>  
+
+<root author="jairomendezabreu@gmail.com" cc_report="daniela.bettoni@oapd.inaf.it,jalfonso@iac.es" report_verbosity="1" version="1.13">
+  <!--
+      This file represents a blank XML template (version indicated in <root>) that is ready to be filled with:
+
+      1. Instrument configuration information
+      2. Field observing constraints approprate to the...
+      3. ...targets from "protofield" FITS files containing ~1500-2000 targets (for MOS)
+
+      The SWG should create a page detailing the possible instrumental
+      configurations and observing condition constraints to aid catalogue construction.
+
+      A service that allows a series of radio buttons to be fixed that
+      then outputs the correct PROGTEMP and OBSTEMP should be
+      provided.
+  -->
+  
+  <programme>
+    <!-- Historical note:
+	 This component is the ProgrammeDefinition XML: it must inserted by the SWG at .fits -> .xml converter stage
+	 (prior to running configure).
+
+         Each target has a PROGTEMP value, which defines:
+
+         PROGTEMP = "NORBI.X"
+	 N = i(N)strument configuration
+	 O = (O)B length
+	 R = (R)ed arm exposure code
+	 B = (B)lue arm exposure code
+	 I = B(I)nning in the spectral direction
+	 X = Conte(X)tual OB actions (duplicate X times, dither pattern X times...)
+
+         The per-target PROGTEMP values are grouped prior to when a concatenated "master catalogue" is created, so  
+	 that targets with common PROGTEMP are observed in the same field.
+
+    -->
+    <spectrograph>
+      <red_Arm VPH="VPH1" binning_X="1" binning_Y="4" resolution="low" speed="slow" />
+      <blue_Arm VPH="VPH1" binning_X="1" binning_Y="4" resolution="low" speed="slow" />
+      <!-- 
+
+         i(N)strument configuration: translated into "type", "VPH" etc, eg:                  [NORBI.X]
+         =============================                                                        ^
+         PROGTEMP     type    resolution   red_Arm   blue_Arm
+	 1****.*      "MOS"   "low"        "VPH1"    "VPH1"
+	 2****.*      "MOS"   "high"       "VPH2"    "VPH2"
+	 3****.*      "MOS"   "high"       "VPH2"    "VPH3"
+	 4****.*      "LIFU"  "low"        "VPH1"    "VPH1"
+	 5****.*      "LIFU"  "high"       "VPH2"    "VPH2"
+	 6****.*      "LIFU"  "high"       "VPH2"    "VPH3"
+	 7****.*      "mIFU"  "low"        "VPH1"    "VPH1"
+	 8****.*      "mIFU"  "high"       "VPH2"    "VPH2"
+	 9****.*      "mIFU"  "high"       "VPH2"    "VPH3"
+
+	 Some elements remain unchanged: readout is always "slow", spatial binning is always = 1x.
+
+	 B(I)nning in the spectral direction:                                                [NORBI.X]
+         =============================                                                            ^
+         PROGTEMP     spectral binning
+	 ****1.*      1x
+	 ****2.*      2x
+	 ****3.*      3x
+	 ****4.*      4x
+
+         (all other values forbidden)
+
+
+        spectrograph: defines the the configuration for both arms of the Spectrograph
+        (both arms are mandatory)        
+        (all attributes mandatory)
+        
+        speed: arm readout speed for the program.Possible values "fast", "slow"                                              [fixed in template]
+        resolution:  arm resolution for the program. Possible values are "low", "high"                                       [defined by PROGTEMP]
+        binning_X: arm detector binning in spatial direction for the program. Possible values: "1","2","3","4" (pixels).     [fixed in template]
+        binning_Y: arm detector binning in spectral direction for the program. Possible values: "1","2","3","4" (pixels).    [defined by PROGTEMP]
+        VPH: Arm Grating; Possible Values are "n/a", "vph1","vph2" and "vp33". ("vph3" only for Blue Arm)                    [defined by PROGTEMP]
+      -->
+    </spectrograph>
+    <exposures>
+
+      <!-- The SWG should provide for a limited number of observing templates ("Exposures") here, with a fixed calibration recipe.
+
+           (O)B length specifier:                                                            [NORBI.X]
+           ========================                                                            ^
+
+           OBs can either be total length* 30 minutes** (OB0), 1hr (OB1) or 2hr (OB2)
+
+           * The "length" here refers to total time on-target(s) (including. overheads) rather than time on-target. A 20-minute OB will
+	   generally comprise 17 minutes on-target and 3 minutes overhead.
+
+
+           ** 30 minute OBs could be used in cases where there is only a short amount of dark time left (end / start of the night)
+	   and/or for bright targets. Where condtions might only permit a further 30 minutes on MOS, OB0 could also be used. If
+	   conditions subsequently clear: there is a danger that the other plate might not have configured in time. One option is to
+	   repeat that 30 minute OB.
+	   
+	   (R)ed or (B)lue arm exposure code:                                                [NORBI.X]
+	   ==================================                                                   ^^
+
+           (NB. these are nominal for illustrative purposes and do not include r/o overhead in total OB execution time)
+
+	   As each arm can be independently read out, mixed templates are possible. This is encoded in the penultimate 2 chars in PROGTEMP,
+	   which correspond respectively to the Red and Blue arms:
+
+	   CODE   TEXP (min) per exposure     OB0      OB1      OB2
+	   0       -                          1x30     1x60m    1x120m
+	   1      60                          -        -        2x60m
+	   2      30                          -        2x30m    4x30m
+	   3      20                          -        3x20m    6x20m
+	   4      15                          2x15m    4x15m    8x15m
+	   5      12                          -    5x12m    10x12m
+	   6      10                          3x10m    6x10m    12x10m
+
+           In the Operational Rehearsals, we were using: 
+
+           PROGTEMP = "11331" (MOS, LR, R:3x20mins, B:3x20mins)
+           PROGTEMP = "22331" (MOS, HR-Blue, R:6x20mins, B:6x20mins)
+           PROGTEMP = "32331" (MOS, HR-Green, R:6x20mins, B:6x20mins)
+
+           Some RB combinations might be restricted due to excessive readout overheads, eg:
+
+           PROGTEMP = "22601" (MOS, HR-Blue, R:4x30mins, B:1x120m)
+	   The red arm here would incur an ~36 minute overhead readout penalty, and would not be completed at around the same time as the  arm.
+
+           In the below example, we show a typical LR OpR2 OB equivalent to PROGTEMP = "11331":
+
+      -->
+
+   <exposure arm="red" cal_lamp="1" cal_lamp_filter_A="1" cal_lamp_filter_B="1" exp_time="20" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="1" type="flat" />
+   <exposure arm="blue" cal_lamp="1" cal_lamp_filter_A="1" cal_lamp_filter_B="1" exp_time="20" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="1" type="flat" />
+   <exposure arm="red" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="2" type="arc" />
+   <exposure arm="blue" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="2" type="arc" />
+   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="3" type="science" />
+   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="4" type="science" />
+   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="5" type="science" />
+   <exposure arm="red" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="6" type="arc" />
+   <exposure arm="blue" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="6" type="arc" />      
+
+      <!--
+	What do these values specifically mean?  
+	exposures:defines the exposures of the OBs belonging to this Programme (all attributes mandatory)
+        
+        order: Order of execution of the exposure                                                                                                [auto-generated by FITS -> XML code]
+        type: Exposure type. Possible values are: "Science", "arc", "flat", "bias", "standard"                                                   [auto-generated by FITS -> XML code]
+        arm: Arm to perform the observation with. Possible values: "both", "red", "blue".                                                        [fixed in template]
+        exp_time: Time of exposure (in secs).                                                                                                    [defined by PROGTEMP]
+        cal_lamp: Possible values are, "1", "2", "3", "4" corresponding  to the lamp chosen.                                                     [fixed in template]
+        cal_lamp_filter_A:Calibration lamp filter A: Possible values:"1", "2", "3",  "4", "5", "6" corresponding to the filter chosen.           [fixed in template]
+        cal_lamp_filter_B:Calibration lamp filter B position. Possible values:"1", "2", "3", "4", "5", "6" corresponding to the filter chosen.   [fixed in template]
+        ff_ilu_1:Arm flat field illumination Led 1. Possible values:[0-100] where 0  corresponds to Off and 100 to the max intensity.            [fixed in template]
+        ff_ilu_2:Arm flat field illumination Led 2. Possible values:[0-100] where 0  corresponds to Off and 100 to the max intensity.            [fixed in template]
+        ff_ilu_3:Arm flat field illumination Led 3. Possible values:[0-100] where 0  corresponds to Off and 100 to the max intensity.            [fixed in template]
+      -->
+    </exposures> 
+
+      <!-- Some surveys have specific requirements for dithering, repeat exposures etc. These are encoded in the contextual OB operations:
+
+           X = Conte(X)tual OB actions                                            [NORBI.X]
+           ===========================                                                   ^
+
+           This component is entirely optional - XMLChecking will not fail if there is no X value in the PROGTEMP.
+
+
+           Survey            X      Action
+           StePS             Any    Duplicate this OB the specified number of times (eg: 11331.7 = "duplicate this target configuration 7 times)
+	   SCIP              <4     Duplicate this OB the specified number of times. OBs must be time-linked to ensure <72 hrs between first and last
+	   IFUs (not LOFAR)  3,5,7  Initiate a dither sequence of 3,5 or 7 pointings
+	   LOFAR             Any    Duplicate this OB the specified number of times (eg: 61331.7 = "duplicate this target configuration 7 times)
+
+      -->
+
+  </programme>   
+
+  <observation name="125_psz1_A" progtemp="71334" ob_priority="1.0" coordinate_system="ICRS" obs_type="mIFU" trimester="2016B2" chained="False" obsgroup="" obsgroup_validity="90" ob_class="science" pa="0.0" linkedgroup="" casuid="-1" > <!-- [["name": identifier for this OB (OB-id?)]]-->
+
+    <configure config_file_version="0.0003" configure_version="1.0.0046" max_calibration="25" max_guide="1" max_sky="100" maximum_gate_angle="14.1" num_sky_fibres="603" plate="PLATE_B" plate_version="test_0004" seed="1">
+    <conditions epoch="2015.0" ha="0" pressure="770.0" relative_humidity="0.2" temperature="293.0" tlr="0.0065" />
+    <hour_angle_limits earliest="-2.0" latest="2.0" />
+  </configure>
+    <surveys>
+      <survey max_fibres="740" name="WC" priority="1.0" />
+      <!-- Set the per-field survey priorities based on the master fibre distribution policy
+	   max_fibres - should this be ignored / removed?
+      -->
+
+    </surveys>
+
+    <!-- The "obsconstraints" component must also inserted by the SWG at .fits -> .xml converter stage
+	 (prior to running configure). Each target has an OBSTEMP value, which defines:
+
+         OBSTEMP = "STAMB"
+	 S = (S)eeing
+	 T = (T)ransparency
+	 A = (A)irmass/elevation
+	 M = (M)oon distance            
+	 B = Sky (B)rightness   
+   
+         (NB. ICS-026, the Scheduler, also lists OB priority; survey and programme priorities as possible inputs
+         but does not list a moon distance constraint, whereas ICS-024, the OB manager, does)
+
+         Each will be divided into grades (A,B,C,D,E) with "A" being the best, "E", the worst. SWG will need to
+	 translate these into their numerical values, eg:
+
+         OBSTEMP = "AAAAA"
+	 S = "A" -> seeing_max="1.3"
+	 T = "A" -> transparency_min="0.9"
+	 A = "A" -> elevation_min="65.0"
+         M = "A" -> moondist_min="120"
+	 B = "A" -> skybright_max="21.9"
+
+    --> 
+    <obsconstraints elevation_min="33.75" moondist_min="0" obstemp="IAEEB" seeing_max="1.5" skybright_max="21.5" transparency_min="0.8" />
+    <dithering apply_dither="3"/>
+    <offsets offset_step_dec="%%%" offset_step_ra="%%%" />
+    <!--
+
+    Example targets below taken from ICD-025 (Configure XML definition), including a few corrections to XML.
+    
+    --> 
+    <fields>
+      <field Dec_d="-4.71060356792" RA_d="316.369609537" order="3">
+	<target cname="WVE_21021534-0516575" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.2826297" targepoch="2015.5" targid="6910684503335331328" targname="guide_12275_509" targparal="1.308" targpmdec="5.32" targpmra="-3.796" targprio="10" targprog="" targra="315.563908" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
+	<photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.474" mag_g="" mag_gg="14.863" mag_i="" mag_r="" mag_rp="14.117"/></target>
+	<target cname="WVE_21025233-0526395" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.4442975" targepoch="2015.5" targid="6910490886209034240" targname="guide_12275_541" targparal="0.541" targpmdec="-1.612" targpmra="-3.174" targprio="10" targprog="" targra="315.7180421" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
+	<photometry emag_bp="0.011" emag_g="" emag_gg="0.003" emag_i="" emag_r="" emag_rp="0.007" mag_bp="15.87" mag_g="" mag_gg="15.279" mag_i="" mag_r="" mag_rp="14.554"/></target>
+	<target cname="WVE_21032779-0532124" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.5367757" targepoch="2015.5" targid="6910486282004084608" targname="guide_12275_563" targparal="0.788" targpmdec="1.666" targpmra="3.11" targprio="10" targprog="" targra="315.8657851" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
+	<photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.003" mag_bp="15.397" mag_g="" mag_gg="15.037" mag_i="" mag_r="" mag_rp="14.514"/></target>
+	<target cname="WVE_21013311-0433049" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.5513745" targepoch="2015.5" targid="6912285216171688192" targname="guide_12278_19" targparal="0.617" targpmdec="-3.575" targpmra="7.375" targprio="10" targprog="" targra="315.3879615" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
+	<photometry emag_bp="0.003" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.813" mag_g="" mag_gg="15.421" mag_i="" mag_r="" mag_rp="14.869"/></target>
+	<target cname="WVE_21013826-0450005" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.8334733" targepoch="2015.5" targid="6912258969626228224" targname="guide_12278_20" targparal="0.596" targpmdec="-5.751" targpmra="-5.731" targprio="10" targprog="" targra="315.4094004" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
+	<photometry emag_bp="0.003" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.477" mag_g="" mag_gg="15.113" mag_i="" mag_r="" mag_rp="14.581"/></target>
+	<target cname="WVE_21013972-0458253" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.973684" targepoch="2015.5" targid="6912253850025195264" targname="guide_12278_22" targparal="1.441" targpmdec="2.607" targpmra="1.088" targprio="10" targprog="" targra="315.4155191" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
+	<photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.001" mag_bp="15.68" mag_g="" mag_gg="15.205" mag_i="" mag_r="" mag_rp="14.58"/></target>
+	<target cname="WVE_21014136-0436516" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.6143443" targepoch="2015.5" targid="6912281681413311232" targname="guide_12278_23" targparal="0.669" targpmdec="4.682" targpmra="6.014" targprio="10" targprog="" targra="315.42233" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
+	<photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.001" mag_bp="15.182" mag_g="" mag_gg="14.809" mag_i="" mag_r="" mag_rp="14.275"/></target>
+	<target cname="WVE_21014192-0430269" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.5074652" targepoch="2015.5" targid="6912308928685848192" targname="guide_12278_25" targparal="0.593" targpmdec="-5.899" targpmra="2.458" targprio="10" targprog="" targra="315.4246826" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
+	<photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.695" mag_g="" mag_gg="15.32" mag_i="" mag_r="" mag_rp="14.786"/></target>
+
+	<!-- The sky bundle -->
+	<!-- -\- I think this is generated at point of configure, so we don't need to add this! -->
+	<!-- <target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="S" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" automatic="%%%" targparal="0.0"/> -->
+
+	<!-- The white dwarf bundle -->
+	<target cname="WVE_21074339-0511305" configid="%%%" fibreid="%%%" ifu_spaxel="C03" targcat="WD_S4" targclass="STAR" targdec="-5.1918001" targepoch="2015.5" targid="WD340676" targname="da006500_800.dat" targparal="17.637" targpmdec="30.11" targpmra="26.512" targprio="10" targprog="" targra="316.9308009" targsrvy="WD" targuse="C" targx="%%%" targy="%%%">
+       <photometry emag_bp="0.002" emag_g="" emag_gg="0.002" emag_i="" emag_r="" emag_rp="0.002" mag_bp="17.694" mag_g="" mag_gg="17.479" mag_i="" mag_r="" mag_rp="17.088"/>
+     </target>
+
+	<!-- The 18 science targets -->
+	<target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="%%%" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="T" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" targparal="%%%">
+	  <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+	</target>
+
+	<!-- ... -->
+	<!-- ... -->
+	
+	<target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="%%%" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="T" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" targparal="%%%">
+	  <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+	</target>
+	
+      </field>
+  </fields>
+
+    </observation> 
+</root>

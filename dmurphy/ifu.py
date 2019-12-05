@@ -447,7 +447,7 @@ class lifu:
 
                 #now add a guide star
                 print 'WARNING - using PA=0 for now!'
-                gs = GuideStar(ra,dec,0,nside=32)
+                gs = GuideStar(ra,dec,0,'LIFU',nside=32)
                 guide_targ = gs.get_guide(as_xml=True)
                 self.guide_targ = guide_targ
 
