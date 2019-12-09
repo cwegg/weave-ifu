@@ -14,7 +14,7 @@ class GuideStar:
  *      GuideStar
  *
  *  Purpose:
- *      Handle the retrieval of WEAVE guide gtars for the LIFU or MOS
+ *      Handle the retrieval of WEAVE guide stars for the LIFU or MOS
  *
  *  Description:
  *      This class provides a mechanism for querying and retrieving guide star
@@ -23,12 +23,14 @@ class GuideStar:
  *  Arguments:
  *      ra : float
  *          The Right Ascension (decimal degrees) - of either the central 
- *          spaxel of central FOV
+ *          spaxel or central FOV
  *      dec : float
  *          The Declination (decimal degrees) - of either the central 
  *          spaxel or central FOV
  *      pa : float 
  *          The position angle (degrees) of rotation (LIFU only)
+ *      mode : str 
+ *          Either LIFU or mIFU
  *      nside : int, optional
  *          Override the default HEALPix nside value. Will likely end in tears.
  *
@@ -66,21 +68,37 @@ class GuideStar:
     import xml.dom.minidom
     from xml.dom.minidom import Node
 
-    def __init__(self,ra,dec,pa,nside=32):
-         self.xml_template_url = 'http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/BlankXMLTemplate.xml'
-         self.xml_template = 'BlankXMLTemplate.xml'
-         self.ra = ra
-         self.dec = dec
-         self.pa = pa
-         self.nside = nside
-         self.guides = None
-         self.plate_scale = 17.8   ##  "/mm
+    def __init__(self,ra,dec,pa,mode,nside=32):
+        self.xml_template_url = 'http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/BlankXMLTemplate.xml'
+        self.xml_template = 'BlankXMLTemplate.xml'
+        self.ra = ra
+        self.dec = dec
+        self.pa = pa
+        self.nside = nside
+        self.guides = None
+        self.plate_scale = 17.8   ##  "/mm
+        self.guide_url = "http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/guides/"
+        self.guide_filename = "Guides_S4_<HEALPIX>.fits"
+        self.cache_dir = './cache/'
 
-         if not os.path.isfile(self.xml_template):
-             self.wget(self.xml_template_url)
+        if not mode in ['LIFU','mIFU']:
+            print 'ERROR: must specify LIFU or mIFU mode'
+            raise SystemExit(0)
+        self.lifu = (mode == 'LIFU')
+
+        if (not self.lifu) and (self.pa != 0):
+            print 'ERROR: mIFU mode requires PA=0'
+            raise SystemExit(0)
+
+        if not os.path.isdir(self.cache_dir):
+            cmd = 'mkdir -p %s'%(self.cache_dir)
+            os.system(cmd)
+        
+        if not os.path.isfile(self.xml_template):
+            self.wget(self.xml_template_url)
         
         
-    def get_guide(self,annular_fail=True,as_xml=True):
+    def get_guide(self,annular_fail=True,as_xml=True,print_xml=False):
         """Master function to return a guide star once the object is
            instantiated.
            
@@ -89,37 +107,47 @@ class GuideStar:
         annular_fail : bool, optional
              If there is no guidestar in GC FOV, search an annulus and
              define the PA required to get a guidestar. Return most
-             centralised candidate
-        
+             centralised candidate        
         as_xml : bool, optional
              Returns the result as an XML <target> element that can be added to
              a <field> element
+        print_xml : bool, optional
+             Prints the XML results if as_xml=True
+
         
         Returns
         -------
         guide : astropy.Table 
              row from the Guide star catalogue
         guide (if as_xml=True) : xml.dom.minidom.Element
-             XML <target> element tha can be inserted into a field XML
+             XML <target> element that can be inserted into a field XML
 
         """
 
 
         self.set_geometry()
         self.retrieve_guidecats()
-        guide = self.select_target()
-        if (guide == None) and (annular_fail == True):
-            print 'No guide found at fixed position - performing annular search'
-            guide = self.annular_search()
+        guides = self.select_target()
+        if (type(guides) == type(None)) and (annular_fail == True):
+            print 'No guide(s) found at fixed position - performing annular search'
+            guides = self.annular_search()
 
-        if guide == None:
-            print 'No guide star was found...'
+        if type(guides) == type(None):
+            print 'No guide star(s) found...'
             return None
             
         if as_xml:
-            return self.to_xml(guide)
+            if self.lifu:
+                return self.to_xml(guides)
+            else:
+                xmls = [self.to_xml(guide) for guide in guides]
+                if print_xml:
+                    for x in xmls:
+                        print x.toxml()
+
+                return xmls
         else:
-            return guide
+            return guides
         
 
     def wget(self,url,outname=None):
@@ -170,25 +198,33 @@ class GuideStar:
         import astropy.coordinates as cc
         from numpy import unique
 
-        self.g_dx = 3.75
-        self.g_dy = 4.0
+        if self.lifu:
+            self.g_dx = 3.75
+            self.g_dy = 4.0
 
-        #testing - let's make it bigger
-#        self.g_dx = 17.0
-#        self.g_dy = 20.0
+            #testing - let's make it bigger
+    #        self.g_dx = 17.0
+    #        self.g_dy = 20.0
 
-        #needs to be about 20x larger in area
-#        self.g_dx = 16.8
-#        self.g_dy = 17.9
-        
-        self.ra_max = self.ra + ((27.7+(0.5*self.g_dx))/60.0)
-        self.ra_min = self.ra + ((27.7-(0.5*self.g_dx))/60.0)
-        self.dec_max = self.dec + ((0.5*self.g_dy)/60.0)
-        self.dec_min = self.dec - ((0.5*self.g_dy)/60.0)
+            #needs to be about 20x larger in area
+    #        self.g_dx = 16.8
+    #        self.g_dy = 17.9
 
-        self.ra_gc0 = self.ra + (27.7/60.0)
-        self.dec_gc0 = self.dec
+            self.ra_max = self.ra + ((27.7+(0.5*self.g_dx))/60.0)
+            self.ra_min = self.ra + ((27.7-(0.5*self.g_dx))/60.0)
+            self.dec_max = self.dec + ((0.5*self.g_dy)/60.0)
+            self.dec_min = self.dec - ((0.5*self.g_dy)/60.0)
 
+            self.ra_gc0 = self.ra + (27.7/60.0)
+            self.dec_gc0 = self.dec
+
+        else:
+            self.ra_min = self.ra - 1.0
+            self.ra_max = self.ra + 1.0
+            self.dec_min = self.dec - 1.0
+            self.dec_max = self.dec + 1.0
+
+            
         if healpix:
             hp = HEALPix(nside=self.nside, order='nested', frame=cc.ICRS())
             self.healpix_indices = []
@@ -215,15 +251,12 @@ class GuideStar:
         if len(self.healpix_indices) == 0:
             self.set_geometry()
             
-        dir_output = '/tmp/'
-        dir_output = './'
         self.guide_files = []
-#        print 'REMOVE!!'
-#        self.healpix_indices = [624,6]
 
         for hp in self.healpix_indices:
-            url = "http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/guides/Guides_S4_%d.fits"%(hp)
-            fn = '%sGuides_S4_%d.fits'%(dir_output,hp)
+            fn = self.guide_filename.replace('<HEALPIX>',str(hp))
+            url = self.guide_url+fn
+            fn = self.cache_dir+fn
             if os.path.isfile(fn):
                 if clobber == False:
                     print 'Using existing file %s'%(fn)
@@ -254,9 +287,15 @@ class GuideStar:
     def select_target(self,annular=False):
         import numpy
         from operator import indexOf
+        from astropy.table import Table
         self.ra_g = self.guides['GAIA_RA']
         self.dec_g = self.guides['GAIA_DEC']
+        
+        if (not self.lifu):
+            annular = True
+            #fig = plt.figure(); sp = plt.subplot(aspect='equal'); plt.plot(self.ra_g,self.dec_g,'ko'); cir = plt.Circle((gs.ra,gs.dec),radius=1.0,lw=2.0,color='red'); sp.add_patch(cir); plt.show()
 
+            
         if annular ==False:        
             filter1 = (self.ra_g > self.ra_min) & (self.ra_g < self.ra_max)
             filter2 = (self.dec_g > self.dec_min) & (self.dec_g < self.dec_max)
@@ -272,9 +311,15 @@ class GuideStar:
         
             self.dist = [((abs(r-self.ra_gc0)**2)+(abs(d-self.dec_gc0)**2))**0.5 for r,d in zip(self.ra_g,self.dec_g)]
         else:
-            #in annulus, want closest to the central radius of the annulus
-            r_min = self.ra_min-self.ra
-            r_max = self.ra_max-self.ra
+            if self.lifu:
+                #in annulus, want closest to the central radius of the annulus
+                r_min = self.ra_min-self.ra
+                r_max = self.ra_max-self.ra
+            else:
+                r_min = 0.95
+                r_max = 1.0
+
+                
             self.radii = numpy.array([(((_ra-self.ra)**2)+((_dec-self.dec)**2))**0.5 for _ra,_dec in zip(self.ra_g,self.dec_g)])
             filter = (self.radii > r_min) & (self.radii < r_max)
             self.guides_filter = self.guides[filter]
@@ -282,10 +327,12 @@ class GuideStar:
             self.dec_g = self.guides_filter['GAIA_DEC']
 
             radii = self.radii[filter]
-            
-            r0 = r_min + (0.5*(r_max-r_min))
-            self.dist = [abs(d-r0) for d in radii]
-
+            if self.lifu:
+                r0 = r_min + (0.5*(r_max-r_min))
+                self.dist = [abs(d-r0) for d in radii]
+            else:
+                self.dist = radii
+                
         minval = min(self.dist)
         g_index = indexOf(self.dist,minval)
 
@@ -305,13 +352,18 @@ class GuideStar:
             from copy import deepcopy
             dist_sort = deepcopy(self.dist)
             dist_sort.sort()
-            print 'Annular search summary (selected closest to centre of a rotated guidecam):'
+            if self.lifu:
+                print 'Annular search summary (selected closest to centre of a rotated guidecam):'
+            else:
+                print 'Annular search summary:'
             print "#\t Dist (')  CNAME\t\t RA\t    Dec\t      angle\t Gaia_G mag"
             i = 0
+            self.guides_filter['dist'] = self.dist
+
             for d in dist_sort:
                 i = i + 1
                 sel = ''
-                if i == 1:
+                if (i == 1) and (self.lifu):
                     sel = ' <-----'
                 index = indexOf(self.dist,d)
                 guide_candidate = self.guides_filter[index]
@@ -323,7 +375,11 @@ class GuideStar:
                     ang += 360.0
                 print '#%d\t %1.2f\t   %s\t %1.4f   %1.4f   %1.3f\t %1.3f%s'%(i,d*60.0,guide_candidate['CNAME'],guide_candidate['GAIA_RA'],guide_candidate['GAIA_DEC'],ang,guide_candidate['GAIA_MAG_GG'],sel)
 
-        return guide_sel
+            self.guides_filter.sort('dist')
+
+        if self.lifu:
+            return guide_sel
+        return self.guides_filter
     
     def ingest_xml(self,dom):
         self.dom = dom
@@ -365,8 +421,8 @@ class GuideStar:
 
         #xml_target.setAttribute('fibreid',"9999")
         #xml_target.setAttribute('configid',"9999")
-        xml_target.setAttribute('fibreid',"0")
-        xml_target.setAttribute('configid',"0")
+        xml_target.setAttribute('fibreid',"")
+        xml_target.setAttribute('configid',"")
 
 
         xml_target.setAttribute('cname',str(guide['CNAME']))
@@ -383,6 +439,7 @@ class GuideStar:
         xml_target.setAttribute('targclass',str(guide['TARGCLASS']))
         xml_target.setAttribute('targcat',str(guide['TARGCAT']))
         xml_target.setAttribute('targepoch',str(guide['GAIA_EPOCH']))
+        xml_target.setAttribute('targparal',str(guide['GAIA_PARAL']))
         xml_target.setAttribute('targprio',"10")
 #        xml_target.setAttribute('ifu_spaxel',"")
         #xml_photom = self.targets_base[0].getElementsByTagName('photometry')[0]
@@ -409,17 +466,35 @@ class GuideStar:
 
 if __name__ =='__main__':
 
-    import ifu
-    ra = 178.835488822
-    dec = 58.2835493041
-    pa = 0.0
-    gs = ifu.guidestar(ra,dec,pa)
-    gs.set_geometry()
-    guide = gs.get_guide(annular_fail=True,as_xml=True)
-    
-    #gs.retrieve_guidecats()
-    #gs.select_target()
 
+    if 0:
+        import ifu
+        ra = 178.835488822
+        dec = 58.2835493041
+        pa = 0.0
+        gs = ifu.guidestar(ra,dec,pa)
+        gs.set_geometry()
+        guide = gs.get_guide(annular_fail=True,as_xml=True)
+
+        #gs.retrieve_guidecats()
+        #gs.select_target()
+
+    if 0:
+        gs = GuideStar(316.369609537,-4.71060356792,0,'mIFU')
+        guides = gs.get_guide()
+        for g in guides[:8]:
+            print g.toxml()
+
+    if 1:
+        gs = GuideStar(316.369609537,-4.71060356792,0,'LIFU')
+        guide = gs.get_guide()
+        print guide.toxml()
+
+            
+    # gs.set_geometry()
+    # gs.retrieve_guidecats()
+    # gs.select_target(annular=True)
+    
     print 'Fin'
 
 
