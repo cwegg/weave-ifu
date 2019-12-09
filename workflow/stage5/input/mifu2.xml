@@ -241,22 +241,22 @@
 
 	<!-- The sky bundle -->
 	<!-- -\- I think this is generated at point of configure, so we don't need to add this! -->
-	<!-- <target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="S" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" automatic="%%%" targparal="0.0"/> -->
+	<!-- <target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="S" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" ifu_pa="%%%" automatic="%%%" targparal="0.0"/> -->
 
 	<!-- The white dwarf bundle -->
-	<target cname="WVE_21074339-0511305" configid="%%%" fibreid="%%%" ifu_spaxel="C03" targcat="WD_S4" targclass="STAR" targdec="-5.1918001" targepoch="2015.5" targid="WD340676" targname="da006500_800.dat" targparal="17.637" targpmdec="30.11" targpmra="26.512" targprio="10" targprog="" targra="316.9308009" targsrvy="WD" targuse="C" targx="%%%" targy="%%%">
+	<target cname="WVE_21074339-0511305" configid="%%%" fibreid="%%%" ifu_spaxel="C03" ifu_pa="%%%" targcat="WD_S4" targclass="STAR" targdec="-5.1918001" targepoch="2015.5" targid="WD340676" targname="da006500_800.dat" targparal="17.637" targpmdec="30.11" targpmra="26.512" targprio="10" targprog="" targra="316.9308009" targsrvy="WD" targuse="C" targx="%%%" targy="%%%">
        <photometry emag_bp="0.002" emag_g="" emag_gg="0.002" emag_i="" emag_r="" emag_rp="0.002" mag_bp="17.694" mag_g="" mag_gg="17.479" mag_i="" mag_r="" mag_rp="17.088"/>
      </target>
 
 	<!-- The 18 science targets -->
-	<target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="%%%" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="T" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" targparal="%%%">
+	<target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="%%%" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="T" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" ifu_pa="%%%" targparal="%%%">
 	  <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
 	</target>
 
 	<!-- ... -->
 	<!-- ... -->
 	
-	<target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="%%%" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="T" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" targparal="%%%">
+	<target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="%%%" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="T" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" ifu_pa="%%%" targparal="%%%">
 	  <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
 	</target>
 	

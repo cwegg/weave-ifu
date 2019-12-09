@@ -479,12 +479,18 @@ if __name__ =='__main__':
         #gs.retrieve_guidecats()
         #gs.select_target()
 
+    if 0:
+        gs = GuideStar(316.369609537,-4.71060356792,0,'mIFU')
+        guides = gs.get_guide()
+        for g in guides[:8]:
+            print g.toxml()
 
-    gs = GuideStar(316.369609537,-4.71060356792,0,'mIFU')
-    guides = gs.get_guide()
-    for g in guides[:8]:
-        print g.toxml()
+    if 1:
+        gs = GuideStar(316.369609537,-4.71060356792,0,'LIFU')
+        guide = gs.get_guide()
+        print guide.toxml()
 
+            
     # gs.set_geometry()
     # gs.retrieve_guidecats()
     # gs.select_target(annular=True)
