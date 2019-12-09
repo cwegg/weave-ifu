@@ -1,31 +1,40 @@
 Documentation for IFU workflow
 ==============================
 
-v. 20191205
+*v. 20191205*
 
 This document details the workflow shown in the relevant html file
 included within this repository. Please use this guide in conjunction
 with the html file. Hyperlinks therein (depicted as globes) provide
 access to the resources described here.
 
-Please note: during development, not all resources are available, and
+**Please note:** during development, not all resources are available, and
 links will be generated when sample files, code is committed.
 
-Disclaimer: this software is designed to aide in the preparation of
+**Disclaimer:** this software is designed to aide in the preparation of
 WEAVE IFU observations. We provide no warranty for this software, and
 offer support on a best-effort basis.
 
-Definitions:
-End-user - the user that is preparing IFU observations
-SPA-columns - the mandatory WEAVE SPA columns that must be included in all input FITS catalogues
+Definitions
+-----------
+
+* End-user: the user that is preparing IFU observations
+* SPA-columns: the mandatory WEAVE SPA columns that must be included in all input FITS catalogues
+
+Stages
+------
 
 Stage 0
+~~~~~~~
+
 The end-user must compile an initial list of IFU
 targets. Consideration must be made of the instrument mode the
 observations are made in, what dither strategy is to be used, what
 targets are to be provided.
 
 Stage 1
+~~~~~~~
+
 The information from Stage 0 needs to be standardised into a
 preliminary FITS catalogue containing "input IFU drivers": IFU target
 positions in each row alongside other critical columns that need to be
@@ -34,14 +43,17 @@ Stage1 provides a template for what quantities must be included, but
 should ideally encompass all SPA-columns.
 
 Stage 2
+~~~~~~~
+
 The code at stage 2 analyses the input IFU driver catalogue and
 converts this list into a series of distinct pointings (grouping mIFU
 pointings into fields where required). This process outputs the
 pointings as XML files (using the base XML template), filling the
 details as interpreted from the PROGTEMP and OBSTEMP codes.
 
-
 Stage 3
+~~~~~~~
+
 Each XML file is further developed by injecting the non-science target
 information. This includes addition of the guidestar(s) for the LIFU
 (mIFU) as well as calibration target options (more than one, to allow
@@ -57,10 +69,14 @@ pointing. We recommend LIFU xmls use the same guide star for each
 exposure.
 
 Stage 4
+~~~~~~~
+
 The output of Stage 3 can be seen in this container. The files here
 are ready to be passed to Configure.
 
 Stage 5
+~~~~~~~
+
 End-users are required to have a copy of Configure installed and
 running for this stage. XML files are passed to the Configure
 tool. For LIFU observations, this serves solely to populate the XML
@@ -77,12 +93,37 @@ which in turn is inherited from the ifu_dither column in stage 0
 catalogue.
 
 Stage 6
+~~~~~~~
 
-
+TBW
 
 Stage 7
+~~~~~~~
+
+TBW
+
 Stage 8
+~~~~~~~
+
+TBW
+
 Stage 9
+~~~~~~~
+
+TBW
+
 Stage 10
+~~~~~~~
+
+TBW
+
 Stage 11
+~~~~~~~
+
+TBW
+
 Stage 12
+~~~~~~~
+
+TBW
+
