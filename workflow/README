@@ -20,8 +20,6 @@ offer support on a best-effort basis.
 * End-user: the user that is preparing IFU observations
 * SPA-columns: the mandatory WEAVE SPA columns that must be included in all input FITS catalogues
 
-.. image:: ifu_workflow.jpg
-
 Stage 0
 -------
 
