@@ -162,6 +162,9 @@ tooltip.style.display = "none";
 <div class="tooltip" id="n112">SWG workflow<br>for MOS XML<br>configure</div>
 <div class="tooltip" id="n113">If LIFU has an "apply_dither" = 3,5 then<br>the GuideStar module must ensure that the <br>*same* guidestar is visible within the fixed<br>dither pattern that Dave Terrett uses, or within<br>a displacement from origin.</div>
 <div class="tooltip" id="n120">Stage 5 input files - this contains the 4 IFU XMLs at the point they are due to be submitted to Configure.</div>
+<div class="tooltip" id="n121">If we decide to ever allow mixed-survey fields for mIFU (eg. filler-mode?), <br>then the surveys will need to split at this point for FITS - ie, <br>the survey-specfic FITS templates must be used, mapping XML target TARGSRVY to the relevant catalogue template.<br><br>From this point onwards, this workflow implies work done on just one of these surveys. In reality, both must be processed.<br></div>
+<div class="tooltip" id="n122">Survey <br>FITS <br>template</div>
+<div class="tooltip" id="n123">This is the input FITS template for a specific survey. <br>For PI-surveys, these templates can be generated at the WASP once end-users <br>receive their access credentials.</div>
 <div class="tooltip" id="e0">XML</div>
 <div class="tooltip" id="e1">FITS</div>
 <div class="tooltip" id="e2">XMLs <br><br>(with PA for LIFU)</div>
@@ -196,8 +199,11 @@ tooltip.style.display = "none";
   <area shape="poly" coords="1162,860,1162,860,1338,860,1338,870,1162,870,1162,870" alt="" onmouseover="showTooltip('e2')" onmouseout="hideTooltip()"/>
   <area shape="poly" coords="340,853,340,853,487,853,487,863,340,863,340,863" alt="" onmouseover="showTooltip('e1')" onmouseout="hideTooltip()"/>
   <area shape="poly" coords="856,860,856,860,1064,860,1064,870,856,870,856,870" alt="" onmouseover="showTooltip('e0')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1995,390,2020,415" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage6/input" alt="" onmouseover="showTooltip('n123')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="1995,316,2058,415" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/obstemp.dat" alt="" onmouseover="showTooltip('n122')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="1934,508,1964,538" alt="" onmouseover="showTooltip('n121')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="1768,818,1793,843" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage5/input" alt="" onmouseover="showTooltip('n120')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="1001,809,1031,839" alt="" onmouseover="showTooltip('n113')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1033,823,1063,853" alt="" onmouseover="showTooltip('n113')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="732,73,825,166" alt="" onmouseover="showTooltip('n112')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="557,288,599,331" alt="" onmouseover="showTooltip('n111')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="1053,476,1095,518" alt="" onmouseover="showTooltip('n109')" onmouseout="hideTooltip()"/>
@@ -207,7 +213,7 @@ tooltip.style.display = "none";
   <area shape="rect" coords="987,503,1078,594" alt="" onmouseover="showTooltip('n102')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="867,503,958,594" alt="" onmouseover="showTooltip('n100')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="1447,508,1538,599" alt="" onmouseover="showTooltip('n97')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2142,707,2167,732" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage6/input" alt="" onmouseover="showTooltip('n96')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="2142,642,2167,667" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage6/input" alt="" onmouseover="showTooltip('n96')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="640,487,682,529" alt="" onmouseover="showTooltip('n88')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="797,264,840,306" alt="" onmouseover="showTooltip('n87')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="1956,589,1998,631" alt="" onmouseover="showTooltip('n86')" onmouseout="hideTooltip()"/>
@@ -238,14 +244,14 @@ tooltip.style.display = "none";
   <area shape="rect" coords="239,771,340,946" alt="" onmouseover="showTooltip('n52')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="132,990,174,1033" alt="" onmouseover="showTooltip('n49')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="1576,1048,1618,1090" alt="" onmouseover="showTooltip('n47')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1093,755,1135,798" alt="" onmouseover="showTooltip('n46')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1030,910,1072,952" alt="" onmouseover="showTooltip('n46')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="515,993,557,1035" alt="" onmouseover="showTooltip('n45')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="269,990,311,1033" alt="" onmouseover="showTooltip('n44')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="1038,1177,1063,1202" href="http://" alt="" onmouseover="showTooltip('n43')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="1043,1131,1103,1191" alt="" onmouseover="showTooltip('n42')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="934,763,959,788" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/guides/" alt="" onmouseover="showTooltip('n41')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="948,703,1012,779" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/GuideDatabase.dat" alt="" onmouseover="showTooltip('n40')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="1262,759,1287,784" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/calibs/" alt="" target="_blank"/>
+  <area shape="rect" coords="1003,798,1028,823" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/guides/" alt="" onmouseover="showTooltip('n41')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="1017,738,1080,815" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/GuideDatabase.dat" alt="" onmouseover="showTooltip('n40')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="1205,795,1230,820" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/calibs/" alt="" target="_blank"/>
   <area shape="rect" coords="263,113,288,138" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow" alt="" target="_blank"/>
   <area shape="rect" coords="275,101,305,131" href="https://docs.google.com/document/d/16Jbquc7cOdQ1MY0Z0yv3dQeoTyKtZNqToo8e1zl-yUE/edit?usp=sharing" alt="" onmouseover="showTooltip('n37')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="245,73,334,172" alt="" onmouseover="showTooltip('n36')" onmouseout="hideTooltip()"/>
@@ -257,7 +263,7 @@ tooltip.style.display = "none";
   <area shape="rect" coords="2142,814,2233,905" alt="" onmouseover="showTooltip('n30')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="191,1125,389,1347" alt="" onmouseover="showTooltip('n29')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="1026,1242,1224,1347" alt="" onmouseover="showTooltip('n28')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1216,703,1280,779" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/SkyDatabase.dat" alt="" onmouseover="showTooltip('n27')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="1160,738,1223,815" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/SkyDatabase.dat" alt="" onmouseover="showTooltip('n27')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="1142,973,1205,1072" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/progtemp.dat" alt="" onmouseover="showTooltip('n26')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="1038,973,1101,1072" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/obstemp.dat" alt="" onmouseover="showTooltip('n25')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="509,658,572,757" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/SemesterFibreAlloc.dat" alt="" onmouseover="showTooltip('n24')" onmouseout="hideTooltip()" target="_blank"/>
