@@ -24,8 +24,10 @@ Definitions
 Stages
 ------
 
+TBW
+
 Stage 0
-+++++++
+~~~~~~~
 
 The end-user must compile an initial list of IFU
 targets. Consideration must be made of the instrument mode the
@@ -33,7 +35,7 @@ observations are made in, what dither strategy is to be used, what
 targets are to be provided.
 
 Stage 1
-+++++++
+~~~~~~~
 
 The information from Stage 0 needs to be standardised into a
 preliminary FITS catalogue containing "input IFU drivers": IFU target
@@ -43,7 +45,7 @@ Stage1 provides a template for what quantities must be included, but
 should ideally encompass all SPA-columns.
 
 Stage 2
-+++++++
+~~~~~~~
 
 The code at stage 2 analyses the input IFU driver catalogue and
 converts this list into a series of distinct pointings (grouping mIFU
@@ -52,7 +54,7 @@ pointings as XML files (using the base XML template), filling the
 details as interpreted from the PROGTEMP and OBSTEMP codes.
 
 Stage 3
-+++++++
+~~~~~~~
 
 Each XML file is further developed by injecting the non-science target
 information. This includes addition of the guidestar(s) for the LIFU
@@ -69,13 +71,13 @@ pointing. We recommend LIFU xmls use the same guide star for each
 exposure.
 
 Stage 4
-+++++++
+~~~~~~~
 
 The output of Stage 3 can be seen in this container. The files here
 are ready to be passed to Configure.
 
 Stage 5
-+++++++
+~~~~~~~
 
 End-users are required to have a copy of Configure installed and
 running for this stage. XML files are passed to the Configure
@@ -93,37 +95,37 @@ which in turn is inherited from the ifu_dither column in stage 0
 catalogue.
 
 Stage 6
-+++++++
+~~~~~~~
 
 TBW
 
 Stage 7
-+++++++
+~~~~~~~
 
 TBW
 
 Stage 8
-+++++++
+~~~~~~~
 
 TBW
 
 Stage 9
-+++++++
+~~~~~~~
 
 TBW
 
 Stage 10
-++++++++
+~~~~~~~~
 
 TBW
 
 Stage 11
-++++++++
+~~~~~~~~
 
 TBW
 
 Stage 12
-++++++++
+~~~~~~~~
 
 TBW
 
