@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VOTABLE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1" xmlns="http://www.ivoa.net/xml/VOTable/v1.1" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.1 http://www.ivoa.net/xml/VOTable/v1.1">
+
+<RESOURCE ID="WEAVE_MIFU" utype="dal:footprint.geom">
+    <PARAM datatype="char" arraysize="*" ID="TelescopeName" value="WHT" />
+    <PARAM datatype="char" arraysize="*" ID="InstrumentName" value="WEAVE" />
+    <PARAM datatype="char" arraysize="*" ID="InstrumentDescription" value="WEAVE Mini IFU" />
+    <PARAM datatype="char" arraysize="*" ID="Origin" value="David Murphy, CASU v1." />
+
+    <PARAM datatype="char" arraysize="*" utype="stc:AstroCoordSystem.CoordFrame.CARTESIAN" name="reference frame" value="*"/>
+    <PARAM name="projection" utype="stc:AstroCoordSystem.CoordFrame.Cart2DRefFrame.projection" datatype="char" arraysize="*" value="TAN"/>
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="-3.684" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="-6.381" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="0.000" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="-6.381" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="3.684" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="-6.381" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="-5.526" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="-3.190" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="-1.842" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="-3.190" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="1.842" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="-3.190" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="5.526" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="-3.190" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="-7.368" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="0.000" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="-3.684" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="0.000" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="0.000" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="0.000" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="3.684" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="0.000" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="7.368" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="0.000" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="-5.526" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="3.190" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="-1.842" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="3.190" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="1.842" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="3.190" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="5.526" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="3.190" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="-3.684" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="6.381" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="0.000" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="6.381" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+
+
+    <RESOURCE ID="shape_0" name="shape_0">
+    <TABLE utype="dal:footprint.geom.segment">
+        <PARAM datatype="char" name="Shape" arraysize="*" value="Circle" utype="dal:footprint.geom.segment.shape" />
+        <PARAM datatype="double" unit="arcsec" name="cxPtPosition" utype="stc:AstroCoordArea.Circle.Center.C1" value="3.684" />
+        <PARAM datatype="double" unit="arcsec" name="cyPtPosition" utype="stc:AstroCoordArea.Circle.Center.C2" value="6.381" />
+        <PARAM datatype="double" unit="arcsec" name="radius" utype="stc:AstroCoordArea.Circle.radius" value="1.3" />
+    </TABLE>
+    </RESOURCE>
+
+</RESOURCE>
+</VOTABLE>
