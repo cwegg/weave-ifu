@@ -212,7 +212,7 @@
     --> 
     <obsconstraints elevation_min="33.75" moondist_min="0" obstemp="IAEEB" seeing_max="1.5" skybright_max="21.5" transparency_min="0.8" />
     <dithering apply_dither="-1"/>
-    <offsets offset_step_dec="0.0 3.35183921474 3.38610516495" offset_step_ra="0.0 -1.97612862846 1.91483601761" />
+    <offsets offset_step_dec="%%%" offset_step_ra="%%%" />
     <!--
 
     Example targets below taken from ICD-025 (Configure XML definition), including a few corrections to XML.
