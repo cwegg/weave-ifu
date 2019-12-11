@@ -72,9 +72,9 @@ class CalibStar:
         Either MOS or mIFU.
     nside : int, optional
         Override the default HEALPix nside value. Will likely end in tears.
-    annular : bool
+    annular : bool, optional
         Search only within an annular radius at the edge of the WEAVE FOV.
-    plot : bool
+    plot : bool, optional
         Plot the results?
     """
 
@@ -134,9 +134,8 @@ class CalibStar:
         
         Returns
         -------
-        calibs : astropy.Table
-             row(s) from the WD calibration star catalogue.
-        calibs (if as_xml=True) : xml.dom.minidom.Element
+        calibs : astropy.Table or xml.dom.minidom.Element
+             Row(s) from the WD calibration star catalogue. If as_xml is True,
              XML <target> element that can be inserted into a field XML.
         """
 

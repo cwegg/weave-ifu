@@ -124,10 +124,9 @@ class GuideStar:
         
         Returns
         -------
-        guide : astropy.Table
-             row from the Guide star catalogue.
-        guide (if as_xml=True) : xml.dom.minidom.Element
-             XML <target> element that can be inserted into a field XML.
+        guide : astropy.Table or xml.dom.minidom.Element
+             Row from the Guide star catalogue. If as_xml is True, XML <target>
+             element that can be inserted into a field XML.
         """
 
 

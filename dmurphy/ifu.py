@@ -74,6 +74,8 @@ class lifu:
     version : str, optional
         Special actions are performed if this is set to 'OpR3b', including
         reading a 2nd extension containing <simulation> data.
+    binning : str, optional
+        The binning.
     """
 
     def __init__(self,input_fits,res='LR',output='auto',version='OpR3b',binning='1'):
