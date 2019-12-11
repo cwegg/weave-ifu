@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #
-# Copyright (C) 2018 Cambridge Astronomy Survey Unit
+# Copyright (C) 2018 Cambridge Astronomical Survey Unit
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -18,15 +18,25 @@
 #
 
 """
-Notes:
-    v0.1 - Still work in progress
+Retrieve of WEAVE guide stars for the LIFU or MOS.
 
-Dependencies:
-    Python core, numpy, astropy, astropy_healpix
+The authors of this module are:
 
-Authors:
-    David Murphy, Cambridge Astronomical Survey Unit (CASU, IoA)
-                  dmurphy@ast.cam.ac.uk
+- David Murphy (dmurphy@ast.cam.ac.uk), Cambridge Astronomical Survey Unit
+  (CASU, IoA).
+
+Notes
+-----
+The dependencies of this module are:
+
+- Python core
+- numpy
+- astropy
+- astropy_healpix
+
+Log:
+
+- v0.1: Still work in progress.
 """
 
 

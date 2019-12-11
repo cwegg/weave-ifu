@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #
-# Copyright (C) 2018 Cambridge Astronomy Survey Unit
+# Copyright (C) 2018 Cambridge Astronomical Survey Unit
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -18,17 +18,28 @@
 #
 
 """
-Notes:
-    v0.1 - Still work in progress. This has been integrated into a Jupyter Notebook
-           so that targets can be generated for an XML file that already has the 
-           required elements populated (apart from the <targets>)
+Convert the target-level data from a FITS input catalogue to a set of XMLs.
 
-Dependencies:
-    Python core, numpy, astropy, astropy_healpix, GuideStar
+The authors of this module are:
 
-Authors:
-    David Murphy, Cambridge Astronomical Survey Unit (CASU, IoA)
-                  dmurphy@ast.cam.ac.uk
+- David Murphy (dmurphy@ast.cam.ac.uk), Cambridge Astronomical Survey Unit
+  (CASU, IoA).
+
+Notes
+-----
+The dependencies of this module are:
+
+- Python core
+- numpy
+- astropy
+- astropy_healpix
+- GuideStar
+
+Log:
+
+- v0.1: Still work in progress. This has been integrated into a Jupyter Notebook
+  so that targets can be generated for an XML file that already has the required
+  elements populated (apart from the <targets>).
 """
 
 
