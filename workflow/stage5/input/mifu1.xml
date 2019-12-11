@@ -172,11 +172,11 @@
 
   </programme>   
 
-  <observation name="125_psz1_A" progtemp="71334" ob_priority="1.0" coordinate_system="ICRS" obs_type="mIFU" trimester="2016B2" chained="False" obsgroup="" obsgroup_validity="90" ob_class="science" pa="0.0" linkedgroup="" casuid="-1" > <!-- [["name": identifier for this OB (OB-id?)]]-->
+  <observation name="125_psz1_A" progtemp="71334" ob_priority="1.0" coordinate_system="ICRS" obs_type="mIFU" trimester="2016B2" chained="False" obsgroup="%%%" obsgroup_validity="%%%" ob_class="science" pa="0.0" linkedgroup="%%%" casuid="-1" > <!-- [["name": identifier for this OB (OB-id?)]]-->
 
-    <configure config_file_version="0.0003" configure_version="1.0.0046" max_calibration="25" max_guide="1" max_sky="100" maximum_gate_angle="14.1" num_sky_fibres="603" plate="PLATE_B" plate_version="test_0004" seed="1">
-    <conditions epoch="2015.0" ha="0" pressure="770.0" relative_humidity="0.2" temperature="293.0" tlr="0.0065" />
-    <hour_angle_limits earliest="-2.0" latest="2.0" />
+    <configure config_file_version="%%%" configure_version="%%%" max_calibration="25" max_guide="1" max_sky="100" maximum_gate_angle="14.1" num_sky_fibres="603" plate="PLATE_B" plate_version="%%%" seed="%%%">
+    <conditions epoch="%%%" ha="%%%" pressure="%%%" relative_humidity="%%%" temperature="%%%" tlr="%%%" />
+    <hour_angle_limits earliest="%%%" latest="%%%" />
   </configure>
     <surveys>
       <survey max_fibres="740" name="WC" priority="1.0" />
@@ -220,42 +220,56 @@
     --> 
     <fields>
       <field Dec_d="-4.71060356792" RA_d="316.369609537" order="3">
+
+	<!-- The guide stars -->
+
 	<target cname="WVE_21021534-0516575" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.2826297" targepoch="2015.5" targid="6910684503335331328" targname="guide_12275_509" targparal="1.308" targpmdec="5.32" targpmra="-3.796" targprio="10" targprog="" targra="315.563908" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
-	<photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.474" mag_g="" mag_gg="14.863" mag_i="" mag_r="" mag_rp="14.117"/></target>
+	  <photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.474" mag_g="" mag_gg="14.863" mag_i="" mag_r="" mag_rp="14.117"/>
+	</target>
 	<target cname="WVE_21025233-0526395" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.4442975" targepoch="2015.5" targid="6910490886209034240" targname="guide_12275_541" targparal="0.541" targpmdec="-1.612" targpmra="-3.174" targprio="10" targprog="" targra="315.7180421" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
-	<photometry emag_bp="0.011" emag_g="" emag_gg="0.003" emag_i="" emag_r="" emag_rp="0.007" mag_bp="15.87" mag_g="" mag_gg="15.279" mag_i="" mag_r="" mag_rp="14.554"/></target>
+	  <photometry emag_bp="0.011" emag_g="" emag_gg="0.003" emag_i="" emag_r="" emag_rp="0.007" mag_bp="15.87" mag_g="" mag_gg="15.279" mag_i="" mag_r="" mag_rp="14.554"/>
+	</target>
 	<target cname="WVE_21032779-0532124" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.5367757" targepoch="2015.5" targid="6910486282004084608" targname="guide_12275_563" targparal="0.788" targpmdec="1.666" targpmra="3.11" targprio="10" targprog="" targra="315.8657851" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
-	<photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.003" mag_bp="15.397" mag_g="" mag_gg="15.037" mag_i="" mag_r="" mag_rp="14.514"/></target>
+	  <photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.003" mag_bp="15.397" mag_g="" mag_gg="15.037" mag_i="" mag_r="" mag_rp="14.514"/>
+	</target>
 	<target cname="WVE_21013311-0433049" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.5513745" targepoch="2015.5" targid="6912285216171688192" targname="guide_12278_19" targparal="0.617" targpmdec="-3.575" targpmra="7.375" targprio="10" targprog="" targra="315.3879615" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
-	<photometry emag_bp="0.003" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.813" mag_g="" mag_gg="15.421" mag_i="" mag_r="" mag_rp="14.869"/></target>
+	  <photometry emag_bp="0.003" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.813" mag_g="" mag_gg="15.421" mag_i="" mag_r="" mag_rp="14.869"/>
+	</target>
 	<target cname="WVE_21013826-0450005" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.8334733" targepoch="2015.5" targid="6912258969626228224" targname="guide_12278_20" targparal="0.596" targpmdec="-5.751" targpmra="-5.731" targprio="10" targprog="" targra="315.4094004" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
-	<photometry emag_bp="0.003" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.477" mag_g="" mag_gg="15.113" mag_i="" mag_r="" mag_rp="14.581"/></target>
+	  <photometry emag_bp="0.003" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.477" mag_g="" mag_gg="15.113" mag_i="" mag_r="" mag_rp="14.581"/>
+	</target>
 	<target cname="WVE_21013972-0458253" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.973684" targepoch="2015.5" targid="6912253850025195264" targname="guide_12278_22" targparal="1.441" targpmdec="2.607" targpmra="1.088" targprio="10" targprog="" targra="315.4155191" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
-	<photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.001" mag_bp="15.68" mag_g="" mag_gg="15.205" mag_i="" mag_r="" mag_rp="14.58"/></target>
+	  <photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.001" mag_bp="15.68" mag_g="" mag_gg="15.205" mag_i="" mag_r="" mag_rp="14.58"/>
+	</target>
 	<target cname="WVE_21014136-0436516" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.6143443" targepoch="2015.5" targid="6912281681413311232" targname="guide_12278_23" targparal="0.669" targpmdec="4.682" targpmra="6.014" targprio="10" targprog="" targra="315.42233" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
-	<photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.001" mag_bp="15.182" mag_g="" mag_gg="14.809" mag_i="" mag_r="" mag_rp="14.275"/></target>
+	  <photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.001" mag_bp="15.182" mag_g="" mag_gg="14.809" mag_i="" mag_r="" mag_rp="14.275"/>
+	</target>
 	<target cname="WVE_21014192-0430269" configid="%%%" fibreid="%%%" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.5074652" targepoch="2015.5" targid="6912308928685848192" targname="guide_12278_25" targparal="0.593" targpmdec="-5.899" targpmra="2.458" targprio="10" targprog="" targra="315.4246826" targsrvy="GUIDES" targuse="G" targx="%%%" targy="%%%">
-	<photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.695" mag_g="" mag_gg="15.32" mag_i="" mag_r="" mag_rp="14.786"/></target>
+	  <photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.695" mag_g="" mag_gg="15.32" mag_i="" mag_r="" mag_rp="14.786"/>
+	</target>
 
 	<!-- The sky bundle -->
+
 	<!-- -\- I think this is generated at point of configure, so we don't need to add this! -->
+
 	<!-- <target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="S" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" ifu_pa="%%%" automatic="%%%" targparal="0.0"/> -->
 
 	<!-- The white dwarf bundle -->
-	<target cname="WVE_21074339-0511305" configid="%%%" fibreid="%%%" ifu_spaxel="C03" ifu_pa="%%%" targcat="WD_S4" targclass="STAR" targdec="-5.1918001" targepoch="2015.5" targid="WD340676" targname="da006500_800.dat" targparal="17.637" targpmdec="30.11" targpmra="26.512" targprio="10" targprog="" targra="316.9308009" targsrvy="WD" targuse="C" targx="%%%" targy="%%%">
-       <photometry emag_bp="0.002" emag_g="" emag_gg="0.002" emag_i="" emag_r="" emag_rp="0.002" mag_bp="17.694" mag_g="" mag_gg="17.479" mag_i="" mag_r="" mag_rp="17.088"/>
-     </target>
+	<target cname="WVE_21074339-0511305" configid="%%%" fibreid="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WD_S4" targclass="STAR" targdec="-5.1918001" targepoch="2015.5" targid="WD340676" targname="da006500_800.dat" targparal="17.637" targpmdec="30.11" targpmra="26.512" targprio="10" targprog="" targra="316.9308009" targsrvy="WD" targuse="C" targx="%%%" targy="%%%">
+	  <photometry emag_bp="0.002" emag_g="" emag_gg="0.002" emag_i="" emag_r="" emag_rp="0.002" mag_bp="17.694" mag_g="" mag_gg="17.479" mag_i="" mag_r="" mag_rp="17.088"/>
+	</target>
 
 	<!-- The 18 science targets -->
-	<target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="%%%" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="T" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" ifu_pa="%%%" targparal="%%%">
-	  <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+
+	<target cname="%%%" configid="%%%" fibreid="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="%%%" targclass="%%%" targdec="%%%" targepoch="%%%" targid="%%%" targname="%%%" targpmdec="%%%" targpmra="%%%" targprio="%%%" targprog="%%%" targra="%%%" targsrvy="%%%" targuse="T" targx="%%%" targy="%%%" targparal="%%%">
+	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
 	</target>
 
 	<!-- ... -->
 	<!-- ... -->
 	
-	<target targx="%%%" targy="%%%" fibreid="%%%" configid="%%%" cname="%%%" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="T" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" ifu_pa="%%%" targparal="%%%">
-	  <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+	<target cname="%%%" configid="%%%" fibreid="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="%%%" targclass="%%%" targdec="%%%" targepoch="%%%" targid="%%%" targname="%%%" targpmdec="%%%" targpmra="%%%" targprio="%%%" targprog="%%%" targra="%%%" targsrvy="%%%" targuse="T" targx="%%%" targy="%%%" targparal="%%%">
+	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
 	</target>
 	
       </field>
