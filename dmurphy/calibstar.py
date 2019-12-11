@@ -113,9 +113,9 @@ class CalibStar:
 
         
     def get_calib(self,annular_fail=True,as_xml=True,print_xml=False):
-        """Master function to return a calib star once the object is
-           instantiated.
-           
+        """
+        Master function to return a calib star once the object is instantiated.
+        
         Parameters
         ----------
         annular_fail : bool, optional
@@ -123,17 +123,16 @@ class CalibStar:
              search the whole field.
         as_xml : bool, optional
              Returns the result as an XML <target> element that can be added to
-             a <field> element
+             a <field> element.
         print_xml : bool, optional
-             Prints the XML results if as_xml=True
+             Prints the XML results if as_xml=True.
         
         Returns
         -------
         calibs : astropy.Table 
-             row(s) from the WD calibration star catalogue
+             row(s) from the WD calibration star catalogue.
         calibs (if as_xml=True) : xml.dom.minidom.Element
-             XML <target> element that can be inserted into a field XML
-
+             XML <target> element that can be inserted into a field XML.
         """
 
 

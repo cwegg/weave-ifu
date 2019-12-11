@@ -102,29 +102,27 @@ class GuideStar:
         
         
     def get_guide(self,annular_fail=True,as_xml=True,print_xml=False):
-        """Master function to return a guide star once the object is
-           instantiated.
-           
+        """
+        Master function to return a guide star once the object is instantiated.
+        
         Parameters
         ----------
         annular_fail : bool, optional
              If there is no guidestar in GC FOV, search an annulus and
              define the PA required to get a guidestar. Return most
-             centralised candidate        
+             centralised candidate.
         as_xml : bool, optional
              Returns the result as an XML <target> element that can be added to
-             a <field> element
+             a <field> element.
         print_xml : bool, optional
-             Prints the XML results if as_xml=True
-
+             Prints the XML results if as_xml=True.
         
         Returns
         -------
         guide : astropy.Table 
-             row from the Guide star catalogue
+             row from the Guide star catalogue.
         guide (if as_xml=True) : xml.dom.minidom.Element
-             XML <target> element that can be inserted into a field XML
-
+             XML <target> element that can be inserted into a field XML.
         """
 
 
