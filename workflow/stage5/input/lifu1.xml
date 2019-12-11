@@ -174,7 +174,7 @@
 
   <observation name="125_psz1_A" progtemp="41334" ob_priority="1.0" coordinate_system="ICRS" obs_type="LIFU" trimester="2016B2" chained="False" obsgroup="%%%" obsgroup_validity="%%%" ob_class="science" pa="0.0" linkedgroup="%%%" casuid="-1" > <!-- [["name": identifier for this OB (OB-id?)]]-->
 
-    <configure config_file_version="0.0003" configure_version="1.0.0046" max_calibration="25" max_guide="1" max_sky="100" maximum_gate_angle="14.1" num_sky_fibres="603" plate="LIFU" plate_version="test_0004" seed="1">
+    <configure config_file_version="%%%" configure_version="%%%" max_calibration="25" max_guide="1" max_sky="100" maximum_gate_angle="14.1" num_sky_fibres="603" plate="LIFU" plate_version="%%%" seed="%%%">
     <conditions epoch="%%%" ha="%%%" pressure="%%%" relative_humidity="%%%" temperature="%%%" tlr="%%%" />
     <hour_angle_limits earliest="%%%" latest="%%%" />
   </configure>
