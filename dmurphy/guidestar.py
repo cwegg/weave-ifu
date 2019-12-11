@@ -17,6 +17,18 @@
 # this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+"""
+Notes:
+    v0.1 - Still work in progress
+
+Dependencies:
+    Python core, numpy, astropy, astropy_healpix
+
+Authors:
+    David Murphy, Cambridge Astronomical Survey Unit (CASU, IoA)
+                  dmurphy@ast.cam.ac.uk
+"""
+
 
 from astropy.io import fits as pyfits
 import os
@@ -27,45 +39,28 @@ from xml.dom.minidom import Node
 from math import radians,cos
 import numpy
 
+
 class GuideStar:
     """
- *+
- *  Name:
- *      GuideStar
- *
- *  Purpose:
- *      Handle the retrieval of WEAVE guide stars for the LIFU or MOS
- *
- *  Description:
- *      This class provides a mechanism for querying and retrieving guide star
- *      targets for the construction of WEAVE 'protofields'.
- *
- *  Arguments:
- *      ra : float
- *          The Right Ascension (decimal degrees) - of either the central 
- *          spaxel or central FOV
- *      dec : float
- *          The Declination (decimal degrees) - of either the central 
- *          spaxel or central FOV
- *      pa : float 
- *          The position angle (degrees) of rotation (LIFU only)
- *      mode : str 
- *          Either LIFU or mIFU
- *      nside : int, optional
- *          Override the default HEALPix nside value. Will likely end in tears.
- *
- *  Returned values:
- *      
- *  Notes:
- *      v0.1 - Still work in progress
- *
- *  Dependencies:
- *      Python core, numpy, astropy, astropy_healpix
- *
- *  Authors:
- *      David Murphy, Cambridge Astronomical Survey Unit (CASU, IoA)
- *                    dmurphy@ast.cam.ac.uk
-+*  
+    Handle the retrieval of WEAVE guide stars for the LIFU or MOS.
+    
+    This class provides a mechanism for querying and retrieving guide star
+    targets for the construction of WEAVE 'protofields'.
+    
+    Parameters
+    ----------
+    ra : float
+        The Right Ascension (decimal degrees) - of either the central spaxel or
+        central FOV.
+    dec : float
+        The Declination (decimal degrees) - of either the central spaxel or
+        central FOV.
+    pa : float
+        The position angle (degrees) of rotation (LIFU only).
+    mode : str
+        Either LIFU or mIFU.
+    nside : int, optional
+        Override the default HEALPix nside value. Will likely end in tears.
     """
 
     import xml.dom.minidom
@@ -108,9 +103,9 @@ class GuideStar:
         Parameters
         ----------
         annular_fail : bool, optional
-             If there is no guidestar in GC FOV, search an annulus and
-             define the PA required to get a guidestar. Return most
-             centralised candidate.
+             If there is no guidestar in GC FOV, search an annulus and define
+             the PA required to get a guidestar. Return most centralised
+             candidate.
         as_xml : bool, optional
              Returns the result as an XML <target> element that can be added to
              a <field> element.
@@ -119,7 +114,7 @@ class GuideStar:
         
         Returns
         -------
-        guide : astropy.Table 
+        guide : astropy.Table
              row from the Guide star catalogue.
         guide (if as_xml=True) : xml.dom.minidom.Element
              XML <target> element that can be inserted into a field XML.
