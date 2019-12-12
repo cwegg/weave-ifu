@@ -176,7 +176,7 @@
 
   <observation name="125_psz1_A" progtemp="71334" ob_priority="1.0" coordinate_system="ICRS" obs_type="mIFU" trimester="2016B2" chained="False" obsgroup="%%%" obsgroup_validity="%%%" ob_class="science" pa="0.0" linkedgroup="%%%" casuid="-1" > <!-- [["name": identifier for this OB (OB-id?)]]-->
 
-    <configure config_file_version="%%%" configure_version="%%%" max_calibration="25" max_guide="8" max_sky="73" maximum_gate_angle="14.1" num_sky_fibres="740" plate="PLATE_B" plate_version="%%%" seed="%%%">
+    <configure config_file_version="%%%" configure_version="%%%" max_calibration="20" max_guide="8" max_sky="73" maximum_gate_angle="14.1" num_sky_fibres="740" plate="PLATE_B" plate_version="%%%" seed="%%%">
     <conditions epoch="%%%" ha="%%%" pressure="%%%" relative_humidity="%%%" temperature="%%%" tlr="%%%" />
     <hour_angle_limits earliest="%%%" latest="%%%" />
   </configure>
@@ -223,7 +223,7 @@
     <fields>
       <field Dec_d="-4.71060356792" RA_d="316.369609537" order="3">
 
-	<!-- The guide stars -->        
+	<!-- The guide stars -->
 	<target cname="WVE_21091716-0457340" configid="" fibreid="" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.9594426" targepoch="2015.5" targid="6912080947526457344" targname="guide_12278_490" targparal="0.758" targpmdec="-5.484" targpmra="-0.937" targprio="10" targprog="" targra="317.3215207" targsrvy="GUIDES" targuse="G" targx="-16.9440187014" targy="4.42933477102">
 	  <photometry emag_bp="0.01" emag_g="" emag_gg="0.001" emag_i="" emag_r="" emag_rp="0.007" mag_bp="15.703" mag_g="" mag_gg="15.297" mag_i="" mag_r="" mag_rp="14.709"/>
 	</target>
@@ -247,7 +247,7 @@
 	</target>
 	<target cname="WVE_21014427-0500346" configid="" fibreid="" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.0096163" targepoch="2015.5" targid="6912205162275919872" targname="guide_12278_26" targparal="0.628" targpmdec="-9.48" targpmra="-1.742" targprio="10" targprog="" targra="315.4344609" targsrvy="GUIDES" targuse="G" targx="16.6456457386" targy="5.32242663102">
 	  <photometry emag_bp="0.003" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.376" mag_g="" mag_gg="14.921" mag_i="" mag_r="" mag_rp="14.32"/>
-	</target>        
+	</target>
 
 	<!-- The sky bundle -->
 
