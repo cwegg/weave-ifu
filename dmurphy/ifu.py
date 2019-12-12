@@ -1,4 +1,48 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2018 Cambridge Astronomical Survey Unit
+#
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+"""
+Convert the target-level data from a FITS input catalogue to a set of XMLs.
+
+The authors of this module are:
+
+- David Murphy (dmurphy@ast.cam.ac.uk), Cambridge Astronomical Survey Unit
+  (CASU, IoA).
+
+Notes
+-----
+The dependencies of this module are:
+
+- Python core
+- numpy
+- astropy
+- astropy_healpix
+- GuideStar
+
+Log:
+
+- v0.1: Still work in progress. This has been integrated into a Jupyter Notebook
+  so that targets can be generated for an XML file that already has the required
+  elements populated (apart from the <targets>).
+"""
+
+
 from astropy.io import fits as pyfits
 import os
 from numpy import unique, arange, random, where
@@ -9,63 +53,29 @@ from math import radians,cos
 import numpy
 from guidestar import GuideStar
 
+
 class lifu:
     """
- *+
- *  Name:
- *      lifu
- *
- *  Purpose:
- *      Convert the target-level data from a FITS input catalogue to a set of XMLs
- *
- *  Description:
- *      This class provides code to take an input FITS catalogue containing IFU spaxel
- *      data and convert it into XML targets that are written into either a supplied XML
- *      or the BlankTemplate.xml file
- *
- *  Arguments:
- *      input_fits : str
- *          Filename of the input FITS catlalogue
- *      res : str, optional
- *          The resolution you wish to select from this input catalogue
- *      output : str, optional
- *          Override the output filename, or leave as 'auto' to auto-generate 
- *          names based on the pointing ID
- *      version : str, optional
- *          Special actions are performed if this is set to 'OpR3b', including 
- *          reading a 2nd extension containing <simulation> data
- *
- *  Returned values:
- *      
- *  Notes:
- *      v0.1 - Still work in progress. This has been integrated into a Jupyter Notebook
- *             so that targets can be generated for an XML file that already has the 
- *             required elements populated (apart from the <targets>)
- *             
- *  Dependencies:
- *      Python core, numpy, astropy, astropy_healpix, GuideStar
- *
- *  Authors:
- *      David Murphy, Cambridge Astronomical Survey Unit (CASU, IoA)
- *                    dmurphy@ast.cam.ac.uk
- *
- *  Copyright:
- *      Copyright (C) 2018 Cambridge Astronomy Survey Unit.
- *
- *      This program is free software: you can redistribute it and/or modify
- *      it under the terms of the GNU General Public License as published by
- *      the Free Software Foundation, either version 3 of the License, or
- *      (at your option) any later version.
- *
- *      This program is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *      GNU General Public License for more details.
- *
- *      You should have received a copy of the GNU General Public License
- *      along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
-+*  
+    Convert the target-level data from a FITS input catalogue to a set of XMLs.
+    
+    This class provides code to take an input FITS catalogue containing IFU
+    spaxel data and convert it into XML targets that are written into either a
+    supplied XML or the BlankTemplate.xml file.
+    
+    Parameters
+    ----------
+    input_fits : str
+        Filename of the input FITS catalogue.
+    res : str, optional
+        The resolution you wish to select from this input catalogue.
+    output : str, optional
+        Override the output filename, or leave as 'auto' to auto-generate names
+        based on the pointing ID.
+    version : str, optional
+        Special actions are performed if this is set to 'OpR3b', including
+        reading a 2nd extension containing <simulation> data.
+    binning : str, optional
+        The binning.
     """
 
     def __init__(self,input_fits,res='LR',output='auto',version='OpR3b',binning='1'):

@@ -1,3 +1,45 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2018 Cambridge Astronomical Survey Unit
+#
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+"""
+Retrieve of WEAVE calib stars for the mIFU or MOS.
+
+The authors of this module are:
+
+- David Murphy (dmurphy@ast.cam.ac.uk), Cambridge Astronomical Survey Unit
+  (CASU, IoA).
+
+Notes
+-----
+The dependencies of this module are:
+
+- Python core
+- numpy
+- astropy
+- astropy_healpix
+
+Log:
+
+- v0.1: Still work in progress.
+"""
+
+
 from astropy.io import fits as pyfits
 import os
 from numpy import unique, arange, random, where
@@ -7,66 +49,33 @@ from xml.dom.minidom import Node
 from math import radians,cos
 import numpy
 
+
 class CalibStar:
     """
- *+
- *  Name:
- *      CalibStar
- *
- *  Purpose:
- *      Handle the retrieval of WEAVE calib stars for the mIFU or MOS
- *
- *  Description:
- *      This class provides a mechanism for querying and retrieving calibration 
- *      star targets for the construction of WEAVE 'protofields'.
- *
- *  Arguments:
- *      ra : float
- *          The Right Ascension (decimal degrees) - of either the central 
- *          spaxel or central FOV
- *      dec : float
- *          The Declination (decimal degrees) - of either the central 
- *          spaxel or central FOV
- *      pa : float 
- *          The position angle (degrees) of rotation (disallowed for calibration selection)
- *      mode : str 
- *          Either MOS or mIFU
- *      nside : int, optional
- *          Override the default HEALPix nside value. Will likely end in tears.
- *      annular : bool
- *          Search only within an annular radius at the edge of the WEAVE FOV
- *      plot : bool
- *          Plot the results?
- *
- *  Returned values:
- *      
- *  Notes:
- *      v0.1 - Still work in progress
- *
- *  Dependencies:
- *      Python core, numpy, astropy, astropy_healpix
- *
- *  Authors:
- *      David Murphy, Cambridge Astronomical Survey Unit (CASU, IoA)
- *                    dmurphy@ast.cam.ac.uk
- *
- *  Copyright:
- *      Copyright (C) 2018 Cambridge Astronomy Survey Unit.
- *
- *      This program is free software: you can redistribute it and/or modify
- *      it under the terms of the GNU General Public License as published by
- *      the Free Software Foundation, either version 3 of the License, or
- *      (at your option) any later version.
- *
- *      This program is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *      GNU General Public License for more details.
- *
- *      You should have received a copy of the GNU General Public License
- *      along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
-+*  
+    Handle the retrieval of WEAVE calib stars for the mIFU or MOS.
+    
+    This class provides a mechanism for querying and retrieving calibration star
+    targets for the construction of WEAVE 'protofields'.
+    
+    Parameters
+    ----------
+    ra : float
+        The Right Ascension (decimal degrees) - of either the central spaxel or
+        central FOV.
+    dec : float
+        The Declination (decimal degrees) - of either the central spaxel or
+        central FOV.
+    pa : float
+        The position angle (degrees) of rotation (disallowed for calibration
+        selection).
+    mode : str
+        Either MOS or mIFU.
+    nside : int, optional
+        Override the default HEALPix nside value. Will likely end in tears.
+    annular : bool, optional
+        Search only within an annular radius at the edge of the WEAVE FOV.
+    plot : bool, optional
+        Plot the results?
     """
 
     import xml.dom.minidom
@@ -109,27 +118,25 @@ class CalibStar:
 
         
     def get_calib(self,annular_fail=True,as_xml=True,print_xml=False):
-        """Master function to return a calib star once the object is
-           instantiated.
-           
+        """
+        Master function to return a calib star once the object is instantiated.
+        
         Parameters
         ----------
         annular_fail : bool, optional
-             (for mIFU) If there are no calibrators in the annulus, 
-             search the whole field.
+             (for mIFU) If there are no calibrators in the annulus, search the
+             whole field.
         as_xml : bool, optional
              Returns the result as an XML <target> element that can be added to
-             a <field> element
+             a <field> element.
         print_xml : bool, optional
-             Prints the XML results if as_xml=True
+             Prints the XML results if as_xml=True.
         
         Returns
         -------
-        calibs : astropy.Table 
-             row(s) from the WD calibration star catalogue
-        calibs (if as_xml=True) : xml.dom.minidom.Element
-             XML <target> element that can be inserted into a field XML
-
+        calibs : astropy.Table or xml.dom.minidom.Element
+             Row(s) from the WD calibration star catalogue. If as_xml is True,
+             XML <target> element that can be inserted into a field XML.
         """
 
 
