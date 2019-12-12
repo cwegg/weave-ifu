@@ -109,6 +109,7 @@
 	   2      30                          -        2x30m    4x30m
 	   3      20                          -        3x20m    6x20m
 	   4      15                          2x15m    4x15m    8x15m
+	   5      12                          -        5x12m    10x12m
 	   6      10                          3x10m    6x10m    12x10m
 
            In the Operational Rehearsals, we were using: 
@@ -171,11 +172,11 @@
 
   </programme>   
 
-  <observation name="125_psz1_A" progtemp="41334" ob_priority="1.0" coordinate_system="ICRS" obs_type="LIFU" trimester="2016B2" chained="False" obsgroup="" obsgroup_validity="90" ob_class="science" pa="0.0" linkedgroup="" casuid="-1" > <!-- [["name": identifier for this OB (OB-id?)]]-->
+  <observation name="125_psz1_A" progtemp="41334" ob_priority="1.0" coordinate_system="ICRS" obs_type="LIFU" trimester="2016B2" chained="False" obsgroup="%%%" obsgroup_validity="%%%" ob_class="science" pa="0.0" linkedgroup="%%%" casuid="-1" > <!-- [["name": identifier for this OB (OB-id?)]]-->
 
-    <configure config_file_version="0.0003" configure_version="1.0.0046" max_calibration="25" max_guide="1" max_sky="100" maximum_gate_angle="14.1" num_sky_fibres="603" plate="LIFU" plate_version="test_0004" seed="1">
-    <conditions epoch="2015.0" ha="0" pressure="770.0" relative_humidity="0.2" temperature="293.0" tlr="0.0065" />
-    <hour_angle_limits earliest="-2.0" latest="2.0" />
+    <configure config_file_version="%%%" configure_version="%%%" max_calibration="25" max_guide="1" max_sky="100" maximum_gate_angle="14.1" num_sky_fibres="603" plate="LIFU" plate_version="%%%" seed="%%%">
+    <conditions epoch="%%%" ha="%%%" pressure="%%%" relative_humidity="%%%" temperature="%%%" tlr="%%%" />
+    <hour_angle_limits earliest="%%%" latest="%%%" />
   </configure>
     <surveys>
       <survey max_fibres="603" name="WC" priority="1.0" />
@@ -222,8 +223,8 @@
 	<target cname="WVE_21071374-0442372" configid="" fibreid="" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.7103243" targepoch="2015.5" targid="6912137679749571456" targname="guide_12278_404" targpmdec="-2.308" targpmra="0.95" targprio="10" targprog="" targra="316.8072654" targsrvy="GUIDES" targuse="G" targx="-7.79027436941" targy="-0.00497096897957" targparal="0.0">
 	  <photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.001" mag_bp="14.944" mag_g="" mag_gg="14.545" mag_i="" mag_r="" mag_rp="13.987" />
 	</target>
-	<target cname="%%%" configid="" fibreid="302" ifu_spaxel="C14" ifu_pa="%%%" targcat="WC_S4" targclass="GALAXY" targdec="-4.71060356792" targepoch="2015.5" targid="PSZ1_125A" targname="3starSSP_FeH-1_XSL_sigma20.fit" targpmdec="" targpmra="" targprio="1" targprog="LR" targra="316.369609537" targsrvy="WC" targuse="T" targx="0.0" targy="0.0" targparal="0.0">
-	  <photometry emag_bp="" emag_g="" emag_gg="" emag_i="" emag_r="" emag_rp="" mag_bp="" mag_g="" mag_gg="" mag_i="" mag_r="23.938" mag_rp="" />
+	<target cname="%%%" configid="%%%" fibreid="302" ifu_spaxel="C14" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.71060356792" targepoch="2015.5" targid="PSZ1_125A" targname="3starSSP_FeH-1_XSL_sigma20.fit" targpmdec="" targpmra="" targprio="1" targprog="LR" targra="316.369609537" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
+	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%" />
 	</target>
       </field>
   </fields>

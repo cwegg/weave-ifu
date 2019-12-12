@@ -364,7 +364,7 @@ class GuideStar:
             print "#\t Dist (')  CNAME\t\t RA\t    Dec\t      angle\t Gaia_G mag"
             i = 0
             self.guides_filter['dist'] = self.dist
-
+            angles = []
             for d in dist_sort:
                 i = i + 1
                 sel = ''
@@ -378,10 +378,13 @@ class GuideStar:
                 ang = (ang*180.0) / numpy.pi
                 if ang < 0:
                     ang += 360.0
+                angles.append(ang)
+
                 print '#%d\t %1.2f\t   %s\t %1.4f   %1.4f   %1.3f\t %1.3f%s'%(i,d*60.0,guide_candidate['CNAME'],guide_candidate['GAIA_RA'],guide_candidate['GAIA_DEC'],ang,guide_candidate['GAIA_MAG_GG'],sel)
 
+            self.guides_filter['ANGLE'] = angles
             self.guides_filter.sort('dist')
-
+            
         if self.lifu:
             return guide_sel
         return self.guides_filter
@@ -484,15 +487,22 @@ if __name__ =='__main__':
         #gs.retrieve_guidecats()
         #gs.select_target()
 
-    if 0:
+    if 1:
         gs = GuideStar(316.369609537,-4.71060356792,0,'mIFU')
         guides = gs.get_guide()
-        for g in guides[:8]:
+        import numpy
+        index = numpy.arange(len(guides))
+        numpy.random.shuffle(index)
+        for i in index[:8]:
+            g = guides[i]
+            if 1:
+                print gs.guides_filter['ANGLE'][i]
             print g.toxml()
 
-    if 1:
+    if 0:
         gs = GuideStar(316.369609537,-4.71060356792,0,'LIFU')
         guide = gs.get_guide()
+        print
         print guide.toxml()
 
             
