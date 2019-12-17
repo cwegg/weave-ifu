@@ -37,12 +37,15 @@ targets are to be provided.
 Stage 1
 -------
 
+**Contributors: DM**
+
 The information from Stage 0 needs to be standardised into a
 preliminary FITS catalogue containing "input IFU drivers": IFU target
 positions in each row alongside other critical columns that need to be
 propagated through into the XML-based OB files. The example data in
 Stage1 provides a template for what quantities must be included, but
-should ideally encompass all SPA-columns.
+should ideally encompass specific SPA-columns required for assembling
+the XML files.
 
 Stage 2
 -------
