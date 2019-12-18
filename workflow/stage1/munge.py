@@ -5,7 +5,7 @@ from xml.dom.minidom import Node
 import numpy
 
 fits_template = '../../test_data/stage0_base.fits'
-outname = './input/WC_IFU.fits'
+outname = './output/WC_IFU.fits'
 xmls = glob.glob('../stage5/input/*.xml')
 
 lookup = {}
