@@ -44,7 +44,7 @@ def get_lookup():
     lookup[''] = 'GAIA_PMRA'
     lookup[''] = 'GAIA_PMDEC'
     lookup[''] = 'GAIA_PARAL'
-    lookup[''] = 'GAIA_PARAL_ERR'
+    # lookup[''] = 'GAIA_PARAL_ERR'
     lookup[''] = 'IFU_SPAXEL'
     lookup['observation:pa'] = 'IFU_PA'
     lookup['dithering:apply_dither'] = 'IFU_DITHER'
@@ -59,6 +59,7 @@ def get_lookup():
     lookup[''] = 'GAIA_MAG_BP'
     lookup[''] = 'GAIA_MAG_BP_ERR'
     lookup[''] = 'GAIA_MAG_RP'
+    lookup[''] = 'GAIA_MAG_RP_ERR'
 
     lookup.pop('')
 
@@ -69,10 +70,27 @@ def get_formats():
 
     formats = {}
 
+    formats['target:targprio'] = int
     formats['target:targra'] = float
     formats['target:targdec'] = float
     formats['target:targepoch'] = float
+    formats['target:targpmra'] = float
+    formats['target:targpmdec'] = float
+    formats['target:targparal'] = float
+    formats['observation:pa'] = float
     formats['dithering:apply_dither'] = int
+    formats['target:mag_g'] = float
+    formats['target:emag_g'] = float
+    formats['target:mag_r'] = float
+    formats['target:emag_r'] = float
+    formats['target:mag_i'] = float
+    formats['target:emag_i'] = float
+    formats['target:mag_gg'] = float
+    formats['target:emag_gg'] = float
+    formats['target:mag_bp'] = float
+    formats['target:emag_bp'] = float
+    formats['target:mag_rp'] = float
+    formats['target:emag_rp'] = float
 
     return formats
 
