@@ -56,7 +56,7 @@ for key in lookup.keys():
 
 
 for x in xmls:
-    template = pyfits.open('../../test_data/stage0_base.fits')
+    template = pyfits.open(fits_template)
     dom = xml.dom.minidom.parse(x)
     root = dom.childNodes[0]
     xml_data = {}
