@@ -165,12 +165,17 @@ def write_data(data, fits_template, outname):
 
 if __name__ == '__main__':
 
+    import os
     import glob
 
     xmls = glob.glob('../stage5/input/*.xml')
 
     fits_template = '../../test_data/stage0_base.fits'
-    outname = './output/WC_IFU.fits'
+    output_dir = './output/'
+    outname = output_dir + 'WC_IFU.fits'
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     data = get_data(xmls)
 
