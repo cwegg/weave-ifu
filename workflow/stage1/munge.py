@@ -20,7 +20,6 @@
 
 import xml.dom.minidom
 
-import numpy as np
 from astropy.io import fits
 
 
@@ -61,6 +60,8 @@ def get_lookup():
     lookup[''] = 'GAIA_MAG_BP_ERR'
     lookup[''] = 'GAIA_MAG_RP'
 
+    lookup.pop('')
+
     return lookup
 
 
@@ -76,60 +77,91 @@ def get_formats():
     return formats
 
 
-def get_data(xmls):
+def get_xml_data(xml_filename):
+
+    xml_data = {}
+
+    dom = xml.dom.minidom.parse(xml_filename)
+
+    root = dom.childNodes[0]
+
+    programme = root.childNodes[3]
+    observation = root.childNodes[5]
+
+    obsconstraints = dom.getElementsByTagName('obsconstraints')[0]
+    dithering = dom.getElementsByTagName('dithering')[0]
+    target = dom.getElementsByTagName('target')
+
+    # configure = dom.getElementsByTagName('configure')[0]
+    # field = dom.getElementsByTagName('field')[0]
+
+    # offset = observation.getElementsByTagName('offsets')[0]
+
+    # base_target = field.getElementsByTagName('target')[0]
+    # targets_base = field.getElementsByTagName('target')
+
+    xml_data['dom'] = dom
+    xml_data['root'] = root
+    xml_data['programme'] = programme
+    xml_data['observation'] = observation
+    xml_data['obsconstraints'] = obsconstraints
+    xml_data['dithering'] = dithering
+    xml_data['target'] = target
+
+    return xml_data
+
+
+def get_data(xml_filename_list):
+
+    # Get dictionaries with the lookup information and the formats
 
     lookup = get_lookup()
     formats = get_formats()
 
-    data = {}
-    for key in lookup.keys():
-        if key != '':
-            data[lookup[key]] = []
+    # Create an dictionary with the desired keywords
 
-    for x in xmls:
-        dom = xml.dom.minidom.parse(x)
-        root = dom.childNodes[0]
-        xml_data = {}
-        programme = root.childNodes[3]
-        observation = root.childNodes[5]
-        obsconstraints = dom.getElementsByTagName('obsconstraints')[0]
-        configure = dom.getElementsByTagName('configure')[0]
-        dithering = dom.getElementsByTagName('dithering')[0]
-        field = dom.getElementsByTagName('field')[0]
-        base_target = field.getElementsByTagName('target')[0]
-        offset = observation.getElementsByTagName('offsets')[0]
-        targets_base = field.getElementsByTagName('target')
+    data = {lookup[key]: [] for key in lookup.keys()}
 
-        xml_data['root'] = root
-        xml_data['dom'] = dom
-        xml_data['programme'] = programme
-        xml_data['observation'] = observation
-        xml_data['obsconstraints'] = obsconstraints
-        xml_data['dithering'] = dithering
-        xml_data['target'] = dom.getElementsByTagName('target')
+    # For each XML file
+    
+    for xml_filename in xml_filename_list:
+
+        # Get the data from the XML file
+
+        xml_data = get_xml_data(xml_filename)
+
+        # For each target in the XML
 
         for target in xml_data['target']:
+
+            # Skip the target if it is a guide or sky fibre
+
             if str(target.getAttribute('targuse')) != 'T':
                 continue
 
+            # For each key in the lookup
+            
             for key in lookup.keys():
-                if key != '':
-                    if key.split(':')[0] == 'target':
-                        element = target
-                    else:
-                        element = xml_data[key.split(':')[0]]
-                    attr = key.split(':')[1]
-                    try:
-                        data[lookup[key]].append(
-                            formats[key](element.getAttribute(attr)))
-                    except KeyError:
-                        data[lookup[key]].append(
-                            str(element.getAttribute(attr)))
+                element_name, attribute_name = key.split(':')
+
+                if element_name == 'target':
+                    element = target
+                else:
+                    element = xml_data[element_name]
+
+                raw_value = element.getAttribute(attribute_name)
+
+                if key in formats.keys():
+                    value = formats[key](raw_value)
+                else:
+                    value = str(raw_value)
+
+                data[lookup[key]].append(value)
 
     return data
 
 
-def write_data(data, fits_template, outname):
+def write_data_as_in_template(data, fits_template, outname):
     columns = []
 
     template = fits.open(fits_template)
@@ -148,11 +180,12 @@ def write_data(data, fits_template, outname):
             else:
                 fno = fmt.split('A')[-1]
                 col_format = fits.column._ColumnFormat('%sA'%(fno))
-            column = fits.Column(name=name,format=col_format,disp=c_base.disp,unit=c_base.unit,null=c_base.null,array=np.array(data[key]))
         else:
-            column = fits.Column(name=name,format=c_base.format,disp=c_base.disp,unit=c_base.unit,null=c_base.null,array=np.array(data[key]))
+            col_format = c_base.format
 
-
+        column = fits.Column(name=name, format=col_format,
+                             disp=c_base.disp, unit=c_base.unit,
+                             null=c_base.null, array=data[key])
 
         columns.append(column)
 
@@ -168,7 +201,7 @@ if __name__ == '__main__':
     import os
     import glob
 
-    xmls = glob.glob('../stage5/input/*.xml')
+    xml_filename_list = glob.glob('../stage5/input/*.xml')
 
     fits_template = '../../test_data/stage0_base.fits'
     output_dir = './output/'
@@ -177,7 +210,7 @@ if __name__ == '__main__':
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    data = get_data(xmls)
+    data = get_data(xml_filename_list)
 
-    write_data(data, fits_template, outname)
+    write_data_as_in_template(data, fits_template, outname)
 
