@@ -75,7 +75,7 @@ def create_ifu_driver_cat_template(catalogue_template, output_filename,
                                              'GAIA_PMRA', 'GAIA_PMDEC',
                                              'GAIA_PARAL',
                                              'IFU_PA', 'IFU_DITHER'],
-                                    rename_dict={'IFU_PA': 'LIFU_PA_REQUEST'},
+                                    rename_dict={'IFU_PA': 'IFU_PA_REQUEST'},
                                     fix_str_format=False):
 
     # Lists with the type of keywords that will be copied from the catalogue
