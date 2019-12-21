@@ -67,16 +67,14 @@ def _try_to_copy_keyword(kwd_type, hdu, i, template_hdu, j):
         hdu.header.comments[kwd_i] = template_hdu.header.comments[kwd_j]
         
     
-def create_ifu_driver_cat_template(catalogue_template, output_filename,
-                                   col_list=['TARGID', 'TARGNAME', 'TARGPRIO',
-                                             'PROGTEMP', 'OBSTEMP',
-                                             'GAIA_RA', 'GAIA_DEC',
-                                             'GAIA_EPOCH',
-                                             'GAIA_PMRA', 'GAIA_PMDEC',
-                                             'GAIA_PARAL',
-                                             'IFU_PA', 'IFU_DITHER'],
-                                    rename_dict={'IFU_PA': 'IFU_PA_REQUEST'},
-                                    fix_str_format=False):
+def create_ifu_driver_template(catalogue_template, output_filename,
+                               col_list=['TARGID', 'TARGNAME', 'TARGPRIO',
+                                         'PROGTEMP', 'OBSTEMP',
+                                         'GAIA_RA', 'GAIA_DEC', 'GAIA_EPOCH',
+                                         'GAIA_PMRA', 'GAIA_PMDEC',
+                                         'GAIA_PARAL', 'IFU_PA', 'IFU_DITHER'],
+                               rename_dict={'IFU_PA': 'IFU_PA_REQUEST'},
+                               fix_str_format=False, overwrite=False):
 
     # Lists with the type of keywords that will be copied from the catalogue
     # template
@@ -176,7 +174,7 @@ def create_ifu_driver_cat_template(catalogue_template, output_filename,
 
     hdu.name = 'INPUT IFU DRIVER CATALOGUE'
 
-    hdu.writeto(output_filename)
+    hdu.writeto(output_filename, overwrite=overwrite)
 
 
 if __name__ == '__main__':
@@ -184,6 +182,6 @@ if __name__ == '__main__':
     catalogue_template = '../../test_data/stage0_base.fits'
     ifu_driver_template = './aux/ifu_driver_template.fits'
 
-    create_ifu_driver_cat_template(catalogue_template, ifu_driver_template,
-                                   fix_str_format=True)
+    create_ifu_driver_template(catalogue_template, ifu_driver_template,
+                               fix_str_format=True)
 
