@@ -33,6 +33,39 @@ def _get_format_from_disp(col_disp):
 
     return col_format
 
+
+def _try_to_copy_comment(kwd_type, hdu, i, template_hdu, j):
+
+    kwd_i = '{}{}'.format(kwd_type, i + 1)
+    kwd_j = '{}{}'.format(kwd_type, j + 1)
+
+    if kwd_i in hdu.header.keys():
+
+        hdu.header.comments[kwd_i] = template_hdu.header.comments[kwd_j]
+
+
+def _try_to_copy_keyword(kwd_type, hdu, i, template_hdu, j):
+
+    kwd_i = '{}{}'.format(kwd_type, i + 1)
+    kwd_j = '{}{}'.format(kwd_type, j + 1)
+
+    if kwd_j in template_hdu.header.keys():
+
+        # Copy the keyword before the next TTYPE kwd if possible, otherwise at
+        # the end of the header
+
+        next_ttype_kwd = 'TTYPE{}'.format(i + 2)
+
+        if next_ttype_kwd in hdu.header.keys():
+            hdu.header.insert(next_ttype_kwd,
+                              (kwd_i, template_hdu.header[kwd_j]))
+        else:
+            hdu.header[kwd_i] = template_hdu.header[kwd_j]
+
+        # Copy the comment of the keyword
+
+        hdu.header.comments[kwd_i] = template_hdu.header.comments[kwd_j]
+        
     
 def create_ifu_driver_cat_template(catalogue_template, output_filename,
                                    col_list=['TARGID', 'TARGNAME', 'TARGPRIO',
@@ -45,18 +78,43 @@ def create_ifu_driver_cat_template(catalogue_template, output_filename,
                                     rename_dict={'IFU_PA': 'LIFU_PA_REQUEST'},
                                     fix_str_format=False):
 
+    # Lists with the type of keywords that will be copied from the catalogue
+    # template
+
+    basic_kwd_type_list = ['TTYPE', 'TFORM', 'TDISP', 'TUNIT', 'TNULL']
+    extra_kwd_type_list = ['TDMIN', 'TDMAX', 'TUCD', 'TPROP']
+
     # Read the catalogue template
 
     template_hdulist = fits.open(catalogue_template)
     template_hdu = template_hdulist[1]
 
-    # Create the column list
+    # Check that all the requested columns exist in the catalogue template and
+    # that there are not repeated columns
+
+    template_column_names = [col.name for col in template_hdu.columns]
+
+    for col_name in col_list:
+        assert col_name in template_column_names
+
+    assert len(col_list) == len(set(col_list))
+
+    # Create the column list and save the mapping between the columns of the
+    # new IFU driver catalogue template and the input catalogue template
 
     column_list = []
+    column_mapping = {}
 
-    for i, col in enumerate(template_hdu.columns):
+    col_counter = 0
+
+    for j, col in enumerate(template_hdu.columns):
 
         if col.name in col_list:
+
+            # Save the mapping and increase the counter of created columns
+
+            column_mapping[col_counter] = j
+            col_counter += 1
 
             # Get the properties of the column
 
@@ -89,16 +147,31 @@ def create_ifu_driver_cat_template(catalogue_template, output_filename,
             column_list.append(column)
 
     # Create the HDU from the column list
-
+    
     coldefs = fits.ColDefs(column_list)
     hdu = fits.BinTableHDU.from_columns(coldefs)
 
+    # Copy the comments of the original catalogue for the created keywords
+
+    for i in range(len(col_list)):
+
+        for kwd_type in basic_kwd_type_list:
+
+            j = column_mapping[i]
+
+            _try_to_copy_comment(kwd_type, hdu, i, template_hdu, j)
+
     # Add other keywords related with each column which could not be added
-    # in the defitions of the columns, and also copy the comments from the
-    # original catalogue
+    # in the defitions of the columns
 
-    # ***
+    for i in range(len(col_list)):
 
+        for kwd_type in extra_kwd_type_list:
+
+            j = column_mapping[i]
+
+            _try_to_copy_keyword(kwd_type, hdu, i, template_hdu, j)
+    
     # Give a name to the HDU and write it
 
     hdu.name = 'INPUT IFU DRIVER CATALOGUE'
