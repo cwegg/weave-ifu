@@ -112,7 +112,7 @@ tooltip.style.display = "none";
 <div class="tooltip" id="n32">Stage 5 input files - this contains the 4 IFU XMLs at the point they are due to be submitted to Configure.</div>
 <div class="tooltip" id="n33">The underlying blank XML template. <br>All OBs are dervied from this master XML file, with specific elements updated throughout the workflow.</div>
 <div class="tooltip" id="n34">This code identifies which guide star(s) and WD calibration stars can be used for a given field, and inserts their XML data <target> representations into the "proto-field" XMLs</div>
-<div class="tooltip" id="n35">v. 20191217</div>
+<div class="tooltip" id="n35">v. 20200106</div>
 <div class="tooltip" id="n36">Notes to accompany this workflow</div>
 <div class="tooltip" id="n39">Positions of viable guidestars within the proposed FOV of the protofield.</div>
 <div class="tooltip" id="n40">HEALPix'd decomposition of the Guidestar catalogue. This is based on Gaia DR2.</div>
@@ -165,6 +165,7 @@ tooltip.style.display = "none";
 <div class="tooltip" id="n121">If we decide to ever allow mixed-survey fields for mIFU (eg. filler-mode?), <br>then the surveys will need to split at this point for FITS - ie, <br>the survey-specfic FITS templates must be used, mapping XML target TARGSRVY to the relevant catalogue template.<br><br>From this point onwards, this workflow implies work done on just one of these surveys. In reality, both must be processed.<br></div>
 <div class="tooltip" id="n122">Survey <br>FITS <br>template</div>
 <div class="tooltip" id="n123">This is the input FITS template for a specific survey. <br>For PI-surveys, these templates can be generated at the WASP once end-users <br>receive their access credentials.</div>
+<div class="tooltip" id="n124">Stage 2 input file - this is the input driver catalogue, as a FITS file.</div>
 <div class="tooltip" id="e0">XML</div>
 <div class="tooltip" id="e1">FITS</div>
 <div class="tooltip" id="e2">XMLs <br><br>(with PA for LIFU)</div>
@@ -199,6 +200,7 @@ tooltip.style.display = "none";
   <area shape="poly" coords="1162,860,1162,860,1338,860,1338,870,1162,870,1162,870" alt="" onmouseover="showTooltip('e2')" onmouseout="hideTooltip()"/>
   <area shape="poly" coords="340,853,340,853,487,853,487,863,340,863,340,863" alt="" onmouseover="showTooltip('e1')" onmouseout="hideTooltip()"/>
   <area shape="poly" coords="856,860,856,860,1064,860,1064,870,856,870,856,870" alt="" onmouseover="showTooltip('e0')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="405,873,430,898" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage2/input" alt="" onmouseover="showTooltip('n124')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="1995,390,2020,415" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage6/input" alt="" onmouseover="showTooltip('n123')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="1995,316,2058,415" href="http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/obstemp.dat" alt="" onmouseover="showTooltip('n122')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="1934,508,1964,538" alt="" onmouseover="showTooltip('n121')" onmouseout="hideTooltip()"/>
