@@ -5,7 +5,7 @@ from xml.dom.minidom import Node
 import numpy
 
 fits_template = '../../test_data/stage0_base.fits'
-outname = './input/WC_IFU.fits'
+outname = '../stage2/input/WC_IFU.fits'
 xmls = glob.glob('../stage5/input/*.xml')
 
 lookup = {}
@@ -96,7 +96,9 @@ for x in xmls:
 
 columns = []
 
-for key in data.keys():
+order = ['GAIA_RA','GAIA_DEC','GAIA_EPOCH','TARGID','TARGNAME','PROGTEMP','OBSTEMP','IFU_DITHER','IFU_PA']
+
+for key in order:
     c_base = template[1].columns[key]
 
     name = c_base.name
@@ -117,9 +119,16 @@ for key in data.keys():
 
         
     columns.append(column)
+
+if len(columns) != len(data.keys()):
+    for key in data.keys():
+        if not key in [c.name for c in columns]:
+            print 'Missing column %s'%(key)
+    raise SystemExit(0)
                     
 new_coldef = pyfits.ColDefs(columns)
 new_table = pyfits.BinTableHDU.from_columns(new_coldef)
 new_table.update()
 template[1] = new_table
 template.writeto(outname,overwrite=True)
+print 'Done'
