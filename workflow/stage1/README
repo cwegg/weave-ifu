@@ -13,7 +13,7 @@ Input, output and auxiliar file(s)
 
   + A FITS file containing the *input IFU driver catalogue*.  
 
-* Auxiliar file(s):
+* **Auxiliar file(s):**
 
   + *aux/ifu_driver_template.fits*:
     A template with the structure of the *input IFU driver catalogue*.
@@ -36,12 +36,9 @@ Extra software
 --------------
 
 * *create_ifu_driver_template.py*:
-
   A script for creating the template with the structure of the *input IFU driver
   catalogue*. **Only useful for CPS team.**
-
 * *get_data_from_xmls.py*:
-
   A Python module used in *create_ifu_driver_cat.py* for cheating the
   information from stage 5. **Obviously, this module will not be needed in real
   workflow.**
