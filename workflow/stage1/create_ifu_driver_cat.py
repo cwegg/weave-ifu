@@ -64,8 +64,18 @@ if __name__ == '__main__':
                                    for progtemp in data_dict['PROGTEMP']]
     
     ############################################################################
+    # Create a list with the information needed to populate the keywords of
+    # of the primary header of the template
+    
+    kwd_value_list = [
+        ('AUTHOR',   'jairomendezabreu@gmail.com'),
+        ('CCREPORT', 'daniela.bettoni@oapd.inaf.it,jalfonso@iac.es'),
+        ('VERBOSE',   1)
+    ]
+    
+    ############################################################################
     # Populate the template with the provided data
     
     populate_fits_table_template(ifu_driver_template, data_dict,
-                                 output_filename)
+                                 output_filename, kwd_value_list=kwd_value_list)
 

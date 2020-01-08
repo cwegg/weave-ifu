@@ -22,11 +22,12 @@ from astropy.io import fits
 
 
 def populate_fits_table_template(fits_template, data_dict, output_filename,
-                                 overwrite=False):
+                                 overwrite=False, kwd_value_list=[]):
     
     # Read the FITS template
     
     template_hdulist = fits.open(fits_template)
+    template_primary_hdu = template_hdulist[0]
     template_hdu = template_hdulist[1]
     
     # Check that all the columns are available in the dictionary with the data
@@ -58,7 +59,16 @@ def populate_fits_table_template(fits_template, data_dict, output_filename,
     
     hdu.header = template_hdu.header
     
-    # Write the HDU
+    # Create the primary extension and populate it with the provided information
     
-    hdu.writeto(output_filename, overwrite=overwrite)
+    primary_hdu = template_primary_hdu
+    
+    for kwd, value in kwd_value_list:
+        primary_hdu.header[kwd] = value
+    
+    # Create a HDU list and save it to a file
+    
+    hdulist = fits.HDUList([primary_hdu, hdu])
+    
+    hdulist.writeto(output_filename, overwrite=overwrite)
 

@@ -68,8 +68,8 @@ def _try_to_copy_keyword(kwd_type, hdu, i, template_hdu, j):
         
     
 def create_ifu_driver_template(catalogue_template, output_filename,
-                               col_list=['TARGID', 'TARGNAME', 'TARGPRIO',
-                                         'PROGTEMP', 'OBSTEMP',
+                               col_list=['TARGSRVY', 'TARGID', 'TARGNAME',
+                                         'TARGPRIO', 'PROGTEMP', 'OBSTEMP',
                                          'GAIA_RA', 'GAIA_DEC', 'GAIA_EPOCH',
                                          'GAIA_PMRA', 'GAIA_PMDEC',
                                          'GAIA_PARAL', 'IFU_PA', 'IFU_DITHER'],
@@ -170,11 +170,29 @@ def create_ifu_driver_template(catalogue_template, output_filename,
 
             _try_to_copy_keyword(kwd_type, hdu, i, template_hdu, j)
     
-    # Give a name to the HDU and write it
+    # Give a name to the HDU
 
     hdu.name = 'INPUT IFU DRIVER CATALOGUE'
+    
+    # Create the primary extension to contain some attributes of the XMLs
+    
+    primary_hdr = fits.Header()
+    
+    primary_hdr['VERBOSE'] = 1
+    primary_hdr.comments['VERBOSE'] = \
+       'Attribute "report_verbosity" of the XML files'
+    
+    primary_hdr['AUTHOR'] = ''
+    
+    primary_hdr['CCREPORT'] = ''
+    
+    primary_hdu = fits.PrimaryHDU(header=primary_hdr)
+    
+    # Create a HDU list and save it to a file
+    
+    hdulist = fits.HDUList([primary_hdu, hdu])
 
-    hdu.writeto(output_filename, overwrite=overwrite)
+    hdulist.writeto(output_filename, overwrite=overwrite)
 
 
 if __name__ == '__main__':
