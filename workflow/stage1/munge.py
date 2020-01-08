@@ -256,7 +256,7 @@ if __name__ == '__main__':
 
     xml_filename_list = glob.glob('../stage5/input/*.xml')
 
-    fits_template = '../../test_data/stage0_base.fits'
+    fits_template = '../../test_data/some_spa_columns.fits'
     output_dir = '../stage2/input/'
     outname = output_dir + 'WC_IFU.fits'
     targsrvy = 'WC'

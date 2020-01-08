@@ -21,6 +21,7 @@
 import xml.dom.minidom
 import os
 from astropy.io import fits
+import numpy
 
 
 class xml_data:
@@ -192,11 +193,6 @@ class ifu:
             else:
                 mifu.append(d)                
 
-
-        # import pdb
-        # pdb.set_trace()
-
-        
         #how do you group entries belonging to the same OB (for custom dithers)?
         group_id = 'TARGID:TARGNAME:PROGTEMP:OBSTEMP'
         
@@ -221,7 +217,45 @@ class ifu:
             for key in custom_dithers.keys():
                 lifu_entry = custom_dithers[key]
                 self.process_rows(lifu_entry)
-                    
+
+
+        #how do you group bundles belonging to the same field?
+        group_id = 'TARGNAME:PROGTEMP:OBSTEMP:IFU_DITHER'
+        
+
+        fields = {}
+        for mifu_entry in mifu:
+            key = ':'.join([str(mifu_entry[subkey]) for subkey in group_id.split(':')])
+            try:
+                fields[key].append(mifu_entry)
+            except KeyError:
+                fields[key] = [mifu_entry]
+
+        if len(fields.keys()) > 0:
+            #what happens if there are (eg) 100 bundles in a given key?
+            #user needs to decide 3 options
+            #1. Include all
+            #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
+            #3. Equipartition - divide up the bundles equally. In the case of 100:
+            #                   100/18. = 5.5 --> 6 fields
+            #                   100/6 = 17 bundles per field (with remainder added to a final XML), ie:
+            #                   5 x 17 bundles + 1 x 15 bundles
+
+            print 'Processing %d mIFU bundle groupings'%(len(fields.keys()))
+            # for the moment, just go with (1), but implement (2) and (3)
+            for key in fields.keys():
+                mifu_entry = fields[key]
+                self.process_rows(mifu_entry)
+
+
+            
+        
+
+        if 1:
+            return
+
+
+                
         if (d['IFU_SPAXEL'] == self.cspax_id):
 #            if (d['IFU_SPAXEL'] == self.cspax_id) and (res_lookup[d['PROGTEMP'][0]] == self.res) and (int(d['PROGTEMP']) > 3):
 #            if (d['TARGID'] not in self.spax_ids) and (d['TARGPROG'] == self.res):
@@ -288,11 +322,17 @@ class ifu:
         mode_lookup['8'] = 'mIFU'
         mode_lookup['9'] = 'mIFU'
 
-
-
-        ndither = len(rows)
-        if len(rows) == 1:
+        if str(mode_lookup[rows[0]['PROGTEMP'][0]]) == 'LIFU':
+            mode = 'LIFU'
+            ndither = len(rows)
+            if len(rows) == 1:
+                ndither = rows[0]['IFU_DITHER']
+            
+        else:
+            #mIFU
+            mode = 'mIFU'
             ndither = rows[0]['IFU_DITHER']
+
 
         this_xml = xml_data()
         this_xml.new_xml(root_data=self.root_data)
@@ -396,37 +436,47 @@ class ifu:
             #exposures.appendChild(calib)
             exposures.insertBefore(calib,comment_ref_node)
             cr_node_clone = cr_node.cloneNode(True)
-#            exposures.insertBefore(cr_node_clone,comment_ref_node)
-            order += 1
+            if (calib.getAttribute('arm') in ['both','blue']):
+                #assumes sequence is always red,blue for arm-independent <exposure> entries!
+                order += 1
 
         cr_node_clone = cr_node.cloneNode(True)
         exposures.insertBefore(cr_node_clone,comment_ref_node)
 
+        #now remove the old exposures element and replace with this one
+        this_xml.exposures.parentNode.replaceChild(exposures,this_xml.exposures)
+        this_xml.exposures = exposures
+        #this_dom.insertBefore()
+        
 
-        #now the <observation> element:
-        this_xml.observation.setAttribute('name',str(rows[0]['TARGID']))
-        this_xml.observation.setAttribute('progtemp',str(rows[0]['PROGTEMP']))
-        this_xml.observation.setAttribute('obs_type',str(mode_lookup[rows[0]['PROGTEMP'][0]]))
-        this_xml.observation.setAttribute('trimester',str(self.trimester))
-        this_xml.observation.setAttribute('pa',str(rows[0]['IFU_PA_REQUEST']))
-
+        
         #the <configure> amd <survey> elements:
         survey = this_xml.surveys.getElementsByTagName('survey')[0]
         survey.setAttribute('name',value=str(self.targsrvy))
         survey.setAttribute('priority',value='1.0')
 
-        if str(mode_lookup[rows[0]['PROGTEMP'][0]]) == 'LIFU':
-            mode = 'LIFU'
+        if mode == 'LIFU':
             this_xml.configure.setAttribute('plate','LIFU')
             survey.setAttribute('max_fibres',value='603')
-        else:
-            #mIFU
-            mode = 'mIFU'
+        elif mode == 'mIFU':
             this_xml.configure.setAttribute('plate','PLATE_B')
             survey.setAttribute('max_fibres',value='740')
+
             
         this_xml.obsconstraints.setAttribute('obstemp',str(rows[0]['OBSTEMP']))
 
+        #now the <observation> element:
+        if mode == 'LIFU':
+            this_xml.observation.setAttribute('name',str(rows[0]['TARGID']))
+        elif mode == 'mIFU':
+            this_xml.observation.setAttribute('name',str(rows[0]['TARGNAME']))
+        this_xml.observation.setAttribute('progtemp',str(rows[0]['PROGTEMP']))
+        this_xml.observation.setAttribute('obs_type',str(mode_lookup[rows[0]['PROGTEMP'][0]]))
+        this_xml.observation.setAttribute('trimester',str(self.trimester))
+        this_xml.observation.setAttribute('pa',str(rows[0]['IFU_PA_REQUEST']))
+
+
+        
         #now generate field template
         fields_clone = this_xml.fields.cloneNode(True)
 
@@ -447,41 +497,69 @@ class ifu:
         this_xml.observation.removeChild(this_xml.fields)
 
         this_xml.dithering.setAttribute('apply_dither',str(rows[0]['IFU_DITHER']))
-        if len(rows) == 1:
 
-            #this is a fixed dither-pattern - only provide the initial pointing
+        #assembly order:
+        #1.target
+        #2.field
+        #3.fields
 
-            #assembly order:
-            #1.target
-            #2.field
-            #3.fields
-
+        order = first_sci_order
+        field = None
+        col_names = rows[0].array.columns.names
+        for i in xrange(len(rows)):
+            row = rows[i]
             target = this_xml.base_target.cloneNode(True)
+            _row = {}
+            for col in col_names:
+                _row[col] = row[col]
+                if (str(row[col]) == 'nan') and numpy.isnan(row[col]):
+                    _row[col] = ""
+            row = _row
+            
             print 'What about fibreid ifu_spaxel??' 
-            target.setAttribute('targra',value=str(rows[0]['GAIA_RA']))
-            target.setAttribute('targdec',value=str(rows[0]['GAIA_DEC']))
-            target.setAttribute('targpmra',value=str(rows[0]['GAIA_PMRA']))
-            target.setAttribute('targpmdec',value=str(rows[0]['GAIA_PMDEC']))
-            target.setAttribute('targepoch',value=str(rows[0]['GAIA_EPOCH']))
-            target.setAttribute('targparal',value=str(rows[0]['GAIA_PARAL']))
-            target.setAttribute('targid',value=str(rows[0]['TARGID']))
-            target.setAttribute('targname',value=str(rows[0]['TARGNAME']))
-            target.setAttribute('targprog',value=str(rows[0]['TARGPROG']))
+            target.setAttribute('targra',value=str(row['GAIA_RA']))
+            target.setAttribute('targdec',value=str(row['GAIA_DEC']))
+            target.setAttribute('targpmra',value=str(row['GAIA_PMRA']))
+            target.setAttribute('targpmdec',value=str(row['GAIA_PMDEC']))
+            target.setAttribute('targepoch',value=str(row['GAIA_EPOCH']))
+            target.setAttribute('targparal',value=str(row['GAIA_PARAL']))
+            target.setAttribute('targid',value=str(row['TARGID']))
+            target.setAttribute('targname',value=str(row['TARGNAME']))
+            target.setAttribute('targprog',value=str(row['TARGPROG']))
             target.setAttribute('targcat',value=self.input_fits.split('/')[-1])
-            target.setAttribute('targprio',value=str(rows[0]['TARGPRIO']))
+            target.setAttribute('targprio',value=str(row['TARGPRIO']))
             target.setAttribute('targuse',value='T')
+            target.setAttribute('targsrvy',value=self.targsrvy)
 
-            #now add field data, and add the target to the field
-            field_clone.setAttribute('order',value=str(first_sci_order))
-            field_clone.setAttribute('RA_d',value=str(rows[0]['GAIA_RA']))
-            field_clone.setAttribute('Dec_d',value=str(rows[0]['GAIA_DEC']))
-            field_clone.appendChild(target)
+            if (mode == 'LIFU'):
+                #generate a <field> element to add this target to
+                field = field_clone.cloneNode(True)
+                field.setAttribute('order',value=str(order))
+                field.setAttribute('RA_d',value=str(row['GAIA_RA']))
+                field.setAttribute('Dec_d',value=str(row['GAIA_DEC']))
+                field.appendChild(target)
+                #now add this field to the fields element
+                fields_clone.appendChild(field)
 
+                order += 1
+
+            elif (mode == 'mIFU'):
+                #if this is the first of the targets, then generate the field, otherwise use the existing <field>
+                #remember - we require fixed IFU_DITHER patterns for mIFU, so multiple <field> entries not needed
+                if i == 0:
+                    field = field_clone.cloneNode(True)
+                    field.setAttribute('order',value=str(order))
+                    field.setAttribute('RA_d',value=str(row['GAIA_RA']))
+                    field.setAttribute('Dec_d',value=str(row['GAIA_DEC']))
+                field.appendChild(target)
+
+        if (mode == 'mIFU'):
             #now add this field to the fields element
-            fields_clone.appendChild(field_clone)
+            fields_clone.appendChild(field)
+            
 
-            #...and finally to observation
-            this_xml.observation.appendChild(fields_clone)
+        #...and finally to observation
+        this_xml.observation.appendChild(fields_clone)
 
 
             
