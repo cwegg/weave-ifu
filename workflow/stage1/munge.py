@@ -21,6 +21,7 @@
 import xml.dom.minidom
 
 from astropy.io import fits
+import numpy
 
 
 def get_lookup():
@@ -28,11 +29,11 @@ def get_lookup():
     lookup = {}
 
     lookup[''] = 'TARGSRVY'
-    lookup[''] = 'TARGPROG'
+    lookup['target:targprog'] = 'TARGPROG'
     #lookup['target:targcat'] = 'TARGCAT'
     lookup['target:targid'] = 'TARGID'
     lookup['target:targname'] = 'TARGNAME'
-    lookup[''] = 'TARGPRIO'
+    lookup['target:targprio'] = 'TARGPRIO'
     lookup[''] = 'TARGCLASS'
     lookup['observation:progtemp'] = 'PROGTEMP'
     lookup['obsconstraints:obstemp'] = 'OBSTEMP'
@@ -41,9 +42,9 @@ def get_lookup():
     lookup['target:targra'] = 'GAIA_RA'
     lookup['target:targdec'] = 'GAIA_DEC'
     lookup['target:targepoch'] = 'GAIA_EPOCH'
-    lookup[''] = 'GAIA_PMRA'
-    lookup[''] = 'GAIA_PMDEC'
-    lookup[''] = 'GAIA_PARAL'
+    lookup['target:targpmra'] = 'GAIA_PMRA'
+    lookup['target:targpmdec'] = 'GAIA_PMDEC'
+    lookup['target:targparal'] = 'GAIA_PARAL'
     # lookup[''] = 'GAIA_PARAL_ERR'
     lookup[''] = 'IFU_SPAXEL'
     lookup['observation:pa'] = 'IFU_PA'
@@ -65,6 +66,16 @@ def get_lookup():
 
     return lookup
 
+def get_nulls():
+
+    nulls = {}
+
+    nulls['target:targpmra'] = float(numpy.nan)
+    nulls['target:targpmdec'] = float(numpy.nan)
+    nulls['target:targparal'] = float(numpy.nan)
+
+    return nulls
+    
 
 def get_formats():
 
@@ -135,6 +146,7 @@ def get_data(xml_filename_list):
 
     lookup = get_lookup()
     formats = get_formats()
+    nulls = get_nulls()
 
     # Create an dictionary with the desired keywords
 
@@ -168,7 +180,9 @@ def get_data(xml_filename_list):
                     element = xml_data[element_name]
 
                 raw_value = element.getAttribute(attribute_name)
-
+                if raw_value == "":
+                    raw_value = nulls[key]
+                
                 if key in formats.keys():
                     value = formats[key](raw_value)
                 else:
@@ -179,12 +193,12 @@ def get_data(xml_filename_list):
     return data
 
 
-def write_data_as_in_template(data, fits_template, outname):
+def write_data_as_in_template(data, fits_template, outname, author, cc_report, report_verbosity, targsrvy):
     columns = []
 
     # Define the order to write out the columns
 
-    order = ['GAIA_RA','GAIA_DEC','GAIA_EPOCH','TARGID','TARGNAME','PROGTEMP','OBSTEMP','IFU_DITHER','IFU_PA']
+    order = ['GAIA_RA','GAIA_DEC','GAIA_EPOCH','GAIA_PMRA','GAIA_PMDEC','GAIA_PARAL','TARGID','TARGNAME','TARGPROG','TARGPRIO','PROGTEMP','OBSTEMP','IFU_DITHER','IFU_PA']
     
     template = fits.open(fits_template)
 
@@ -228,6 +242,10 @@ def write_data_as_in_template(data, fits_template, outname):
     new_table = fits.BinTableHDU.from_columns(new_coldef)
     new_table.update()
     template[1] = new_table
+    template[0].header['AUTHOR'] = author
+    template[0].header['CCREPORT'] = cc_report
+    template[0].header['VERBOSE'] = report_verbosity
+    template[0].header['TARGSRVY'] = targsrvy
     template.writeto(outname,overwrite=True)
 
 
@@ -241,11 +259,16 @@ if __name__ == '__main__':
     fits_template = '../../test_data/stage0_base.fits'
     output_dir = '../stage2/input/'
     outname = output_dir + 'WC_IFU.fits'
+    targsrvy = 'WC'
+    author = 'jairomendezabreu@gmail.com'
+    cc_report = 'daniela.bettoni@oapd.inaf.it,jalfonso@iac.es'
+    report_verbosity = 1
 
+    
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
     data = get_data(xml_filename_list)
 
-    write_data_as_in_template(data, fits_template, outname)
+    write_data_as_in_template(data, fits_template, outname, author, cc_report, report_verbosity, targsrvy)
     print('IFU catalogue driver file written to: {0}'.format(outname))
