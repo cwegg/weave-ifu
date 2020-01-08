@@ -182,9 +182,13 @@ def get_data(xml_filename_list):
 def write_data_as_in_template(data, fits_template, outname):
     columns = []
 
+    # Define the order to write out the columns
+
+    order = ['GAIA_RA','GAIA_DEC','GAIA_EPOCH','TARGID','TARGNAME','PROGTEMP','OBSTEMP','IFU_DITHER','IFU_PA']
+    
     template = fits.open(fits_template)
 
-    for key in data.keys():
+    for key in order:
         c_base = template[1].columns[key]
 
         name = c_base.name
@@ -207,6 +211,19 @@ def write_data_as_in_template(data, fits_template, outname):
 
         columns.append(column)
 
+    # Did we miss any columns (ie, those defined within the order list?)
+
+    if len(columns) != len(data.keys()):
+        col_names = [c.name for c in columns]
+        for key in data.keys():
+            if (not key in col_names):
+                if (key == 'IFU_PA' and ('IFU_PA_REQUEST' in col_names)):
+                    continue
+                else:
+                    print('Missing column {0}'.format(key))
+        raise SystemExit(0)
+
+        
     new_coldef = fits.ColDefs(columns)
     new_table = fits.BinTableHDU.from_columns(new_coldef)
     new_table.update()
@@ -222,7 +239,7 @@ if __name__ == '__main__':
     xml_filename_list = glob.glob('../stage5/input/*.xml')
 
     fits_template = '../../test_data/stage0_base.fits'
-    output_dir = './output/'
+    output_dir = '../stage2/input/'
     outname = output_dir + 'WC_IFU.fits'
 
     if not os.path.exists(output_dir):
@@ -231,4 +248,4 @@ if __name__ == '__main__':
     data = get_data(xml_filename_list)
 
     write_data_as_in_template(data, fits_template, outname)
-
+    print('IFU catalogue driver file written to: {0}'.format(outname))
