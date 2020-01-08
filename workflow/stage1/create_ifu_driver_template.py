@@ -179,7 +179,7 @@ def create_ifu_driver_template(catalogue_template, output_filename,
 
 if __name__ == '__main__':
 
-    catalogue_template = '../../test_data/stage0_base.fits'
+    catalogue_template = '../../test_data/some_spa_columns.fits'
     ifu_driver_template = './aux/ifu_driver_template.fits'
 
     create_ifu_driver_template(catalogue_template, ifu_driver_template,
