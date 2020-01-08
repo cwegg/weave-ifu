@@ -24,9 +24,8 @@ Software
 
 * *populate_fits_table_template.py*:
 
-  A Python module to populate the template useful to populate the template of
-  the *input IFU driver catalogue* with the information contained in a
-  dictionary.
+  A Python module to populate the template of the *input IFU driver catalogue*
+  with the information contained in a dictionary.
 
 * *create_ifu_driver_cat.py*:
 
