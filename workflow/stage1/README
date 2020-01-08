@@ -1,0 +1,48 @@
+Stage 1
+=======
+
+Input, output and auxiliar file(s)
+----------------------------------
+
+* **Input:**
+
+  + A Python dictionary which items contain the information needed to fill the
+    columns of the *input IFU driver catalogue*.
+
+* **Output:**
+
+  + A FITS file containing the *input IFU driver catalogue*.  
+
+* Auxiliar file(s):
+
+  + *aux/ifu_driver_template.fits*:
+    A template with the structure of the *input IFU driver catalogue*.
+
+
+Software
+--------
+
+* *populate_fits_table_template.py*:
+
+  A Python module to populate the template useful to populate the template of
+  the *input IFU driver catalogue* with the information contained in a
+  dictionary.
+
+* *create_ifu_driver_cat.py*:
+
+  An example illustrating how to use the module *populate_fits_table_template*.
+
+Extra software
+--------------
+
+* *create_ifu_driver_template.py*:
+
+  A script for creating the template with the structure of the *input IFU driver
+  catalogue*. **Only useful for CPS team.**
+
+* *get_data_from_xmls.py*:
+
+  A Python module used in *create_ifu_driver_cat.py* for cheating the
+  information from stage 5. **Obviously, this module will not be needed in real
+  workflow.**
+
