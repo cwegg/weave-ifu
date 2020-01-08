@@ -32,14 +32,25 @@ Software
 
   An example illustrating how to use the module *populate_fits_table_template*.
 
+* *check_ifu_driver_cat.py*:
+
+  A script for making some verifications on the contents of a *input IFU driver
+  catalogue*.
+  **To be developed.**
+
+
 Extra software
 --------------
 
 * *create_ifu_driver_template.py*:
+
   A script for creating the template with the structure of the *input IFU driver
-  catalogue*. **Only useful for CPS team.**
+  catalogue*.
+  **Only useful for CPS team.**
+
 * *get_data_from_xmls.py*:
+
   A Python module used in *create_ifu_driver_cat.py* for cheating the
-  information from stage 5. **Obviously, this module will not be needed in real
-  workflow.**
+  information from stage 5.
+  **Obviously, this module will not be needed in real workflow.**
 
