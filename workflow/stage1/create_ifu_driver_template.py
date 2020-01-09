@@ -86,6 +86,7 @@ def create_ifu_driver_template(catalogue_template, output_filename,
     # Read the catalogue template
 
     template_hdulist = fits.open(catalogue_template)
+    template_primary_hdr = template_hdulist[0].header
     template_hdu = template_hdulist[1]
 
     # Check that all the requested columns exist in the catalogue template and
@@ -178,6 +179,13 @@ def create_ifu_driver_template(catalogue_template, output_filename,
     # Create the primary extension to contain some attributes of the XMLs
     
     primary_hdr = fits.Header()
+    
+    # Add a keyword with the WEAVE data model version to the primary header
+    
+    primary_hdr['DATAMVER'] = template_primary_hdr['DATAMVER']
+    primary_hdr.comments['DATAMVER'] = template_primary_hdr.comments['DATAMVER']
+    
+    # Add some attributes of the XMLs to the primary header
     
     primary_hdr['VERBOSE'] = 1
     primary_hdr.comments['VERBOSE'] = \
