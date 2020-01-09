@@ -68,8 +68,9 @@ def _try_to_copy_keyword(kwd_type, hdu, i, template_hdu, j):
         
     
 def create_ifu_driver_template(catalogue_template, output_filename,
-                               col_list=['TARGSRVY', 'TARGID', 'TARGNAME',
-                                         'TARGPRIO', 'PROGTEMP', 'OBSTEMP',
+                               col_list=['TARGSRVY', 'TARGPROG',
+                                         'TARGID', 'TARGNAME', 'TARGPRIO',
+                                         'PROGTEMP', 'OBSTEMP',
                                          'GAIA_RA', 'GAIA_DEC', 'GAIA_EPOCH',
                                          'GAIA_PMRA', 'GAIA_PMDEC',
                                          'GAIA_PARAL', 'IFU_PA', 'IFU_DITHER'],
