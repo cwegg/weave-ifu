@@ -131,7 +131,6 @@ class ifu:
         self.author = input_data[0].header['AUTHOR']
         self.cc_report = input_data[0].header['CCREPORT']
         self.report_verbosity = input_data[0].header['VERBOSE']
-        self.targsrvy = input_data[0].header['TARGSRVY']
         self.root_data = {}
         self.root_data['author'] = self.author
         self.root_data['cc_report'] = self.cc_report
@@ -166,6 +165,9 @@ class ifu:
     def row_validator(self,row):
         print 'WARNING: row validator not implemented!'
         #assert row['IFU_DITHER'] in [-1,3,5]
+        #check length of cc_report != max length (70? 69?) issue warning
+
+
         return True
     
     def generate_xmls(self):
@@ -452,16 +454,25 @@ class ifu:
         
         #the <configure> amd <survey> elements:
         survey = this_xml.surveys.getElementsByTagName('survey')[0]
-        survey.setAttribute('name',value=str(self.targsrvy))
-        survey.setAttribute('priority',value='1.0')
-
-        if mode == 'LIFU':
-            this_xml.configure.setAttribute('plate','LIFU')
-            survey.setAttribute('max_fibres',value='603')
-        elif mode == 'mIFU':
-            this_xml.configure.setAttribute('plate','PLATE_B')
-            survey.setAttribute('max_fibres',value='740')
-
+        #make a clone and remove the placeholder <survey>
+        survey_clone = survey.cloneNode(True)
+        this_xml.surveys.removeChild(survey)
+        #get initial comment in <surveys>, to allow an insertBefore
+        sruveys_comment = this_xml.surveys.childNodes[0]
+        a = 1
+        
+        all_surveys = numpy.unique([r['TARGSRVY'] for r in rows])
+        for s in all_surveys:
+            this_survey = survey_clone.cloneNode(True)
+            this_survey.setAttribute('name',value=str(s))
+            this_survey.setAttribute('priority',value='1.0')
+            if mode == 'LIFU':
+                this_xml.configure.setAttribute('plate','LIFU')
+                this_survey.setAttribute('max_fibres',value='603')
+            elif mode == 'mIFU':
+                this_xml.configure.setAttribute('plate','PLATE_B')
+                this_survey.setAttribute('max_fibres',value='740')
+            this_xml.surveys.insertBefore(this_survey,sruveys_comment)
             
         this_xml.obsconstraints.setAttribute('obstemp',str(rows[0]['OBSTEMP']))
 
@@ -529,7 +540,7 @@ class ifu:
             target.setAttribute('targcat',value=self.input_fits.split('/')[-1])
             target.setAttribute('targprio',value=str(row['TARGPRIO']))
             target.setAttribute('targuse',value='T')
-            target.setAttribute('targsrvy',value=self.targsrvy)
+            target.setAttribute('targsrvy',value=str(row['TARGSRVY']))
 
             if (mode == 'LIFU'):
                 #generate a <field> element to add this target to
