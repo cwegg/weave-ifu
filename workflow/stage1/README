@@ -31,12 +31,6 @@ Software
 
   An example illustrating how to use the module *populate_fits_table_template*.
 
-* *check_ifu_driver_cat.py*:
-
-  A script for making some verifications on the contents of a *input IFU driver
-  catalogue*.
-  **To be developed.**
-
 
 Extra software
 --------------
