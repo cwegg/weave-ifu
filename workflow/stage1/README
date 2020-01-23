@@ -31,6 +31,12 @@ Software
 
   An example illustrating how to use the module *populate_fits_table_template*.
 
+* *plot_ifu_driver_cat_with_aladin.py*:
+
+  A script for plotting the contents of a *input IFU driver catalogue* with
+  Aladin.
+  **To be developed.**
+
 
 Extra software
 --------------
