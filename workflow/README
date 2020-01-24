@@ -104,6 +104,8 @@ catalogue.
 Stage 6
 -------
 
+**Contributors:** David Murphy, Luis Peralta
+
 The output of configure (previous stage) provides spatial data for all
 fibres, at all dither positions. The workflow now takes these data and
 converts each fibre into a row of a FITS file defined by the input

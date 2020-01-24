@@ -1,0 +1,35 @@
+Cheatsheet for the IWG docker
+=============================
+
+* **Build the image:**
+
+  docker build -t iwg:0.01 .
+
+* **Run a container:**
+
+  docker run -e HOST_USER_ID=`id -u` -e HOST_USER_NAME=`id -un` -e HOST_GROUP_ID=`id -g` -e HOST_GROUP_NAME=`id -gn` -v /home/lperalta/Desktop/ifu:/media/ -h iwg_docker --name iwg -d -i -t iwg:0.01
+
+* **Start the container:**
+
+  docker start iwg
+
+* **Get a command line into the container with your user:**
+
+  docker exec -it iwg su `id -un` -s /bin/bash
+
+* **Get a command line into the container as root:**
+
+  docker exec -it iwg /bin/bash
+
+* **Stop the container:**
+
+  docker stop iwg
+
+* **Remove the container:**
+
+  docker rm iwg
+
+* **Remove the image::**
+
+  docker rmi iwg:0.01
+
