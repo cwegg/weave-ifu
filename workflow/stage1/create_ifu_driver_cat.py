@@ -26,39 +26,164 @@ import numpy as np
 from populate_fits_table_template import populate_fits_table_template
 
 
-def _get_data_dict():
+def get_data_dict():
     
     data_dict = {}
     
-    data_dict['TARGSRVY'] = []
+    data_dict['TARGSRVY'] = \
+        ['WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC',
+         'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC',
+         'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC',
+         'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC',
+         'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC']
     
-    data_dict['TARGPROG'] = []
+    data_dict['TARGPROG'] = \
+        ['LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR',
+         'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR',
+         'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR',
+         'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR',
+         'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR']
     
-    data_dict['TARGID'] = []
+    data_dict['TARGID'] = \
+        ['PSZ1_125A', 'PSZ1_125A', 'PSZ1_125A', 'PSZ1_125A', 'PGC_91697',
+           'PGC_65950', 'PGC_1051614', 'PGC_1048686', 'PGC_1058689', 'PGC_1044404',
+         'PGC_1045221', 'PGC_1054814', 'PGC_1041786', 'PGC_1048019', 'PGC_1065694',
+           'PGC_1051735', 'PGC_1053791', 'PGC_1060024', 'PGC_1059931', 'PGC_1063030',
+         'PGC_1053595', 'PGC_1055624', 'PGC_1049654', 'PGC_1060631', 'PGC_1058049',
+           'PGC_1056295', 'PGC_91697', 'PGC_65950', 'PGC_1051614', 'PGC_1048686',
+         'PGC_1058689', 'PGC_1044404', 'PGC_1045221', 'PGC_1054814', 'PGC_1041786',
+           'PGC_1048019', 'PGC_1065694', 'PGC_1051735', 'PGC_1053791', 'PGC_1060024',
+         'PGC_1059931', 'PGC_1063030', 'PGC_1053595', 'PGC_1055624', 'PGC_1049654',
+           'PGC_1060631', 'PGC_1058049', 'PGC_1056295']
     
-    data_dict['TARGNAME'] = []
+    data_dict['TARGNAME'] = \
+        ['PSZ1_125A', 'PSZ1_125A', 'PSZ1_125A', 'PSZ1_125A', 'CLUSTER1',
+           'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
+         'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
+           'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
+         'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
+           'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
+         'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
+           'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
+         'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
+           'CLUSTER1', 'CLUSTER1', 'CLUSTER1']
     
-    data_dict['TARGPRIO'] = []
+    data_dict['TARGPRIO'] = \
+        [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+         1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+         1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+         1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+         1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     
-    data_dict['PROGTEMP'] = []
+    data_dict['PROGTEMP'] = \
+        ['41334', '41334', '41334', '41334', '71334',
+           '71334', '71334', '71334', '71334', '71334',
+         '71334', '71334', '71334', '71334', '71334',
+           '71334', '71334', '71334', '71334', '71334',
+         '71334', '71334', '71334', '71334', '71334',
+           '71334', '71334', '71334', '71334', '71334',
+         '71334', '71334', '71334', '71334', '71334',
+           '71334', '71334', '71334', '71334', '71334',
+         '71334', '71334', '71334', '71334', '71334',
+           '71334', '71334', '71334']
     
-    data_dict['OBSTEMP'] = []
+    data_dict['OBSTEMP'] = \
+        ['IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
+           'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
+         'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
+           'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
+         'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
+           'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
+         'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
+           'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
+         'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
+           'IAEEB', 'IAEEB', 'IAEEB']
     
-    data_dict['GAIA_RA'] = []
+    data_dict['GAIA_RA'] = \
+        [316.369609537, 316.369609537, 316.369058752, 316.370143237, 316.9558,
+           315.5608, 315.9079, 315.8575, 315.67, 316.6396,
+         316.2858, 316.7646, 316.3958, 316.705, 316.5483,
+           316.7125, 316.4896, 316.1362, 316.9229, 315.6946,
+         316.9179, 316.0612, 316.7354, 316.2367, 316.5967,
+           316.9825, 316.9558, 315.5608, 315.9079, 315.8575,
+         315.67, 316.6396, 316.2858, 316.7646, 316.3958,
+           316.705, 316.5483, 316.7125, 316.4896, 316.1362,
+         316.9229, 315.6946, 316.9179, 316.0612, 316.7354,
+           316.2367, 316.5967, 316.9825]
     
-    data_dict['GAIA_DEC'] = []
+    data_dict['GAIA_DEC'] = \
+        [-4.71060356792, -4.71060356792, -4.70967250147, -4.70966298315, -5.3525,
+           -5.1131, -4.9278, -5.1475, -4.4014, -5.4644,
+         -5.4, -4.6878, -5.6722, -5.1933, -3.8808,
+           -4.9186, -4.7664, -4.3089, -4.315, -4.0897,
+         -4.7797, -4.6247, -5.0761, -4.2647, -4.4497,
+           -4.5789, -5.3525, -5.1131, -4.9278, -5.1475,
+         -4.4014, -5.4644, -5.4, -4.6878, -5.6722,
+           -5.1933, -3.8808, -4.9186, -4.7664, -4.3089,
+         -4.315, -4.0897, -4.7797, -4.6247, -5.0761,
+           -4.2647, -4.4497, -4.5789]
     
-    data_dict['GAIA_EPOCH'] = []
+    data_dict['GAIA_EPOCH'] = \
+        [2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+           2015.5, 2015.5, 2015.5]
     
-    data_dict['GAIA_PMRA'] = []
+    data_dict['GAIA_PMRA'] = \
+        [np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan]
     
-    data_dict['GAIA_PMDEC'] = []
+    data_dict['GAIA_PMDEC'] = \
+        [np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan]
     
-    data_dict['GAIA_PARAL'] = []
+    data_dict['GAIA_PARAL'] = \
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
-    data_dict['IFU_PA_REQUEST'] = []
+    data_dict['IFU_PA_REQUEST'] = \
+        [0.0, 0.0, 0.0, 0.0, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan]
     
-    data_dict['IFU_DITHER'] = []
+    data_dict['IFU_DITHER'] = \
+        [3, -1, -1, -1, 3, 3, 3, 3, 3, 3,
+         3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+         3, 3, 3, 3, 3, 3, 5, 5, 5, 5,
+         5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+         5, 5, 5, 5, 5, 5, 5, 5]
     
     return data_dict
 
@@ -85,7 +210,7 @@ if __name__ == '__main__':
     # NOTE: See the above function _get_data_dict to understand the structure of
     # the dictionary
     
-    data_dict = _get_data_dict()
+    data_dict = get_data_dict()
     
     ############################################################################
     # Create a list with the information needed to populate the keywords of
