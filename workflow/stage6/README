@@ -1,0 +1,9 @@
+Stage 6
+=======
+
+**Contributors:** David Murphy, Luis Peralta
+
+It is worth noting that the modules **populate_fits_table_template.py** and **get_data_from_xmls.py** developed for *stage 1* were developed thinking in this stage too.
+
+Therefore, they could be used probably too for this stage directly, or after some trivial changes in order to extend the capabilities of these modules.
+
