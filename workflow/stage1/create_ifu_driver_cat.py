@@ -23,8 +23,44 @@ import glob
 
 import numpy as np
 
-from get_data_from_xmls import get_spa_data_of_targets_from_xmls
 from populate_fits_table_template import populate_fits_table_template
+
+
+def _get_data_dict():
+    
+    data_dict = {}
+    
+    data_dict['TARGSRVY'] = []
+    
+    data_dict['TARGPROG'] = []
+    
+    data_dict['TARGID'] = []
+    
+    data_dict['TARGNAME'] = []
+    
+    data_dict['TARGPRIO'] = []
+    
+    data_dict['PROGTEMP'] = []
+    
+    data_dict['OBSTEMP'] = []
+    
+    data_dict['GAIA_RA'] = []
+    
+    data_dict['GAIA_DEC'] = []
+    
+    data_dict['GAIA_EPOCH'] = []
+    
+    data_dict['GAIA_PMRA'] = []
+    
+    data_dict['GAIA_PMDEC'] = []
+    
+    data_dict['GAIA_PARAL'] = []
+    
+    data_dict['IFU_PA_REQUEST'] = []
+    
+    data_dict['IFU_DITHER'] = []
+    
+    return data_dict
 
 
 if __name__ == '__main__':
@@ -44,24 +80,12 @@ if __name__ == '__main__':
         os.makedirs(output_dir)
     
     ############################################################################
-    # Read a dictionary with the data which will populate the template
+    # Get a dictionary with the data which will populate the template
     
-    # For this example, we cheat getting them from stage-5 XMLs. Obviously,
-    # this will not be possible in the real SWG workflow, but we provide this
-    # example to illustrate how the data should be provided to the function
-    # "populate_fits_table_template"
+    # NOTE: See the above function _get_data_dict to understand the structure of
+    # the dictionary
     
-    xml_filename_list = glob.glob('../stage5/input/*.xml')
-    xml_filename_list.sort()
-    
-    data_dict = get_spa_data_of_targets_from_xmls(xml_filename_list)
-    
-    # Add a column with the IFU_PA_REQUEST values. It will be 0 for LIFU and
-    # NULL for mIFU
-    
-    data_dict['IFU_PA_REQUEST'] = [0. if progtemp[0] in ['4', '5', '6']
-                                   else np.nan
-                                   for progtemp in data_dict['PROGTEMP']]
+    data_dict = _get_data_dict()
     
     ############################################################################
     # Create a list with the information needed to populate the keywords of
