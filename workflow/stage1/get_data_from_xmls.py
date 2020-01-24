@@ -75,17 +75,17 @@ def _get_formats():
 
     formats = {}
 
-    formats['target:targprio'] = int
+    formats['target:targprio'] = float
     formats['target:targra'] = float
     formats['target:targdec'] = float
     formats['target:targepoch'] = float
     formats['target:targpmra'] = float
-    formats[''] = float
+    formats[''] = float # 'GAIA_PMRA_ERR'
     formats['target:targpmdec'] = float
-    formats[''] = float
+    formats[''] = float # 'GAIA_PMDEC_ERR'
     formats['target:targparal'] = float
-    formats[''] = float
-    formats[''] = int
+    formats[''] = float # 'GAIA_PARAL_ERR'
+    formats[''] = int # 'HEALPIX'
     formats['observation:pa'] = float
     formats['dithering:apply_dither'] = int
     formats['photometry:mag_g'] = float
