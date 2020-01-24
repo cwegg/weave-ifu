@@ -23,7 +23,7 @@ import glob
 
 import numpy as np
 
-from get_data_from_xmls import get_target_data_from_xmls
+from get_data_from_xmls import get_spa_data_of_targets_from_xmls
 from populate_fits_table_template import populate_fits_table_template
 
 
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     xml_filename_list = glob.glob('../stage5/input/*.xml')
     xml_filename_list.sort()
     
-    data_dict = get_target_data_from_xmls(xml_filename_list)
+    data_dict = get_spa_data_of_targets_from_xmls(xml_filename_list)
     
     # Add a column with the IFU_PA_REQUEST values. It will be 0 for LIFU and
     # NULL for mIFU

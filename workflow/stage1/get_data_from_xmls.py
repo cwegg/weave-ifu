@@ -132,7 +132,22 @@ def _get_xml_data(xml_filename):
     return xml_data
 
 
-def get_target_data_from_xmls(xml_filename_list):
+def get_spa_data_of_targets_from_xmls(xml_filename_list):
+    """
+    Get SPA data of the targets contained in a list of configure XML files.
+
+    Parameters
+    ----------
+    xml_filename_list: list of str
+        A list of configure XML files.
+
+    Returns
+    -------
+    data_dict : dict
+        A dictionary with the data. Its keys are the name of the SPA columns
+        which are expected to be potencially in the configure XML files, while
+        its values are lists contain these data.
+    """
 
     # Get dictionaries with the lookup information and the formats
 
