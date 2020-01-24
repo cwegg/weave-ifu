@@ -146,7 +146,7 @@ def get_spa_data_of_targets_from_xmls(xml_filename_list):
     data_dict : dict
         A dictionary with the data. Its keys are the name of the SPA columns
         which are expected to be potencially in the configure XML files, while
-        its values are lists contain these data.
+        its values are lists containing these data.
     """
 
     # Get dictionaries with the lookup information and the formats

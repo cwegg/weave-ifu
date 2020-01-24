@@ -23,6 +23,25 @@ from astropy.io import fits
 
 def populate_fits_table_template(fits_template, data_dict, output_filename,
                                  overwrite=False, kwd_value_list=[]):
+    """
+    Populate a FITS table template with the provided data.
+
+    Parameters
+    ----------
+    fits_template : list of str
+        A FITS template with a primary HDU and a primary extension with a table.
+    data_dict : dict
+        A dictionary with the data. Its keys should contain the name of the
+        columns of the table in the first extension of the FITS template. Its
+        values should be array-like with the data to populate the table.
+    output_filename : str
+        The name of the output file which will be created.
+    overwrite : bool, optional
+        Overwrite the output FITS file.
+    kwd_value_list : dict, optional
+        A dictionary with a list of keywords and their corresponding values
+        which will be written a in the primary HDU.
+    """
     
     # Read the FITS template
     
