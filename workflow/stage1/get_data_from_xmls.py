@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #
-# Copyright (C) 2019 Cambridge Astronomical Survey Unit
+# Copyright (C) 2020 Cambridge Astronomical Survey Unit
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -75,17 +75,17 @@ def _get_formats():
 
     formats = {}
 
-    formats['target:targprio'] = int
+    formats['target:targprio'] = float
     formats['target:targra'] = float
     formats['target:targdec'] = float
     formats['target:targepoch'] = float
     formats['target:targpmra'] = float
-    formats[''] = float
+    formats[''] = float # 'GAIA_PMRA_ERR'
     formats['target:targpmdec'] = float
-    formats[''] = float
+    formats[''] = float # 'GAIA_PMDEC_ERR'
     formats['target:targparal'] = float
-    formats[''] = float
-    formats[''] = int
+    formats[''] = float # 'GAIA_PARAL_ERR'
+    formats[''] = int # 'HEALPIX'
     formats['observation:pa'] = float
     formats['dithering:apply_dither'] = int
     formats['photometry:mag_g'] = float
@@ -132,7 +132,22 @@ def _get_xml_data(xml_filename):
     return xml_data
 
 
-def get_target_data_from_xmls(xml_filename_list):
+def get_spa_data_of_targets_from_xmls(xml_filename_list):
+    """
+    Get SPA data of the targets contained in a list of configure XML files.
+
+    Parameters
+    ----------
+    xml_filename_list: list of str
+        A list of configure XML files.
+
+    Returns
+    -------
+    data_dict : dict
+        A dictionary with the data. Its keys are the name of the SPA columns
+        which are expected to be potencially in the configure XML files, while
+        its values are lists containing these data.
+    """
 
     # Get dictionaries with the lookup information and the formats
 

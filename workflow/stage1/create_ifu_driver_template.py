@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #
-# Copyright (C) 2019 Cambridge Astronomical Survey Unit
+# Copyright (C) 2020 Cambridge Astronomical Survey Unit
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -18,6 +18,7 @@
 #
 
 
+import argparse
 import re
 import logging
 
@@ -76,6 +77,29 @@ def create_ifu_driver_template(catalogue_template, output_filename,
                                          'GAIA_PARAL', 'IFU_PA', 'IFU_DITHER'],
                                rename_dict={'IFU_PA': 'IFU_PA_REQUEST'},
                                fix_str_format=False, overwrite=False):
+    """
+    Create a template for the input IFU driver catalogues.
+
+    Parameters
+    ----------
+    catalogue_template : str
+        Any catalogue template containing the SPA columns.
+    output_filename : str
+        The name of the output file for the new IFU driver template.
+    col_list : list of str, optional
+        A list containing all the columns which will be included in the new IFU
+        driver template.
+    rename_dict : dict, optional
+        A dictionary used to rename the columns. Its keys should be the name of
+        the columns in the input catalogue template, while its values should be
+        the new name which will be used in the output IFU driver template.
+    fix_str_format : bool, optional
+        Activate an option for fixing faulty TFORMs of the string columns in
+        the input catalogue template. If True, TFORMs will be fixed using the
+        values available for TDISP in these columns.
+    overwrite : bool, optional
+        Overwrite the output FITS file containing the IFU driver template.
+    """
 
     # Lists with the type of keywords that will be copied from the catalogue
     # template
@@ -206,8 +230,26 @@ def create_ifu_driver_template(catalogue_template, output_filename,
 
 if __name__ == '__main__':
 
-    catalogue_template = './Master_CatalogueTemplate.fits'
-    ifu_driver_template = './aux/ifu_driver_template.fits'
+    parser = argparse.ArgumentParser(
+        description='Create a template for the input IFU driver catalogues')
 
-    create_ifu_driver_template(catalogue_template, ifu_driver_template)
+    parser.add_argument('--in', dest='catalogue_template',
+                        default='Master_CatalogueTemplate.fits',
+                        help="""name of catalogue template containing the SPA
+                        columns""")
+
+    parser.add_argument('--out', dest='ifu_driver_template',
+                        default='aux/ifu_driver_template.fits',
+                        help="""name for the output file which will contain the
+                        new template for the IFU driver catalogues.""")
+
+    parser.add_argument('--overwrite', dest='overwrite',
+                        action='store_true',
+                        help='overwrite the output file')
+
+    args = parser.parse_args()
+
+    create_ifu_driver_template(args.catalogue_template,
+                               args.ifu_driver_template,
+                               overwrite=args.overwrite)
 
