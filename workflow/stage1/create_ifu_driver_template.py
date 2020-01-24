@@ -76,6 +76,29 @@ def create_ifu_driver_template(catalogue_template, output_filename,
                                          'GAIA_PARAL', 'IFU_PA', 'IFU_DITHER'],
                                rename_dict={'IFU_PA': 'IFU_PA_REQUEST'},
                                fix_str_format=False, overwrite=False):
+    """
+    Create a template for the input IFU driver catalogues.
+
+    Parameters
+    ----------
+    catalogue_template : str
+        Any catalogue template containing the SPA columns.
+    output_filename : str
+        The name of the output file for the new IFU driver template.
+    col_list : list of str, optional
+        A list containing all the columns which will be included in the new IFU
+        driver template.
+    rename_dict : dict, optional
+        A dictionary used to rename the columns. Its keys should be the name of
+        the columns in the input catalogue template, while its values should be
+        the new name which will be used in the output IFU driver template.
+    fix_str_format : bool, optional
+        Activate an option for fixing faulty TFORMs of the string columns in
+        the input catalogue template. If True, TFORMs will be fixed using the
+        values available for TDISP in these columns.
+    overwrite : bool, optional
+        Overwrite the output FITS file containing the IFU driver template.
+    """
 
     # Lists with the type of keywords that will be copied from the catalogue
     # template
