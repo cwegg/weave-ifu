@@ -18,6 +18,7 @@
 #
 
 
+import argparse
 import re
 import logging
 
@@ -229,8 +230,26 @@ def create_ifu_driver_template(catalogue_template, output_filename,
 
 if __name__ == '__main__':
 
-    catalogue_template = './Master_CatalogueTemplate.fits'
-    ifu_driver_template = './aux/ifu_driver_template.fits'
+    parser = argparse.ArgumentParser(
+        description='Create a template for the input IFU driver catalogues')
 
-    create_ifu_driver_template(catalogue_template, ifu_driver_template)
+    parser.add_argument('--in', dest='catalogue_template',
+                        default='Master_CatalogueTemplate.fits',
+                        help="""name of catalogue template containing the SPA
+                        columns""")
+
+    parser.add_argument('--out', dest='ifu_driver_template',
+                        default='aux/ifu_driver_template.fits',
+                        help="""name for the output file which will contain the
+                        new template for the IFU driver catalogues.""")
+
+    parser.add_argument('--overwrite', dest='overwrite',
+                        action='store_true',
+                        help='overwrite the output file')
+
+    args = parser.parse_args()
+
+    create_ifu_driver_template(args.catalogue_template,
+                               args.ifu_driver_template,
+                               overwrite=args.overwrite)
 
