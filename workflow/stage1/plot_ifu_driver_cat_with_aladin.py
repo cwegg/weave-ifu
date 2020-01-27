@@ -66,17 +66,17 @@ def _get_obsmode_from_progtemp(progtemp):
     return result
 
 
-def plot_ifu_driver_cat_with_aladin(filename, output_dir='output/',
+def plot_ifu_driver_cat_with_aladin(cat_filename, output_dir='output/',
                                     aladin_jar='Aladin.jar'):
 
     logging.info(
         """
-        This plotting tool need time. If you want to monitor its progress, see
+        This plotting tool needs time. If you want to monitor its progress, see
         the directory which will contain its ouput images.
         """)
 
-    aladin_starting_cmd = 'aladin'.format(aladin_jar)
-    aladin_starting_cmd = 'java -jar {}'.format(aladin_jar)
+    # Open Aladin
+    
     aladin_starting_cmd = 'java -jar {} -nogui'.format(aladin_jar)
 
     logging.debug('Popen({})'.format(aladin_starting_cmd))
@@ -84,26 +84,32 @@ def plot_ifu_driver_cat_with_aladin(filename, output_dir='output/',
                          stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
 
+    # Set the grid one
+
     _send_command('grid on', p)
 
-    # _send_command('load {}'.format(filename), p)
-    
-    with fits.open(filename) as hdu_list:
+    # # Load the catalogue
 
-        # Get the data
+    # _send_command('load {}'.format(cat_filename), p)
+
+    # Open the catalogue
+
+    with fits.open(cat_filename) as hdu_list:
+
+        # Get the data from the catalogue
 
         data = hdu_list[1].data
 
-        # Set the format string for the numbers of the images
+        # Set the format string to build the numbers of the images
         
         num_digits = len(str(len(data)))
         num_digits_fmt = '{:0' + str(num_digits) + '}'
 
-        # For each row of the data
+        # For each target in the catalogue
 
         for i in range(len(data)):
 
-            # Get the needed information
+            # Get the needed information of the target
 
             ra = data['GAIA_RA'][i]
             dec = data['GAIA_DEC'][i]
@@ -111,15 +117,19 @@ def plot_ifu_driver_cat_with_aladin(filename, output_dir='output/',
             targname = data['TARGNAME'][i]
             targid = data['TARGID'][i]
 
-            # Set a filename
+            # Set a filename for the output image
 
-            img_filename = (output_dir + num_digits_fmt.format(i + 1) +
-                            '-' + targname + '-' + targid + '.png')
+            cat_basename_wo_ext = os.path.splitext(
+                                      os.path.basename(cat_filename))[0]
+
+            img_filename = (output_dir + cat_basename_wo_ext + '-' +
+                            num_digits_fmt.format(i + 1) + '-' +
+                            targname + '-' + targid + '.png')
 
             # Create a the string with the coordinates which will be used in the
             # Aladin commands
 
-            coord_str = '{} {}'.format(ra, dec)
+            coord_str = '{:.10f} {:.10f}'.format(ra, dec)
 
             # Guess the obsmode and set some parameters acording to it
 
@@ -133,8 +143,8 @@ def plot_ifu_driver_cat_with_aladin(filename, output_dir='output/',
                 get_radius_str = '2arcmin'
             else:
                 logging.warning(
-                    'Skipping plotting of row {} of {}'.format(
-                        i + 1, filename))
+                    'Skipping plotting of target {} of {}'.format(
+                        i + 1, cat_filename))
 
                 continue
 
@@ -145,45 +155,36 @@ def plot_ifu_driver_cat_with_aladin(filename, output_dir='output/',
             # Reset and load the catalogue
 
             cmd_list.append('reset')
-            # cmd_list.append('grid on')
-            cmd_list.append('load {}'.format(os.path.abspath(filename)))
+            cmd_list.append('load {}'.format(os.path.abspath(cat_filename)))
 
             # Set the coordinates and the desired zoom
 
             cmd_list.append(coord_str)
-
             cmd_list.append('zoom {}'.format(zoom_size_str))
 
             # Get the image
 
-            # cmd_list.append('get aladin {}'.format(coord_str))
+            cmd_list.append('get aladin {}'.format(coord_str))
             # cmd_list.append('get aladin {} {}'.format(coord_str,
             #                                           get_radius_str))
-            cmd_list.append('get ESO(DSS2/color) {} {}'.format(coord_str,
-                                                         get_radius_str))
+            # cmd_list.append('get ESO(DSS2/color) {} {}'.format(coord_str,
+            #                                              get_radius_str))
             # cmd_list.append('get hips(CDS/P/DSS2/color)'.format(coord_str,
             #                                           get_radius_str))
 
-            # Draw some circles to show the field of view of the instrument
+            # Draw some circles to show the field of view of the instrument:
+            # - For LIFU, draw circles to show the central bundle and the sky
+            #   bundles.
+            # - For mIFU, draw a circle for each bundle
 
             if obsmode == 'LIFU':
-
-                # Draw a circle for the inner LIFU bundle
-
                 cmd_list.append('draw yellow circle({} 1.51arcmin)'.format(
                     coord_str))
-
-                # Draw two circles for the sky LIFU bundles
-
                 cmd_list.append('draw green circle({} 8.6arcmin)'.format(
                     coord_str))
                 cmd_list.append('draw green circle({} 8.28arcmin)'.format(
                     coord_str))
-
-            if obsmode == 'mIFU':
-
-                # Draw a circle for a mIFU bundle
-
+            elif obsmode == 'mIFU':
                 cmd_list.append('draw red circle({} 8.7arcsec)'.format(
                     coord_str))
 
@@ -195,8 +196,9 @@ def plot_ifu_driver_cat_with_aladin(filename, output_dir='output/',
 
             cmd_list.append('save {}'.format(os.path.abspath(img_filename)))
 
-            cmd = '; '.join(cmd_list)
+            # Join the commands for this target and send them to Aladin
 
+            cmd = '; '.join(cmd_list)
             _send_command(cmd, p)
 
         # Ask Aladin to quit and wait
@@ -206,9 +208,7 @@ def plot_ifu_driver_cat_with_aladin(filename, output_dir='output/',
 
 if __name__ == '__main__':
 
-    # logging.basicConfig(level=logging.DEBUG)
-
-    filename = 'output/WC_IFU.fits'
+    cat_filename = 'output/WC_IFU.fits'
     
     output_dir = 'output/'
 
@@ -223,6 +223,6 @@ if __name__ == '__main__':
     if not os.path.exists(aladin_jar_path):
         _get_aladin_jar(aladin_jar_path=aladin_jar_path)
     
-    plot_ifu_driver_cat_with_aladin(filename, output_dir=output_dir,
+    plot_ifu_driver_cat_with_aladin(cat_filename, output_dir=output_dir,
                                     aladin_jar=aladin_jar_path)
 
