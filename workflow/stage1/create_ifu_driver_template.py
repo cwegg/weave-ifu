@@ -234,7 +234,7 @@ if __name__ == '__main__':
         description='Create a template for the input IFU driver catalogues')
 
     parser.add_argument('--in', dest='catalogue_template',
-                        default='Master_CatalogueTemplate.fits',
+                        default='aux/Master_CatalogueTemplate.fits',
                         help="""name of catalogue template containing the SPA
                         columns""")
 

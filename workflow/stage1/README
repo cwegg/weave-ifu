@@ -36,9 +36,8 @@ Software
 
 * *plot_ifu_driver_cat_with_aladin.py*:
 
-  A script for plotting the contents of a *input IFU driver catalogue* with
+  A script for plotting the contents of an *input IFU driver catalogue* with
   Aladin.
-  **To be developed.**
 
 
 Extra software
