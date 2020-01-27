@@ -18,6 +18,7 @@
 #
 
 
+import argparse
 import os.path
 import logging
 import urllib.request
@@ -68,12 +69,22 @@ def _get_obsmode_from_progtemp(progtemp):
 
 def plot_ifu_driver_cat_with_aladin(cat_filename, output_dir='output/',
                                     aladin_jar='Aladin.jar'):
+    """
+    Plot targets contained in an IFU driver catalogue with Aladin.
+
+    Parameters
+    ----------
+    cat_filename : str
+        A FITS file with an IFU driver catalogue.
+    output_dir : str, optional
+        The directory which will contain the plots generated with Aladin.
+    aladin_jar : str, optional
+        The location of the Java JAR file of Aladin.
+    """
 
     logging.info(
-        """
-        This plotting tool needs time. If you want to monitor its progress, see
-        the directory which will contain its ouput images.
-        """)
+        'This plotting tool needs time. If you want to monitor its progress, '
+        'see the directory which will contain its ouput images.')
 
     # Open Aladin
     
@@ -157,20 +168,14 @@ def plot_ifu_driver_cat_with_aladin(cat_filename, output_dir='output/',
             cmd_list.append('reset')
             cmd_list.append('load {}'.format(os.path.abspath(cat_filename)))
 
-            # Set the coordinates and the desired zoom
+            # Set the coordinates
 
             cmd_list.append(coord_str)
-            cmd_list.append('zoom {}'.format(zoom_size_str))
 
             # Get the image
 
-            cmd_list.append('get aladin {}'.format(coord_str))
-            # cmd_list.append('get aladin {} {}'.format(coord_str,
-            #                                           get_radius_str))
-            # cmd_list.append('get ESO(DSS2/color) {} {}'.format(coord_str,
-            #                                              get_radius_str))
-            # cmd_list.append('get hips(CDS/P/DSS2/color)'.format(coord_str,
-            #                                           get_radius_str))
+            cmd_list.append('get aladin {} {}'.format(coord_str,
+                                                      get_radius_str))
 
             # Draw some circles to show the field of view of the instrument:
             # - For LIFU, draw circles to show the central bundle and the sky
@@ -208,21 +213,38 @@ def plot_ifu_driver_cat_with_aladin(cat_filename, output_dir='output/',
 
 if __name__ == '__main__':
 
-    cat_filename = 'output/WC_IFU.fits'
+    parser = argparse.ArgumentParser(description=
+        """
+        Plot targets contained in an IFU driver catalogue with Aladin.
+        """)
+
+    parser.add_argument('catalogue',
+                        help='A FITS file with an IFU driver catalogue')
+
+    parser.add_argument('--dir', default='output/', help=
+                        """
+                        The directory which will contain the plots generated
+                        with Aladin
+                        """)
+
+    parser.add_argument('--aladin', default='aux/Aladin.jar',
+                        help='The location of the Java JAR file of Aladin')
+
+    parser.add_argument('--log_level', default='info',
+                        choices=['debug', 'info', 'warning', 'error'],
+                        help='The level for the logging messages')
+
+    args = parser.parse_args()
     
-    output_dir = 'output/'
-
-    aladin_jar_dir = 'aux/'
-    aladin_jar_filename = 'Aladin.jar'
-
-    if aladin_jar_dir[-1] != os.path.sep:
-        aladin_jar_dir = aladin_jar_dir + os.path.sep
-
-    aladin_jar_path = aladin_jar_dir + aladin_jar_filename
-
-    if not os.path.exists(aladin_jar_path):
-        _get_aladin_jar(aladin_jar_path=aladin_jar_path)
+    level_dict = {'debug': logging.DEBUG, 'info': logging.INFO,
+                  'warning': logging.WARNING, 'error': logging.ERROR}
     
-    plot_ifu_driver_cat_with_aladin(cat_filename, output_dir=output_dir,
-                                    aladin_jar=aladin_jar_path)
+    logging.basicConfig(level=level_dict[args.log_level])
+
+    if not os.path.exists(args.aladin):
+        logging.info('Downloading the the Java JAR file of Aladin')
+        _get_aladin_jar(aladin_jar_path=args.aladin)
+    
+    plot_ifu_driver_cat_with_aladin(args.catalogue, output_dir=args.dir,
+                                    aladin_jar=args.aladin)
 
