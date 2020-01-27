@@ -18,57 +18,90 @@
 #
 
 
+import os.path
+import logging
+import urllib.request
 import subprocess
 
 from astropy.io import fits
 
 
-def plot_ifu_driver_cat_with_aladin(filename, output_dir='./img/',
-                                    aladin_jar='/usr/local/aladin/Aladin.jar'):
-    
-#    p = subprocess.Popen(['aladin'.format(aladin_jar)], shell=True,
-#                         stdin=subprocess.PIPE)
-#    p = subprocess.Popen(['java -jar {}'.format(aladin_jar)], shell=True,
-#                         stdin=subprocess.PIPE)
-# p = subprocess.Popen(['java -jar {} -nogui'.format(aladin_jar)], shell=True,
+def get_aladin_jar(aladin_jar_path='Aladin.jar',
+                   aladin_jar_url='https://aladin.u-strasbg.fr/java/Aladin.jar'):
 
-#    p.wait()
-    print('grid on\n')
-#    p.stdin.write('grid on\n')
-    print('load {}\n'.format(filename))
-#    p.stdin.write('load {}\n'.format(filename))
+    urllib.request.urlretrieve(aladin_jar_url, aladin_jar_path)
+
+    return aladin_jar_path
+
+
+def _write_command(cmd, p):
+
+    cmd = cmd + '\n'
+
+    logging.debug('p.stdin.write({})'.format(cmd))
+
+    p.stdin.write(cmd.encode())
+
+
+def plot_ifu_driver_cat_with_aladin(filename, output_dir='img/',
+                                    aladin_jar='Aladin.jar'):
+
+    aladin_starting_cmd = ['aladin'.format(aladin_jar)]
+    aladin_starting_cmd = ['java -jar {}'.format(aladin_jar)]
+    aladin_starting_cmd = ['java -jar {} -nogui'.format(aladin_jar)]
+
+    logging.debug(aladin_starting_cmd)
+    p = subprocess.Popen(aladin_starting_cmd, shell=True, stdin=subprocess.PIPE)
+
+    # p.wait()
+
+    _write_command('grid on', p)
+
+    _write_command('load {}'.format(filename), p)
     
     with fits.open(filename) as hdu_list:
     
         data = hdu_list[1].data
 
         for i in range(len(data)):
-    #        p.stdin.write('reset\n')
+
+            img_filename = output_dir + '{}.png'.format(i + 1)
+
             ra = data['GAIA_RA'][i]
             dec = data['GAIA_DEC'][i]
-            
-            img_filename = output_dir + '{}.png'.format(i + 1)
-            
-            print('get aladin {} {}\n'.format(ra, dec))
-#            p.stdin.write('get aladin {} {}\n'.format(ra, dec))
-            print('zoom 10arcmin\n')
-#            p.stdin.write('zoom 10arcmin\n')
-            print('save {}\n'.format(img_filename))
-#            p.stdin.write('save {}\n'.format(img_filename))
 
-#        p.stdin.write('quit\n')
+            # _write_command('reset', p)
+            # _write_command('grid on', p)
+            # _write_command('load {}'.format(filename), p)
+            
+            _write_command('get aladin {} {}'.format(ra, dec), p)
+            _write_command('zoom 10arcmin', p)
+            _write_command('save {}'.format(img_filename), p)
 
-#    p.wait()
+            break
+
+        _write_command('quit', p)
+
+    p.wait()
 
 
 if __name__ == '__main__':
 
     filename = './output/WC_IFU.fits'
     
-    output_dir = './img/'
-    
-    aladin_jar='/usr/local/aladin/Aladin.jar'
+    output_dir = 'img/'
+
+    aladin_jar_dir = 'aux/'
+    aladin_jar_filename = 'Aladin.jar'
+
+    if aladin_jar_dir[-1] != os.path.sep:
+        aladin_jar_dir = aladin_jar_dir + os.path.sep
+
+    aladin_jar_path = aladin_jar_dir + aladin_jar_filename
+
+    if not os.path.exists(aladin_jar_path):
+        get_aladin_jar(aladin_jar_path=aladin_jar_path)
     
     plot_ifu_driver_cat_with_aladin(filename, output_dir=output_dir,
-                                    aladin_jar=aladin_jar)
+                                    aladin_jar=aladin_jar_path)
 
