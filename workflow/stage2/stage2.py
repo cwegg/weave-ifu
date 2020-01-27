@@ -142,24 +142,6 @@ class ifu:
         self.xml_out = output
         self.xml_template = 'BlankXMLTemplate.xml'
 
-        # ifu_lookup = './LIFUfibreTable.dat'
-        # file = open(ifu_lookup,'r')
-        # ifu_tab = file.readlines()
-        # file.close()
-        # self.spax_ids = [i.split()[2] for i in ifu_tab]
-        # self.spax_lookup = {}
-        # for line in ifu_tab:
-        #     x = float(line.split()[0])
-        #     y = float(line.split()[1])
-        #     id = line.split()[2]
-        #     fibreid = line.split()[4]
-        #     self.spax_lookup[id] = {'x':x,'y':y,'fibreid':fibreid}
-
-
-        # if len(self.spax_ids) != len(unique(self.spax_ids)):
-        #     raise SystemExit('List of spaxel ids not unique')
-
-        # self.cspax_id = 'C14'
         return
 
     def row_validator(self,row):
@@ -520,14 +502,19 @@ class ifu:
         for i in xrange(len(rows)):
             row = rows[i]
             target = this_xml.base_target.cloneNode(True)
+
+            # remove things we shouldn't have as the xml gets passed into Configure
+            to_remove = ['configid','fibreid']
+            for rem in to_remove:
+                target.removeAttribute(rem)
+
             _row = {}
             for col in col_names:
                 _row[col] = row[col]
                 if (str(row[col]) == 'nan') and numpy.isnan(row[col]):
                     _row[col] = ""
             row = _row
-            
-            print 'What about fibreid ifu_spaxel??' 
+             
             target.setAttribute('targra',value=str(row['GAIA_RA']))
             target.setAttribute('targdec',value=str(row['GAIA_DEC']))
             target.setAttribute('targpmra',value=str(row['GAIA_PMRA']))
