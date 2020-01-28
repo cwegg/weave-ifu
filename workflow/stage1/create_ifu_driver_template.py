@@ -19,10 +19,19 @@
 
 
 import argparse
-import re
 import logging
+import os.path
+import re
+import urllib.request
 
 from astropy.io import fits
+
+
+def _get_master_cat(file_path='Master_CatalogueTemplate.fits',
+                    url=('http://casu.ast.cam.ac.uk/weave/data_model/' +
+                         'Master_CatalogueTemplate.fits')):
+
+    urllib.request.urlretrieve(url, file_path)
 
 
 def _get_format_from_disp(col_disp):
@@ -247,7 +256,20 @@ if __name__ == '__main__':
                         action='store_true',
                         help='overwrite the output file')
 
+    parser.add_argument('--log_level', default='info',
+                        choices=['debug', 'info', 'warning', 'error'],
+                        help='The level for the logging messages')
+
     args = parser.parse_args()
+    
+    level_dict = {'debug': logging.DEBUG, 'info': logging.INFO,
+                  'warning': logging.WARNING, 'error': logging.ERROR}
+    
+    logging.basicConfig(level=level_dict[args.log_level])
+
+    if not os.path.exists(args.catalogue_template):
+        logging.info('Downloading the master catalogue template')
+        _get_master_cat(file_path=args.catalogue_template)
 
     create_ifu_driver_template(args.catalogue_template,
                                args.ifu_driver_template,
