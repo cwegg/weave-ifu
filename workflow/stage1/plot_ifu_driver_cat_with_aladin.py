@@ -242,7 +242,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=level_dict[args.log_level])
 
     if not os.path.exists(args.aladin):
-        logging.info('Downloading the the Java JAR file of Aladin')
+        logging.info('Downloading the Java JAR file of Aladin')
         _get_aladin_jar(aladin_jar_path=args.aladin)
     
     plot_ifu_driver_cat_with_aladin(args.catalogue, output_dir=args.dir,
