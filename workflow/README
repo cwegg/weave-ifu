@@ -61,6 +61,8 @@ details as interpreted from the PROGTEMP and OBSTEMP codes.
 Stage 3
 -------
 
+**Contributors:** David Murphy
+
 Each XML file is further developed by injecting the non-science target
 information. This includes addition of the guidestar(s) for the LIFU
 (mIFU) as well as calibration target options (more than one, to allow
