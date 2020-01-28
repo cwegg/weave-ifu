@@ -260,6 +260,7 @@
 
 	<!-- At least 18 science targets -->
 
+
 	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-5.3525" targepoch="2015.5" targid="PGC_91697" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.9558" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
 	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
 	</target>

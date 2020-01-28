@@ -36,9 +36,14 @@ Software
 
 * *check_ifu_driver_cat.py*:
 
-  A script for making some verifications on the contents of a *input IFU driver
+  A script for making some verifications on the contents of an *input IFU driver
   catalogue*.
   **To be developed.**
+
+* *plot_ifu_driver_cat_with_aladin.py*:
+
+  A script for plotting the contents of an *input IFU driver catalogue* with
+  Aladin.
 
 
 Extra software
