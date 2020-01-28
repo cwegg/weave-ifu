@@ -196,7 +196,7 @@ if __name__ == '__main__':
     ifu_driver_template = './aux/ifu_driver_template.fits'
     
     output_dir = './output/'
-    output_filename = output_dir + 'WC_IFU.fits'
+    output_filename = output_dir + 'WC_2020B2-ifu_driver_cat.fits'
     
     ############################################################################
     # Create the output directory if it does not exist
