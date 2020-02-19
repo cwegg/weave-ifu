@@ -23,7 +23,7 @@ import glob
 
 import numpy as np
 
-from populate_fits_table_template import populate_fits_table_template
+from workflow.utils import populate_fits_table_template
 
 
 def get_data_dict():

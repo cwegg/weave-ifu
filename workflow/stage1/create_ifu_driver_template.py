@@ -28,7 +28,7 @@ from astropy.io import fits
 
 
 def _get_master_cat(file_path='Master_CatalogueTemplate.fits',
-                    url=('http://casu.ast.cam.ac.uk/weave/data_model/' +
+                    url=('http://casu.ast.cam.ac.uk/weave/data_model/cats/' +
                          'Master_CatalogueTemplate.fits')):
 
     urllib.request.urlretrieve(url, file_path)
