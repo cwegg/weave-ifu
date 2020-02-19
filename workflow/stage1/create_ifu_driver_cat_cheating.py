@@ -45,9 +45,9 @@ if __name__ == '__main__':
     
     ############################################################################
     # Get the dictionary with the data which will populate the template from the
-    # stage-5 XMLs
+    # stage-4 XMLs
     
-    xml_filename_list = glob.glob('../stage5/input/*.xml')
+    xml_filename_list = glob.glob('../stage4/input/*.xml')
     xml_filename_list.sort()
     
     data_dict = get_spa_data_of_targets_from_xmls(xml_filename_list)
