@@ -19,6 +19,7 @@
 
 
 import argparse
+from datetime import date
 import logging
 import os.path
 import re
@@ -28,20 +29,10 @@ from astropy.io import fits
 
 
 def _get_master_cat(file_path='Master_CatalogueTemplate.fits',
-                    url=('http://casu.ast.cam.ac.uk/weave/data_model/cats/' +
+                    url=('http://casu.ast.cam.ac.uk/weave/data_model/' +
                          'Master_CatalogueTemplate.fits')):
 
     urllib.request.urlretrieve(url, file_path)
-
-
-def _get_format_from_disp(col_disp):
-
-    assert re.match('A[0-9]*', col_disp)
-
-    number = col_disp[1:]
-    col_format = number + 'A'
-
-    return col_format
 
 
 def _try_to_copy_comment(kwd_type, hdu, i, template_hdu, j):
@@ -77,37 +68,28 @@ def _try_to_copy_keyword(kwd_type, hdu, i, template_hdu, j):
         hdu.header.comments[kwd_i] = template_hdu.header.comments[kwd_j]
         
     
-def create_ifu_driver_template(catalogue_template, output_filename,
-                               col_list=['TARGSRVY', 'TARGPROG',
-                                         'TARGID', 'TARGNAME', 'TARGPRIO',
-                                         'PROGTEMP', 'OBSTEMP',
-                                         'GAIA_RA', 'GAIA_DEC', 'GAIA_EPOCH',
-                                         'GAIA_PMRA', 'GAIA_PMDEC',
-                                         'GAIA_PARAL', 'IFU_PA', 'IFU_DITHER'],
-                               rename_dict={'IFU_PA': 'IFU_PA_REQUEST'},
-                               fix_str_format=False, overwrite=False):
+def create_pi_template(catalogue_template, output_filename, col_list,
+                       extname='CATALOGUE BINARY TABLE', primary_kwds={},
+                       overwrite=False):
     """
     Create a template for the input IFU driver catalogues.
 
     Parameters
     ----------
     catalogue_template : str
-        Any catalogue template containing the SPA columns.
+        The name of the master catalogue template.
     output_filename : str
-        The name of the output file for the new IFU driver template.
-    col_list : list of str, optional
-        A list containing all the columns which will be included in the new IFU
-        driver template.
-    rename_dict : dict, optional
-        A dictionary used to rename the columns. Its keys should be the name of
-        the columns in the input catalogue template, while its values should be
-        the new name which will be used in the output IFU driver template.
-    fix_str_format : bool, optional
-        Activate an option for fixing faulty TFORMs of the string columns in
-        the input catalogue template. If True, TFORMs will be fixed using the
-        values available for TDISP in these columns.
+        The name of the output file for the new PI template.
+    col_list : list of str
+        A list containing all the columns which will be included in the new PI
+        template.
+    extname : str, optional
+        Name to be used in the table extension.
+    primary_kwds: dict, optional
+        A dictionary with the keywords and their values which should be added or
+        updated in the primary header.
     overwrite : bool, optional
-        Overwrite the output FITS file containing the IFU driver template.
+        Overwrite the output FITS file containing the PI template.
     """
 
     # Lists with the type of keywords that will be copied from the catalogue
@@ -151,26 +133,11 @@ def create_ifu_driver_template(catalogue_template, output_filename,
 
             # Get the properties of the column
 
-            if col.name in rename_dict.keys():
-                col_name = rename_dict[col.name]
-            else:
-                col_name = col.name
-
+            col_name = col.name
             col_format = col.format
-
             col_disp = col.disp
             col_unit = col.unit
             col_null = col.null
-
-            # Fix the format of the string columns if requested
-
-            if ('A' in col_format) and (fix_str_format is True):
-                col_format = _get_format_from_disp(col_disp)
-
-                if col_format != col.format:
-                    logging.warning(
-                        'format of column {} updated from {} to {}'.format(
-                            col_name, col.format, col_format))
 
             # Create the column and add it to the column list
 
@@ -207,26 +174,25 @@ def create_ifu_driver_template(catalogue_template, output_filename,
     
     # Give a name to the HDU
 
-    hdu.name = 'INPUT IFU DRIVER CATALOGUE'
+    hdu.name = extname
     
-    # Create the primary extension to contain some attributes of the XMLs
+    # Create the primary header copying its keywords from the template
     
     primary_hdr = fits.Header()
     
-    # Add a keyword with the WEAVE data model version to the primary header
+    basic_kwd_list =['SIMPLE', 'BITPIX', 'NAXIS', 'EXTEND', 'COMMENT']
     
-    primary_hdr['DATAMVER'] = template_primary_hdr['DATAMVER']
-    primary_hdr.comments['DATAMVER'] = template_primary_hdr.comments['DATAMVER']
+    for kwd in template_primary_hdr.keys():
+        if kwd not in basic_kwd_list:
+            primary_hdr[kwd] = template_primary_hdr[kwd]
+            primary_hdr.comments[kwd] = template_primary_hdr.comments[kwd]
     
-    # Add some attributes of the XMLs to the primary header
+    # Add/Overwrite the requested keywords
     
-    primary_hdr['VERBOSE'] = 1
-    primary_hdr.comments['VERBOSE'] = \
-       'Attribute "report_verbosity" of the XML files'
-    
-    primary_hdr['AUTHOR'] = ''
-    
-    primary_hdr['CCREPORT'] = ''
+    for kwd in primary_kwds.keys():
+        primary_hdr[kwd] = template_primary_hdr[kwd]
+
+    # Create the primary HDU
     
     primary_hdu = fits.PrimaryHDU(header=primary_hdr)
     
@@ -240,17 +206,30 @@ def create_ifu_driver_template(catalogue_template, output_filename,
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        description='Create a template for the input IFU driver catalogues')
+        description='Create a template for a PI proposal')
 
     parser.add_argument('--in', dest='catalogue_template',
-                        default='aux/Master_CatalogueTemplate.fits',
-                        help="""name of catalogue template containing the SPA
-                        columns""")
+                        default='Master_CatalogueTemplate.fits',
+                        help='name of the master catalogue template')
 
-    parser.add_argument('--out', dest='ifu_driver_template',
-                        default='aux/ifu_driver_template.fits',
-                        help="""name for the output file which will contain the
-                        new template for the IFU driver catalogues""")
+    parser.add_argument('--out', dest='pi_template',
+                        default='pi_template.fits',
+                        help='name for the output PI template')
+
+    parser.add_argument('--cols', dest='cols_str',
+                        default=('TARGSRVY,TARGPROG,TARGID,TARGNAME,TARGPRIO,' +
+                                 'PROGTEMP,OBSTEMP,GAIA_RA,GAIA_DEC,' +
+                                 'GAIA_EPOCH,GAIA_PMRA,GAIA_PMDEC,GAIA_PARAL,' +
+                                 'IFU_PA,IFU_DITHER'),
+                        help='name of the columns to be inclueded in the table')
+
+    parser.add_argument('--extname', dest='extname',
+                        default='CATALOGUE BINARY TABLE',
+                        help='name to be used in the table extension')
+
+    parser.add_argument('--keep_date', dest='keep_date',
+                        action='store_true',
+                        help='keep the date keyword from the master template')
 
     parser.add_argument('--overwrite', dest='overwrite',
                         action='store_true',
@@ -271,7 +250,14 @@ if __name__ == '__main__':
         logging.info('Downloading the master catalogue template')
         _get_master_cat(file_path=args.catalogue_template)
 
-    create_ifu_driver_template(args.catalogue_template,
-                               args.ifu_driver_template,
-                               overwrite=args.overwrite)
+    col_list = args.cols_str.split(',')
+
+    if args.keep_date is True:
+        primary_kwds = {}
+    else:
+        primary_kwds = {'DATE': date.today().strftime('%Y-%m-%d')}
+
+    create_pi_template(args.catalogue_template, args.pi_template, col_list,
+                       extname=args.extname, primary_kwds=primary_kwds,
+                       overwrite=args.overwrite)
 

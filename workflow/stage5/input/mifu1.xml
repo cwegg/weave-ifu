@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8" ?>  
-
-<root author="jairomendezabreu@gmail.com" cc_report="daniela.bettoni@oapd.inaf.it,jalfonso@iac.es" report_verbosity="1" version="1.13">
-  <!--
+<?xml version='1.0' encoding='utf-8'?>
+<root version="1.13" report_verbosity="1" cc_report="daniela.bettoni@oapd.inaf.it,jalfonso@iac.es" author="jairomendezabreu@gmail.com">
+ <!--
       This file represents a blank XML template (version indicated in <root>) that is ready to be filled with:
 
       1. Instrument configuration information
@@ -15,9 +14,8 @@
       then outputs the correct PROGTEMP and OBSTEMP should be
       provided.
   -->
-  
-  <programme>
-    <!-- Historical note:
+ <programme>
+  <!-- Historical note:
 	 This component is the ProgrammeDefinition XML: it must inserted by the SWG at .fits -> .xml converter stage
 	 (prior to running configure).
 
@@ -35,10 +33,10 @@
 	 that targets with common PROGTEMP are observed in the same field.
 
     -->
-    <spectrograph>
-      <red_Arm VPH="VPH1" binning_X="1" binning_Y="4" resolution="low" speed="slow" />
-      <blue_Arm VPH="VPH1" binning_X="1" binning_Y="4" resolution="low" speed="slow" />
-      <!-- 
+  <spectrograph>
+   <red_Arm binning_X="1" binning_Y="4" VPH="VPH1" speed="slow" resolution="low"/>
+   <blue_Arm binning_X="1" binning_Y="4" VPH="VPH1" speed="slow" resolution="low"/>
+   <!-- 
 
          i(N)strument configuration: translated into "type", "VPH" etc, eg:                  [NORBI.X]
          =============================                                                        ^
@@ -76,10 +74,9 @@
         binning_Y: arm detector binning in spectral direction for the program. Possible values: "1","2","3","4" (pixels).    [defined by PROGTEMP]
         VPH: Arm Grating; Possible Values are "n/a", "vph1","vph2" and "vp33". ("vph3" only for Blue Arm)                    [defined by PROGTEMP]
       -->
-    </spectrograph>
-    <exposures>
-
-      <!-- The SWG should provide for a limited number of observing templates ("Exposures") here, with a fixed calibration recipe.
+  </spectrograph>
+  <exposures>
+   <!-- The SWG should provide for a limited number of observing templates ("Exposures") here, with a fixed calibration recipe.
 
            (O)B length specifier:                                                            [NORBI.X]
            ========================                                                            ^
@@ -126,18 +123,16 @@
            In the below example, we show a typical LR OpR2 OB equivalent to PROGTEMP = "11331":
 
       -->
-
-   <exposure arm="red" cal_lamp="1" cal_lamp_filter_A="1" cal_lamp_filter_B="1" exp_time="20" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="1" type="flat" />
-   <exposure arm="blue" cal_lamp="1" cal_lamp_filter_A="1" cal_lamp_filter_B="1" exp_time="20" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="1" type="flat" />
-   <exposure arm="red" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="2" type="arc" />
-   <exposure arm="blue" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="2" type="arc" />
-   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="3" type="science" />
-   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="4" type="science" />
-   <exposure arm="both" cal_lamp="0" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="5" type="science" />
-   <exposure arm="red" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="6" type="arc" />
-   <exposure arm="blue" cal_lamp="2" cal_lamp_filter_A="0" cal_lamp_filter_B="0" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="6" type="arc" />      
-
-      <!--
+   <exposure ff_ilu_3="0" cal_lamp_filter_B="1" ff_ilu_2="0" type="flat" cal_lamp="1" ff_ilu_1="0" order="1" arm="red" cal_lamp_filter_A="1" exp_time="20"/>
+   <exposure ff_ilu_3="0" cal_lamp_filter_B="1" ff_ilu_2="0" type="flat" cal_lamp="1" ff_ilu_1="0" order="1" arm="blue" cal_lamp_filter_A="1" exp_time="20"/>
+   <exposure ff_ilu_3="56" cal_lamp_filter_B="0" ff_ilu_2="34" type="arc" cal_lamp="2" ff_ilu_1="45" order="2" arm="red" cal_lamp_filter_A="0" exp_time="25"/>
+   <exposure ff_ilu_3="56" cal_lamp_filter_B="0" ff_ilu_2="34" type="arc" cal_lamp="2" ff_ilu_1="45" order="2" arm="blue" cal_lamp_filter_A="0" exp_time="25"/>
+   <exposure ff_ilu_3="0" cal_lamp_filter_B="0" ff_ilu_2="0" type="science" cal_lamp="0" ff_ilu_1="0" order="3" arm="both" cal_lamp_filter_A="0" exp_time="1020"/>
+   <exposure ff_ilu_3="0" cal_lamp_filter_B="0" ff_ilu_2="0" type="science" cal_lamp="0" ff_ilu_1="0" order="4" arm="both" cal_lamp_filter_A="0" exp_time="1020"/>
+   <exposure ff_ilu_3="0" cal_lamp_filter_B="0" ff_ilu_2="0" type="science" cal_lamp="0" ff_ilu_1="0" order="5" arm="both" cal_lamp_filter_A="0" exp_time="1020"/>
+   <exposure ff_ilu_3="56" cal_lamp_filter_B="0" ff_ilu_2="34" type="arc" cal_lamp="2" ff_ilu_1="45" order="6" arm="red" cal_lamp_filter_A="0" exp_time="25"/>
+   <exposure ff_ilu_3="56" cal_lamp_filter_B="0" ff_ilu_2="34" type="arc" cal_lamp="2" ff_ilu_1="45" order="6" arm="blue" cal_lamp_filter_A="0" exp_time="25"/>
+   <!--
 	What do these values specifically mean?  
 	exposures:defines the exposures of the OBs belonging to this Programme (all attributes mandatory)
         
@@ -152,9 +147,8 @@
         ff_ilu_2:Arm flat field illumination Led 2. Possible values:[0-100] where 0  corresponds to Off and 100 to the max intensity.            [fixed in template]
         ff_ilu_3:Arm flat field illumination Led 3. Possible values:[0-100] where 0  corresponds to Off and 100 to the max intensity.            [fixed in template]
       -->
-    </exposures> 
-
-      <!-- Some surveys have specific requirements for dithering, repeat exposures etc. These are encoded in the contextual OB operations:
+  </exposures>
+  <!-- Some surveys have specific requirements for dithering, repeat exposures etc. These are encoded in the contextual OB operations:
 
            X = Conte(X)tual OB actions                                            [NORBI.X]
            ===========================                                                   ^
@@ -169,24 +163,20 @@
 	   LOFAR             Any    Duplicate this OB the specified number of times (eg: 61331.7 = "duplicate this target configuration 7 times)
 
       -->
-
-  </programme>   
-
-  <observation name="125_psz1_A" progtemp="71334" ob_priority="1.0" coordinate_system="ICRS" obs_type="mIFU" trimester="2016B2" chained="False" obsgroup="%%%" obsgroup_validity="%%%" ob_class="science" pa="0.0" linkedgroup="%%%" casuid="-1" > <!-- [["name": identifier for this OB (OB-id?)]]-->
-
-    <configure config_file_version="%%%" configure_version="%%%" max_calibration="20" max_guide="8" max_sky="73" maximum_gate_angle="14.1" num_sky_fibres="740" plate="PLATE_B" plate_version="%%%" seed="%%%">
-    <conditions epoch="%%%" ha="%%%" pressure="%%%" relative_humidity="%%%" temperature="%%%" tlr="%%%" />
-    <hour_angle_limits earliest="%%%" latest="%%%" />
+ </programme>
+ <observation obs_type="mIFU" ob_class="science" trimester="2016B2" obsgroup="%%%" obsgroup_validity="%%%" coordinate_system="ICRS" ob_priority="1.0" chained="False" pa="0.0" progtemp="71334" linkedgroup="%%%" name="125_psz1_A" casuid="-1">
+  <!-- [["name": identifier for this OB (OB-id?)]]-->
+  <configure max_guide="8" seed="%%%" config_file_version="0.0002" plate="PLATE_B" max_sky="73" num_sky_fibres="740" plate_version="test_0009" max_calibration="20" configure_version="2.4.2" maximum_gate_angle="14.1">
+   <conditions temperature="283" tlr="0.0065" relative_humidity="0.2" ha="0.01543142591439456" epoch="0.0003219202260424936" pressure="0"/>
+   <hour_angle_limits earliest="0.01543142591439456" latest="0.01543142591439456"/>
   </configure>
-    <surveys>
-      <survey max_fibres="740" name="WC" priority="1.0" />
-      <!-- Set the per-field survey priorities based on the master fibre distribution policy
+  <surveys>
+   <survey max_fibres="740" priority="1.0" name="WC"/>
+   <!-- Set the per-field survey priorities based on the master fibre distribution policy
 	   max_fibres - should this be ignored / removed?
       -->
-
-    </surveys>
-
-    <!-- The "obsconstraints" component must also inserted by the SWG at .fits -> .xml converter stage
+  </surveys>
+  <!-- The "obsconstraints" component must also inserted by the SWG at .fits -> .xml converter stage
 	 (prior to running configure). Each target has an OBSTEMP value, which defines:
 
          OBSTEMP = "STAMB"
@@ -209,127 +199,646 @@
          M = "A" -> moondist_min="120"
 	 B = "A" -> skybright_max="21.9"
 
-    --> 
-    <obsconstraints elevation_min="33.75" moondist_min="0" obstemp="IAEEB" seeing_max="1.5" skybright_max="21.5" transparency_min="0.8" />
-    <dithering apply_dither="3"/>
-    <offsets offset_step_dec="%%%" offset_step_ra="%%%" />
-    <!--
+    -->
+  <obsconstraints elevation_min="33.75" obstemp="IAEEB" moondist_min="0" transparency_min="0.8" seeing_max="1.5" skybright_max="21.5"/>
+  <dithering apply_dither="3"/>
+  <!--
 
     Example targets below taken from ICD-025 (Configure XML definition), including a few corrections to XML.
     
-    --> 
-    <fields>
-      <field Dec_d="-4.71060356792" RA_d="316.369609537" order="3">
-
-	<!-- The guide stars -->
-	<target cname="WVE_21091716-0457340" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.9594426" targepoch="2015.5" targid="6912080947526457344" targname="guide_12278_490" targparal="0.758" targpmdec="-5.484" targpmra="-0.937" targprio="10.0" targprog="" targra="317.3215207" targsrvy="GUIDES" targuse="G" targx="-16.9440187014" targy="4.42933477102">
-	  <photometry emag_bp="0.01" emag_g="" emag_gg="0.001" emag_i="" emag_r="" emag_rp="0.007" mag_bp="15.703" mag_g="" mag_gg="15.297" mag_i="" mag_r="" mag_rp="14.709"/>
-	</target>
-	<target cname="WVE_21092791-0438500" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.6472301" targepoch="2015.5" targid="6912106721625236480" targname="guide_12278_492" targparal="1.105" targpmdec="-1.862" targpmra="3.12" targprio="10.0" targprog="" targra="317.366274" targsrvy="GUIDES" targuse="G" targx="-17.7406274414" targy="-1.12804772898">
-	  <photometry emag_bp="0.005" emag_g="" emag_gg="0.001" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.863" mag_g="" mag_gg="15.382" mag_i="" mag_r="" mag_rp="14.708"/>
-	</target>
-	<target cname="WVE_21084167-0411470" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.1964009" targepoch="2015.5" targid="6912556078283760768" targname="guide_12279_59" targparal="0.855" targpmdec="-4.381" targpmra="-1.291" targprio="10.0" targprog="" targra="317.173615" targsrvy="GUIDES" targuse="G" targx="-14.3112972414" targy="-9.15280748898">
-	  <photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.648" mag_g="" mag_gg="15.243" mag_i="" mag_r="" mag_rp="14.684"/>
-	</target>
-	<target cname="WVE_21035464-0535555" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.5987396" targepoch="2015.5" targid="6911971344256088576" targname="guide_12278_146" targparal="0.721" targpmdec="-3.565" targpmra="2.268" targprio="10.0" targprog="" targra="315.9776672" targsrvy="GUIDES" targuse="G" targx="6.9765735986" targy="15.808821371">
-	  <photometry emag_bp="0.003" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.333" mag_g="" mag_gg="15.051" mag_i="" mag_r="" mag_rp="14.603"/>
-	</target>
-	<target cname="WVE_21020650-0415151" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.2541811" targepoch="2015.5" targid="6915322861856359936" targname="guide_12284_487" targparal="0.833" targpmdec="-1.941" targpmra="-0.604" targprio="10.0" targprog="" targra="315.5270988" targsrvy="GUIDES" targuse="G" targx="14.9966911186" targy="-8.12431992898">
-	  <photometry emag_bp="0.004" emag_g="" emag_gg="0.001" emag_i="" emag_r="" emag_rp="0.001" mag_bp="15.381" mag_g="" mag_gg="15.02" mag_i="" mag_r="" mag_rp="14.493"/>
-	</target>
-	<target cname="WVE_21055356-0541029" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.6841456" targepoch="2015.5" targid="6911913963493060480" targname="guide_12278_305" targparal="1.009" targpmdec="-5.844" targpmra="-4.637" targprio="10.0" targprog="" targra="316.4731794" targsrvy="GUIDES" targuse="G" targx="-1.8435435614" targy="17.329048171">
-	  <photometry emag_bp="0.003" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="14.853" mag_g="" mag_gg="14.519" mag_i="" mag_r="" mag_rp="14.023"/>
-	</target>
-	<target cname="WVE_21091292-0430068" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.501898" targepoch="2015.5" targid="6912156715044579968" targname="guide_12278_487" targparal="0.496" targpmdec="4.128" targpmra="3.707" targprio="10.0" targprog="" targra="317.3038341" targsrvy="GUIDES" targuse="G" targx="-16.6291972214" targy="-3.71495910898">
-	  <photometry emag_bp="0.002" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.207" mag_g="" mag_gg="14.847" mag_i="" mag_r="" mag_rp="14.323"/>
-	</target>
-	<target cname="WVE_21014427-0500346" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.0096163" targepoch="2015.5" targid="6912205162275919872" targname="guide_12278_26" targparal="0.628" targpmdec="-9.48" targpmra="-1.742" targprio="10.0" targprog="" targra="315.4344609" targsrvy="GUIDES" targuse="G" targx="16.6456457386" targy="5.32242663102">
-	  <photometry emag_bp="0.003" emag_g="" emag_gg="0.0" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.376" mag_g="" mag_gg="14.921" mag_i="" mag_r="" mag_rp="14.32"/>
-	</target>
-
-	<!-- The sky bundle -->
-
-	<!-- -\- I think this is generated at point of configure, so we don't need to add this! -->
-
-	<!-- <target targx="%%%" targy="%%%" cname="" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="S" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" ifu_pa="%%%" automatic="%%%" targparal="0.0"/> -->
-
-	<!-- The white dwarf bundle -->
-	<target cname="WVE_21074339-0511305" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WD_S4" targclass="STAR" targdec="-5.1918001" targepoch="2015.5" targid="WD340676" targname="da006500_800.dat" targparal="17.637" targpmdec="30.11" targpmra="26.512" targprio="10.0" targprog="" targra="316.9308009" targsrvy="WD" targuse="C" targx="%%%" targy="%%%">
-	  <photometry emag_bp="0.002" emag_g="" emag_gg="0.002" emag_i="" emag_r="" emag_rp="0.002" mag_bp="17.694" mag_g="" mag_gg="17.479" mag_i="" mag_r="" mag_rp="17.088"/>
-	</target>
-
-	<!-- At least 18 science targets -->
-
-
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-5.3525" targepoch="2015.5" targid="PGC_91697" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.9558" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-5.1131" targepoch="2015.5" targid="PGC_65950" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="315.5608" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.9278" targepoch="2015.5" targid="PGC_1051614" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="315.9079" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-5.1475" targepoch="2015.5" targid="PGC_1048686" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="315.8575" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.4014" targepoch="2015.5" targid="PGC_1058689" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="315.67" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-5.4644" targepoch="2015.5" targid="PGC_1044404" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.6396" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-5.4" targepoch="2015.5" targid="PGC_1045221" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.2858" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.6878" targepoch="2015.5" targid="PGC_1054814" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.7646" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-5.6722" targepoch="2015.5" targid="PGC_1041786" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.3958" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-5.1933" targepoch="2015.5" targid="PGC_1048019" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.705" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-3.8808" targepoch="2015.5" targid="PGC_1065694" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.5483" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.9186" targepoch="2015.5" targid="PGC_1051735" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.7125" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.7664" targepoch="2015.5" targid="PGC_1053791" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.4896" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.3089" targepoch="2015.5" targid="PGC_1060024" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.1362" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.315" targepoch="2015.5" targid="PGC_1059931" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.9229" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.0897" targepoch="2015.5" targid="PGC_1063030" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="315.6946" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.7797" targepoch="2015.5" targid="PGC_1053595" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.9179" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.6247" targepoch="2015.5" targid="PGC_1055624" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.0612" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-5.0761" targepoch="2015.5" targid="PGC_1049654" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.7354" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.2647" targepoch="2015.5" targid="PGC_1060631" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.2367" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.4497" targepoch="2015.5" targid="PGC_1058049" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.5967" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	<target cname="%%%" ifu_spaxel="%%%" ifu_pa="%%%" targcat="WC_S4" targclass="%%%" targdec="-4.5789" targepoch="2015.5" targid="PGC_1056295" targname="CLUSTER1" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.9825" targsrvy="WC" targuse="T" targx="%%%" targy="%%%" targparal="0.0">
-	  <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
-	</target>
-	
-      </field>
+    -->
+  <offsets offset_steps_ra=" 0.000000000 1.000000000 -1.000000000" offset_steps_dec=" 0.000000000 -1.000000000 1.000000000"/>
+  <fields>
+   <field Dec_d="-4.710603567962107" order="3" RA_d="316.369609536946">
+    <!-- The guide stars -->
+    <target targid="6912080947526457344" cname="WVE_21091716-0457340" targclass="STAR" targparal="0.758" targprog="" targsrvy="GUIDES" targy="-81.8117519897279" targpmdec="-5.484" targra="317.3210988833197" targpmra="-0.937" targepoch="2015.5" targuse="G" targname="guide_12278_490" targcat="Guides_S4.fits" targprio="10" configid="1" targdec="-4.95637298115077" targx="184.0849678343062">
+     <photometry emag_r="" emag_i="" emag_rp="0.007" emag_bp="0.01" mag_gg="15.297" emag_gg="0.001" mag_bp="15.703" mag_r="" mag_rp="14.709" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912106721625236480" cname="WVE_21092791-0438500" targclass="STAR" targparal="1.105" targprog="" targsrvy="GUIDES" targy="-20.39213735515565" targpmdec="-1.862" targra="317.3656591647824" targpmra="3.12" targepoch="2015.5" targuse="G" targname="guide_12278_492" targcat="Guides_S4.fits" targprio="10" configid="2" targdec="-4.646187443749035" targx="203.6760420051909">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.005" mag_gg="15.382" emag_gg="0.001" mag_bp="15.863" mag_r="" mag_rp="14.708" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912556078283760768" cname="WVE_21084167-0411470" targclass="STAR" targparal="0.855" targprog="" targsrvy="GUIDES" targy="77.80467533447772" targpmdec="-4.381" targra="317.1731373453007" targpmra="-1.291" targepoch="2015.5" targuse="G" targname="guide_12279_59" targcat="Guides_S4.fits" targprio="10" configid="3" targdec="-4.193947488821335" targx="179.8111567600403">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.002" mag_gg="15.243" emag_gg="0.0" mag_bp="15.648" mag_r="" mag_rp="14.684" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6911971344256088576" cname="WVE_21035464-0535555" targclass="STAR" targparal="0.721" targprog="" targsrvy="GUIDES" targy="-166.6863483453209" targpmdec="-3.565" targra="315.9772627445075" targpmra="2.268" targepoch="2015.5" targuse="G" targname="guide_12278_146" targcat="Guides_S4.fits" targprio="10" configid="4" targdec="-5.596745491904503" targx="-108.9433876323961">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.003" mag_gg="15.051" emag_gg="0.0" mag_bp="15.333" mag_r="" mag_rp="14.603" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6915322861856359936" fibreid="879" cname="WVE_21020650-0415151" targclass="STAR" targparal="0.833" targprog="" targsrvy="GUIDES" targy="120.8718451853631" targpmdec="-1.941" targra="315.5266312239771" targpmra="-0.604" targepoch="2015.5" targuse="G" targname="guide_12284_487" targcat="Guides_S4.fits" targprio="10" configid="5" targdec="-4.253093750999746" targx="-155.1578807379337">
+     <photometry emag_r="" emag_i="" emag_rp="0.001" emag_bp="0.004" mag_gg="15.02" emag_gg="0.001" mag_bp="15.381" mag_r="" mag_rp="14.493" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6911913963493060480" fibreid="501" cname="WVE_21055356-0541029" targclass="STAR" targparal="1.009" targprog="" targsrvy="GUIDES" targy="-200.3070437129454" targpmdec="-5.844" targra="316.4726147551211" targpmra="-4.637" targepoch="2015.5" targuse="G" targname="guide_12278_305" targcat="Guides_S4.fits" targprio="10" configid="6" targdec="-5.680876148286707" targx="-11.75568633264979">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.003" mag_gg="14.519" emag_gg="0.0" mag_bp="14.853" mag_r="" mag_rp="14.023" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912156715044579968" fibreid="249" cname="WVE_21091292-0430068" targclass="STAR" targparal="0.496" targprog="" targsrvy="GUIDES" targy="10.50845174814508" targpmdec="4.128" targra="317.3035576113902" targpmra="3.707" targepoch="2015.5" targuse="G" targname="guide_12278_487" targcat="Guides_S4.fits" targprio="10" configid="7" targdec="-4.504208839902994" targx="195.6995152096538">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.002" mag_gg="14.847" emag_gg="0.0" mag_bp="15.207" mag_r="" mag_rp="14.323" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912205162275919872" cname="WVE_21014427-0500346" targclass="STAR" targparal="0.628" targprog="" targsrvy="GUIDES" targy="-28.45581764105367" targpmdec="-9.48" targra="315.4341069218009" targpmra="-1.742" targepoch="2015.5" targuse="G" targname="guide_12278_26" targcat="Guides_S4.fits" targprio="10" configid="8" targdec="-5.004309566041927" targx="-198.9728435451105">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.003" mag_gg="14.921" emag_gg="0.0" mag_bp="15.376" mag_r="" mag_rp="14.32" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <!-- The sky bundle -->
+    <!-- -\- I think this is generated at point of configure, so we don't need to add this! -->
+    <!-- <target targx="%%%" targy="%%%" cname="" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="S" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" ifu_pa="%%%" automatic="%%%" targparal="0.0"/> -->
+    <!-- The white dwarf bundle -->
+    <target ifu_pa="98.42060467813606" targid="WD340676" fibreid="1919" cname="WVE_21074339-0511305" targclass="STAR" targparal="17.637" targprog="" targsrvy="WD" targy="-118.8449622961494" targpmdec="30.11" targra="316.9209271326841" ifu_spaxel="m09C19" targpmra="26.512" targepoch="2015.5" targuse="C" targname="da006500_800.dat" targcat="WD_S4" targprio="10" configid="9" targdec="-5.208658137794531" targx="94.14774753620635">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.002" mag_gg="17.479" emag_gg="0.002" mag_bp="17.694" mag_r="" mag_rp="17.088" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <!-- At least 18 science targets -->
+    <target ifu_pa="%%%" targid="PGC_91697" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-149.4573222154596" targpmdec="" targra="316.9557998381244" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_91697" targcat="WC_S4" targprio="1" configid="10" targdec="-5.352499823196135" targx="96.60720046124263">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_65950" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-54.62771209175901" targpmdec="" targra="315.5608000903026" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_65950" targcat="WC_S4" targprio="1" configid="11" targdec="-5.11309995517515" targx="-176.6278021338742">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1051614" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-28.38455192835944" targpmdec="" targra="315.9078986631912" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1051614" targcat="WC_S4" targprio="1" configid="12" targdec="-4.927800628235932" targx="-99.63587826474485">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1048686" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-71.06656020207075" targpmdec="" targra="315.8574987067963" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1048686" targcat="WC_S4" targprio="1" configid="13" targdec="-5.147501102027345" targx="-117.3180136177585">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1058689" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="85.62341681360249" targpmdec="" targra="315.6699992936983" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1058689" targcat="WC_S4" targprio="1" configid="14" targdec="-4.401399687499722" targx="-130.4875708442248">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1044404" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-161.2656855870654" targpmdec="" targra="316.6396001004122" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1044404" targcat="WC_S4" targprio="1" configid="15" targdec="-5.464400280371623" targx="29.11335582183748">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1045221" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-136.171589667857" targpmdec="" targra="316.2857998156512" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1045221" targcat="WC_S4" targprio="1" configid="16" targdec="-5.400001513952239" targx="-39.79448363486006">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1054814" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-8.505987816247062" targpmdec="" targra="316.7646004107216" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1054814" targcat="WC_S4" targprio="1" configid="17" targdec="-4.687799976249926" targx="79.72099892474355">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1041786" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-195.9085993271534" targpmdec="" targra="316.395800044055" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1041786" targcat="WC_S4" targprio="1" configid="18" targdec="-5.672201618948401" targx="-26.96411712633698">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1048019" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-108.2230601921202" targpmdec="" targra="316.7050010711429" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1048019" targcat="WC_S4" targprio="1" configid="19" targdec="-5.19330154041791" targx="51.13057322631656">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="-105.9434337866112" targid="PGC_1065694" fibreid="1119" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="161.8541806766174" targpmdec="" targra="316.5482999646403" ifu_spaxel="m01C19" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1065694" targcat="WC_S4" targprio="1" configid="20" targdec="-3.880800163961553" targx="63.8064891787827">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1051735" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-53.07560050631587" targpmdec="" targra="316.7125003986405" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1051735" targcat="WC_S4" targprio="1" configid="21" targdec="-4.918600241788941" targx="61.63125259630114">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1053791" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-15.12977134267515" targpmdec="" targra="316.489599407029" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1053791" targcat="WC_S4" targprio="1" configid="22" targdec="-4.766399724472167" targx="22.08977630126721">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1060024" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="88.37096940330923" targpmdec="" targra="316.1361994528114" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1060024" targcat="WC_S4" targprio="1" configid="23" targdec="-4.308899057944654" targx="-33.3953886770256">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1059931" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="61.28591562898584" targpmdec="" targra="316.9229013420163" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1059931" targcat="WC_S4" targprio="1" configid="24" targdec="-4.314999039446964" targx="124.3426407814288">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1063030" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="148.2722475263065" targpmdec="" targra="315.6945999184912" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1063030" targcat="WC_S4" targprio="1" configid="25" targdec="-4.089699925110857" targx="-115.608164124044">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1053595" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-32.09697687762559" targpmdec="" targra="316.9179017355672" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1053595" targcat="WC_S4" targprio="1" configid="26" targdec="-4.779700218108381" targx="107.5368075850084">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1055624" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="27.39312183174721" targpmdec="" targra="316.0612002294695" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1055624" targcat="WC_S4" targprio="1" configid="27" targdec="-4.624700064087823" targx="-58.77023880151638">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1049654" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-85.56211942736357" targpmdec="" targra="316.7354010832316" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1049654" targcat="WC_S4" targprio="1" configid="28" targdec="-5.076101081656498" targx="61.06166564953225">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1060631" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="93.92466193693609" targpmdec="" targra="316.2366996865016" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1060631" targcat="WC_S4" targprio="1" configid="29" targdec="-4.264698948016666" targx="-11.80802526377575">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1058049" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="44.79494934968513" targpmdec="" targra="316.5966999784375" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1058049" targcat="WC_S4" targprio="1" configid="30" targdec="-4.449700024745455" targx="54.0401246346716">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1056295" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="6.12225347532533" targpmdec="" targra="316.9825018460643" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1056295" targcat="WC_S4" targprio="1" configid="31" targdec="-4.578899602494576" targx="127.3487024988275">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target automatic="1" configid="32" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.547427247674" targdec="-3.880165214682383" targx="63.65232810133096" targuse="T" ifu_spaxel="m01C01" fibreid="1101" targy="162.013457295397"/>
+    <target automatic="1" configid="33" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5473875896362" targdec="-3.880516328813449" targx="63.63203072396146" targuse="T" ifu_spaxel="m01C02" fibreid="1102" targy="161.9424071167425"/>
+    <target automatic="1" configid="34" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5473479309163" targdec="-3.880867446543732" targx="63.61173362325606" targuse="T" ifu_spaxel="m01C03" fibreid="1103" targy="161.8713579045595"/>
+    <target automatic="1" configid="35" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.547308270441" targdec="-3.881218577374739" targx="63.59143624983673" targuse="T" ifu_spaxel="m01C04" fibreid="1104" targy="161.8003077357593"/>
+    <target automatic="1" configid="36" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5477577948071" targdec="-3.880025803160092" targx="63.72400830675006" targuse="T" ifu_spaxel="m01C05" fibreid="1105" targy="162.0314047167364"/>
+    <target automatic="1" configid="37" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5477181401581" targdec="-3.880376913234111" targx="63.70371092835553" targuse="T" ifu_spaxel="m01C06" fibreid="1106" targy="161.9603545351094"/>
+    <target automatic="1" configid="38" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5476784842895" targdec="-3.88072803165998" targx="63.68341355194839" targuse="T" ifu_spaxel="m01C07" fibreid="1107" targy="161.8893043584474"/>
+    <target automatic="1" configid="39" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5476388272012" targdec="-3.881079158435711" targx="63.6631161775283" targuse="T" ifu_spaxel="m01C08" fibreid="1108" targy="161.8182541867112"/>
+    <target automatic="1" configid="40" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5475991688934" targdec="-3.881430293559248" targx="63.64281880506405" targuse="T" ifu_spaxel="m01C09" fibreid="1109" targy="161.7472040198765"/>
+    <target automatic="1" configid="41" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5480883374276" targdec="-3.879886400417075" targx="63.79568823797008" targuse="T" ifu_spaxel="m01C10" fibreid="1110" targy="162.0493511782021"/>
+    <target automatic="1" configid="42" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5480486861683" targdec="-3.880237506433058" targx="63.77539085853589" targuse="T" ifu_spaxel="m01C11" fibreid="1111" targy="161.9783009935977"/>
+    <target automatic="1" configid="43" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5480090336883" targdec="-3.880588620801736" targx="63.7550934811178" targuse="T" ifu_spaxel="m01C12" fibreid="1112" targy="161.9072508139722"/>
+    <target automatic="1" configid="44" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5479693805246" targdec="-3.880939738769283" targx="63.73479638035483" targuse="T" ifu_spaxel="m01C13" fibreid="1113" targy="161.8362016008145"/>
+    <target automatic="1" configid="45" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5479297256039" targdec="-3.881290869837162" targx="63.71449900688862" targuse="T" ifu_spaxel="m01C14" fibreid="1114" targy="161.7651514310508"/>
+    <target automatic="1" configid="46" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5478900694629" targdec="-3.881642009251707" targx="63.69420163537595" targuse="T" ifu_spaxel="m01C15" fibreid="1115" targy="161.6941012661682"/>
+    <target automatic="1" configid="47" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5484188766052" targdec="-3.879746996951186" targx="63.8673684443264" targuse="T" ifu_spaxel="m01C16" fibreid="1116" targy="162.0672986028693"/>
+    <target automatic="1" configid="48" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5483792287366" targdec="-3.880098098907965" targx="63.84707106386379" targuse="T" ifu_spaxel="m01C17" fibreid="1117" targy="161.99624841527"/>
+    <target automatic="1" configid="49" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5483395796464" targdec="-3.880449209218257" targx="63.82677368541506" targuse="T" ifu_spaxel="m01C18" fibreid="1118" targy="161.9251982326653"/>
+    <target automatic="1" configid="50" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.548260277802" targdec="-3.881151454891327" targx="63.7861789344765" targuse="T" ifu_spaxel="m01C20" fibreid="1120" targy="161.7830978823217"/>
+    <target automatic="1" configid="51" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.548220625048" targdec="-3.881502590250084" targx="63.76588156196564" targuse="T" ifu_spaxel="m01C21" fibreid="1121" targy="161.7120477145145"/>
+    <target automatic="1" configid="52" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5481809710731" targdec="-3.88185373395426" targx="63.74558419141635" targuse="T" ifu_spaxel="m01C22" fibreid="1122" targy="161.6409975515795"/>
+    <target automatic="1" configid="53" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5487097667868" targdec="-3.879958700162851" targx="63.91875099498964" targuse="T" ifu_spaxel="m01C23" fibreid="1123" targy="162.0141948770772"/>
+    <target automatic="1" configid="54" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5486701210872" targdec="-3.880309806413795" targx="63.89845361550603" targuse="T" ifu_spaxel="m01C24" fibreid="1124" targy="161.9431446914851"/>
+    <target automatic="1" configid="55" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5486304741653" targdec="-3.880660921017048" targx="63.87815623801345" targuse="T" ifu_spaxel="m01C25" fibreid="1125" targy="161.8720945108813"/>
+    <target automatic="1" configid="56" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5485908265579" targdec="-3.881012039218794" targx="63.85785913720823" targuse="T" ifu_spaxel="m01C26" fibreid="1126" targy="161.8010452967504"/>
+    <target automatic="1" configid="57" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5485511771918" targdec="-3.881363170520568" targx="63.83756176368969" targuse="T" ifu_spaxel="m01C27" fibreid="1127" targy="161.7299951260111"/>
+    <target automatic="1" configid="58" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5485115266039" targdec="-3.881714310168609" targx="63.81726439215133" targuse="T" ifu_spaxel="m01C28" fibreid="1128" targy="161.6589449601538"/>
+    <target automatic="1" configid="59" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5490006590808" targdec="-3.880170402886" targx="63.97013382075293" targuse="T" ifu_spaxel="m01C29" fibreid="1129" targy="161.9610921134976"/>
+    <target automatic="1" configid="60" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5489610155495" targdec="-3.880521513429544" targx="63.9498364422346" targuse="T" ifu_spaxel="m01C30" fibreid="1130" targy="161.8900419299083"/>
+    <target automatic="1" configid="61" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5489213707952" targdec="-3.88087263232423" targx="63.9295390657153" targuse="T" ifu_spaxel="m01C31" fibreid="1131" targy="161.8189917512892"/>
+    <target automatic="1" configid="62" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5488817248179" targdec="-3.881223759568046" targx="63.90924169118467" targuse="T" ifu_spaxel="m01C32" fibreid="1132" targy="161.7479415776059"/>
+    <target automatic="1" configid="63" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5488420776178" targdec="-3.881574895158967" targx="63.88894431863221" targuse="T" ifu_spaxel="m01C33" fibreid="1133" targy="161.6768914088238"/>
+    <target automatic="1" configid="64" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5492915524111" targdec="-3.880382114621804" targx="64.02151637223595" targuse="T" ifu_spaxel="m01C34" fibreid="1134" targy="161.9079883890693"/>
+    <target automatic="1" configid="65" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5492519110473" targdec="-3.880733229456621" targx="64.00121899469482" targuse="T" ifu_spaxel="m01C35" fibreid="1135" targy="161.8369382074758"/>
+    <target automatic="1" configid="66" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5492122689961" targdec="-3.881084347889591" targx="63.98092189382173" targuse="T" ifu_spaxel="m01C36" fibreid="1136" targy="161.7658889923608"/>
+    <target automatic="1" configid="67" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5491726251849" targdec="-3.88143547942218" targx="63.96062452025607" targuse="T" ifu_spaxel="m01C37" fibreid="1137" targy="161.6948388206422"/>
+    <target automatic="1" configid="68" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7113520085956" targdec="-4.275031225154793" targx="82.99016154541127" targuse="S" ifu_spaxel="m03C01" fibreid="1301" targy="76.22169176949866"/>
+    <target automatic="1" configid="69" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7110838423538" targdec="-4.275271516784108" targx="82.92791854470968" targuse="S" ifu_spaxel="m03C02" fibreid="1302" targy="76.18186667569373"/>
+    <target automatic="1" configid="70" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7108156752849" targdec="-4.275511809370321" targx="82.865676384932" targuse="S" ifu_spaxel="m03C03" fibreid="1303" targy="76.1420421195189"/>
+    <target automatic="1" configid="71" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.710547500133" targdec="-4.275752109415045" targx="82.80343338141915" targuse="S" ifu_spaxel="m03C04" fibreid="1304" targy="76.1022170230634"/>
+    <target automatic="1" configid="72" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7116972257207" targdec="-4.275143975956736" targx="83.05577280336489" targuse="S" ifu_spaxel="m03C05" fibreid="1305" targy="76.18770081619007"/>
+    <target automatic="1" configid="73" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7114290626843" targdec="-4.275384267085331" targx="82.99352980309349" targuse="S" ifu_spaxel="m03C06" fibreid="1306" targy="76.14787572289319"/>
+    <target automatic="1" configid="74" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7111608951893" targdec="-4.275624562423176" targx="82.93128680138767" targuse="S" ifu_spaxel="m03C07" fibreid="1307" targy="76.10805062827366"/>
+    <target automatic="1" configid="75" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7108927232385" targdec="-4.275864861967966" targx="82.86904379831262" targuse="S" ifu_spaxel="m03C08" fibreid="1308" targy="76.06822553232647"/>
+    <target automatic="1" configid="76" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7106245468345" targdec="-4.27610516571744" targx="82.80680079382073" targuse="S" ifu_spaxel="m03C09" fibreid="1309" targy="76.02840043505836"/>
+    <target automatic="1" configid="77" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.712042436652" targdec="-4.275256731039399" targx="83.12138321890963" targuse="S" ifu_spaxel="m03C10" fibreid="1310" targy="76.15370932377513"/>
+    <target automatic="1" configid="78" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.711774276823" targdec="-4.275497021666973" targx="83.05914021903605" targuse="S" ifu_spaxel="m03C11" fibreid="1311" targy="76.11388423099005"/>
+    <target automatic="1" configid="79" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7115061125334" targdec="-4.275737316504134" targx="82.9968972177858" targuse="S" ifu_spaxel="m03C12" fibreid="1312" targy="76.07405913687367"/>
+    <target automatic="1" configid="80" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.711237947415" targdec="-4.275977612296594" targx="82.93465505746954" targuse="S" ifu_spaxel="m03C13" fibreid="1313" targy="76.03423458039317"/>
+    <target automatic="1" configid="81" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7109697742122" targdec="-4.276217915546035" targx="82.87241205341161" targuse="S" ifu_spaxel="m03C14" fibreid="1314" targy="75.99440948363406"/>
+    <target automatic="1" configid="82" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7107015965566" targdec="-4.276458222998255" targx="82.81016904794717" targuse="S" ifu_spaxel="m03C15" fibreid="1315" targy="75.95458438555605"/>
+    <target automatic="1" configid="83" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7123876486438" targdec="-4.275369483897754" targx="83.18699447669506" targuse="S" ifu_spaxel="m03C16" fibreid="1316" targy="76.11971837016731"/>
+    <target automatic="1" configid="84" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7121194920245" targdec="-4.275609774023811" targx="83.12475147727035" targuse="S" ifu_spaxel="m03C17" fibreid="1317" targy="76.07989327789116"/>
+    <target automatic="1" configid="85" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7118513309425" targdec="-4.275850068359817" targx="83.06250847644469" targuse="S" ifu_spaxel="m03C18" fibreid="1318" targy="76.040068184288"/>
+    <target automatic="1" configid="86" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7115831654003" targdec="-4.276090366903541" targx="83.0002654742016" targuse="S" ifu_spaxel="m03C19" fibreid="1319" targy="76.00024308935971"/>
+    <target automatic="1" configid="87" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7113149954009" targdec="-4.276330669652655" targx="82.93802247057566" targuse="S" ifu_spaxel="m03C20" fibreid="1320" targy="75.96041799310628"/>
+    <target automatic="1" configid="88" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7110468209465" targdec="-4.276570976604861" targx="82.87577946553981" targuse="S" ifu_spaxel="m03C21" fibreid="1321" targy="75.92059289553933"/>
+    <target automatic="1" configid="89" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7107786420399" targdec="-4.276811287757912" targx="82.81353645910767" targuse="S" ifu_spaxel="m03C22" fibreid="1322" targy="75.88076779665364"/>
+    <target automatic="1" configid="90" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7124647010266" targdec="-4.27572253065832" targx="83.19036189307234" targuse="S" ifu_spaxel="m03C23" fibreid="1323" targy="76.04590178568722"/>
+    <target automatic="1" configid="91" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7121965431543" targdec="-4.275962824492871" targx="83.1281188926696" targuse="S" ifu_spaxel="m03C24" fibreid="1324" targy="76.00607669259166"/>
+    <target automatic="1" configid="92" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7119283808198" targdec="-4.276203122535448" targx="83.06587589086627" targuse="S" ifu_spaxel="m03C25" fibreid="1325" targy="75.96625159817651"/>
+    <target automatic="1" configid="93" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.711660217655" targdec="-4.276443421531742" targx="83.00363372999669" targuse="S" ifu_spaxel="m03C26" fibreid="1326" targy="75.92642704139382"/>
+    <target automatic="1" configid="94" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7113920464042" targdec="-4.27668372798353" targx="82.941390725389" targuse="S" ifu_spaxel="m03C27" fibreid="1327" targy="75.88660194433095"/>
+    <target automatic="1" configid="95" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.711123870699" targdec="-4.276924038636488" targx="82.87914771940208" targuse="S" ifu_spaxel="m03C28" fibreid="1328" targy="75.84677684595387"/>
+    <target automatic="1" configid="96" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7125417564233" targdec="-4.276075578397949" targx="83.19373015114874" targuse="S" ifu_spaxel="m03C29" fibreid="1329" targy="75.97208573970796"/>
+    <target automatic="1" configid="97" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7122735972987" targdec="-4.276315875938974" targx="83.13148714978493" targuse="S" ifu_spaxel="m03C30" fibreid="1330" targy="75.9322606457992"/>
+    <target automatic="1" configid="98" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7120054337124" targdec="-4.276556177686139" targx="83.06924414701041" targuse="S" ifu_spaxel="m03C31" fibreid="1331" targy="75.8924355505669"/>
+    <target automatic="1" configid="99" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7117372656671" targdec="-4.27679648363714" targx="83.00700114281882" targuse="S" ifu_spaxel="m03C32" fibreid="1332" targy="75.85261045401731"/>
+    <target automatic="1" configid="100" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7114690931655" targdec="-4.277036793789694" targx="82.94475813725475" targuse="S" ifu_spaxel="m03C33" fibreid="1333" targy="75.81278535614862"/>
+    <target automatic="1" configid="101" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7126188075748" targdec="-4.276428633616754" targx="83.19709756627684" targuse="S" ifu_spaxel="m03C34" fibreid="1334" targy="75.89826915431644"/>
+    <target automatic="1" configid="102" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7123506471985" targdec="-4.276668934862356" targx="83.13485456394677" targuse="S" ifu_spaxel="m03C35" fibreid="1335" targy="75.8584440595949"/>
+    <target automatic="1" configid="103" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7120824859902" targdec="-4.276909237060088" targx="83.07261240252963" targuse="S" ifu_spaxel="m03C36" fibreid="1336" targy="75.81861950251229"/>
+    <target automatic="1" configid="104" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7118143166942" targdec="-4.277149546711773" targx="83.01036939737787" targuse="S" ifu_spaxel="m03C37" fibreid="1337" targy="75.77879440515498"/>
+    <target automatic="1" configid="105" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9219812045365" targdec="-5.208877058672142" targx="94.35402034800481" targuse="T" ifu_spaxel="m09C01" fibreid="1901" targy="-118.9266599888671"/>
+    <target automatic="1" configid="106" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.921873562327" targdec="-5.20853639395893" targx="94.34320006224303" targuse="T" ifu_spaxel="m09C02" fibreid="1902" targy="-118.8535641405266"/>
+    <target automatic="1" configid="107" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9217659184517" targdec="-5.208195727709653" targx="94.33237992255802" targuse="T" ifu_spaxel="m09C03" fibreid="1903" targy="-118.7804692802822"/>
+    <target automatic="1" configid="108" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9216582699977" targdec="-5.207855050706563" targx="94.32155963610545" targuse="T" ifu_spaxel="m09C04" fibreid="1904" targy="-118.7073734297131"/>
+    <target automatic="1" configid="109" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9217377536868" targdec="-5.209144983250894" targx="94.29612760189698" targuse="T" ifu_spaxel="m09C05" fibreid="1905" targy="-118.9725798115779"/>
+    <target automatic="1" configid="110" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9216301109718" targdec="-5.208804321174259" targx="94.28530731597742" targuse="T" ifu_spaxel="m09C06" fibreid="1906" targy="-118.8994839636849"/>
+    <target automatic="1" configid="111" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9215224651346" targdec="-5.208463652949161" targx="94.27448702969723" targuse="T" ifu_spaxel="m09C07" fibreid="1907" targy="-118.8263881146764"/>
+    <target automatic="1" configid="112" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9214148161759" targdec="-5.208122978578551" targx="94.26366674305731" targuse="T" ifu_spaxel="m09C08" fibreid="1908" targy="-118.7532922645495"/>
+    <target automatic="1" configid="113" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9213071640964" targdec="-5.207782298065399" targx="94.25284645604818" targuse="T" ifu_spaxel="m09C09" fibreid="1909" targy="-118.6801964133009"/>
+    <target automatic="1" configid="114" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9214942991493" targdec="-5.209412901298532" targx="94.23823470908934" targuse="T" ifu_spaxel="m09C10" fibreid="1910" targy="-119.018498644706"/>
+    <target automatic="1" configid="115" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.921386655928" targdec="-5.209072241860515" targx="94.22741442297853" targuse="T" ifu_spaxel="m09C11" fibreid="1911" targy="-118.9454027972541"/>
+    <target automatic="1" configid="116" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9212790095849" targdec="-5.208731576272046" targx="94.21659413651" targuse="T" ifu_spaxel="m09C12" fibreid="1912" targy="-118.8723069486908"/>
+    <target automatic="1" configid="117" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9211713615778" targdec="-5.208390909146455" targx="94.2057739961256" targuse="T" ifu_spaxel="m09C13" fibreid="1913" targy="-118.7992120882248"/>
+    <target automatic="1" configid="118" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9210637089936" targdec="-5.208050231265957" targx="94.19495370895893" targuse="T" ifu_spaxel="m09C14" fibreid="1914" targy="-118.7261162374224"/>
+    <target automatic="1" configid="119" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9209560532897" targdec="-5.207709547243793" targx="94.18413342140612" targuse="T" ifu_spaxel="m09C15" fibreid="1915" targy="-118.6530203854873"/>
+    <target automatic="1" configid="120" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9212508438401" targdec="-5.209680822032383" targx="94.18034196239226" targuse="T" ifu_spaxel="m09C16" fibreid="1916" targy="-119.064418466662"/>
+    <target automatic="1" configid="121" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9211432001118" targdec="-5.209340165235192" targx="94.16952167611721" targuse="T" ifu_spaxel="m09C17" fibreid="1917" targy="-118.9913226196593"/>
+    <target automatic="1" configid="122" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9210355532623" targdec="-5.20899950228558" targx="94.15870138946673" targuse="T" ifu_spaxel="m09C18" fibreid="1918" targy="-118.9182267715455"/>
+    <target automatic="1" configid="123" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9208202502029" targdec="-5.208318157940658" targx="94.13706081512511" targuse="T" ifu_spaxel="m09C20" fibreid="1920" targy="-118.7720350719547"/>
+    <target automatic="1" configid="124" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.920712593994" targdec="-5.207977476551201" targx="94.12624052739444" targuse="T" ifu_spaxel="m09C21" fibreid="1921" targy="-118.6989392204621"/>
+    <target automatic="1" configid="125" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9206049346668" targdec="-5.20763678902104" targx="94.11542023931196" targuse="T" ifu_spaxel="m09C22" fibreid="1922" targy="-118.6258433678411"/>
+    <target automatic="1" configid="126" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9208997406124" targdec="-5.209608082074952" targx="94.11162878251596" targuse="T" ifu_spaxel="m09C23" fibreid="1923" targy="-119.0372414524772"/>
+    <target automatic="1" configid="127" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9207920932559" targdec="-5.209267421766206" targx="94.10080849571168" targuse="T" ifu_spaxel="m09C24" fibreid="1924" targy="-118.9641456048096"/>
+    <target automatic="1" configid="128" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9206844427795" targdec="-5.208926755305915" targx="94.0899882085357" targuse="T" ifu_spaxel="m09C25" fibreid="1925" targy="-118.8910497560213"/>
+    <target automatic="1" configid="129" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9205767906408" targdec="-5.208586087307408" targx="94.0791680674407" targuse="T" ifu_spaxel="m09C26" fibreid="1926" targy="-118.8179548953238"/>
+    <target automatic="1" configid="130" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9204691339265" targdec="-5.208245408552902" targx="94.06834777953853" targuse="T" ifu_spaxel="m09C27" fibreid="1927" targy="-118.7448590442782"/>
+    <target automatic="1" configid="131" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9203614740944" targdec="-5.207904723655663" targx="94.05752749127714" targuse="T" ifu_spaxel="m09C28" fibreid="1928" targy="-118.671763192101"/>
+    <target automatic="1" configid="132" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9205486324819" targdec="-5.209535343931472" targx="94.04291574807566" targuse="T" ifu_spaxel="m09C29" fibreid="1929" targy="-119.0100654269105"/>
+    <target automatic="1" configid="133" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9204409814984" targdec="-5.209194680112232" targx="94.03209546073455" targuse="T" ifu_spaxel="m09C30" fibreid="1930" targy="-118.9369695785663"/>
+    <target automatic="1" configid="134" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9203333273962" targdec="-5.208854010142423" targx="94.02127517301518" targuse="T" ifu_spaxel="m09C31" fibreid="1931" targy="-118.8638737291005"/>
+    <target automatic="1" configid="135" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9202256701759" targdec="-5.208513334024912" targx="94.01045488494906" targuse="T" ifu_spaxel="m09C32" fibreid="1932" targy="-118.7907778785052"/>
+    <target automatic="1" configid="136" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9201180098379" targdec="-5.208172651762664" targx="93.99963459649577" targuse="T" ifu_spaxel="m09C33" fibreid="1933" targy="-118.7176820267744"/>
+    <target automatic="1" configid="137" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9201975165381" targdec="-5.209462598381871" targx="93.97420256619152" targuse="T" ifu_spaxel="m09C34" fibreid="1934" targy="-118.9828884115243"/>
+    <target automatic="1" configid="138" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9200898619286" targdec="-5.209121931053178" targx="93.96338227830719" targuse="T" ifu_spaxel="m09C35" fibreid="1935" targy="-118.9097925625052"/>
+    <target automatic="1" configid="139" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9199822056585" targdec="-5.208781262185187" targx="93.95256213649033" targuse="T" ifu_spaxel="m09C36" fibreid="1936" targy="-118.836697701568"/>
+    <target automatic="1" configid="140" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9198745448144" targdec="-5.208440582560114" targx="93.94174184786179" targuse="T" ifu_spaxel="m09C37" fibreid="1937" targy="-118.7636018502835"/>
+   </field>
+   <field Dec_d="-4.710834309918819" order="4" RA_d="316.3699327987906">
+    <!-- The guide stars -->
+    <target targid="6912080947526457344" cname="WVE_21091716-0457340" targclass="STAR" targparal="0.758" targprog="" targsrvy="GUIDES" targy="-81.8117519897279" targra="317.3214223627068" targpmdec="-5.484" targpmra="-0.937" targepoch="2015.5" targuse="G" targname="guide_12278_490" targcat="Guides_S4.fits" targprio="10" configid="1" targdec="-4.956604131946736" targx="184.0849678343062">
+     <photometry emag_r="" emag_i="" emag_rp="0.007" emag_bp="0.01" mag_gg="15.297" emag_gg="0.001" mag_bp="15.703" mag_r="" mag_rp="14.709" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912106721625236480" cname="WVE_21092791-0438500" targclass="STAR" targparal="1.105" targprog="" targsrvy="GUIDES" targy="-20.39213735515565" targra="317.3659827825587" targpmdec="-1.862" targpmra="3.12" targepoch="2015.5" targuse="G" targname="guide_12278_492" targcat="Guides_S4.fits" targprio="10" configid="2" targdec="-4.646418612268391" targx="203.6760420051909">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.005" mag_gg="15.382" emag_gg="0.001" mag_bp="15.863" mag_r="" mag_rp="14.708" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912556078283760768" cname="WVE_21084167-0411470" targclass="STAR" targparal="0.855" targprog="" targsrvy="GUIDES" targy="77.80467533447772" targra="317.1734610850785" targpmdec="-4.381" targpmra="-1.291" targepoch="2015.5" targuse="G" targname="guide_12279_59" targcat="Guides_S4.fits" targprio="10" configid="3" targdec="-4.194178580536567" targx="179.8111567600403">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.002" mag_gg="15.243" emag_gg="0.0" mag_bp="15.648" mag_r="" mag_rp="14.684" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6911971344256088576" cname="WVE_21035464-0535555" targclass="STAR" targparal="0.721" targprog="" targsrvy="GUIDES" targy="-166.6863483453209" targra="315.9775854378847" targpmdec="-3.565" targpmra="2.268" targepoch="2015.5" targuse="G" targname="guide_12278_146" targcat="Guides_S4.fits" targprio="10" configid="4" targdec="-5.596976046309714" targx="-108.9433876323961">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.003" mag_gg="15.051" emag_gg="0.0" mag_bp="15.333" mag_r="" mag_rp="14.603" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6915322861856359936" fibreid="879" cname="WVE_21020650-0415151" targclass="STAR" targparal="0.833" targprog="" targsrvy="GUIDES" targy="120.8718451853631" targra="315.5269544471801" targpmdec="-1.941" targpmra="-0.604" targepoch="2015.5" targuse="G" targname="guide_12284_487" targcat="Guides_S4.fits" targprio="10" configid="5" targdec="-4.253324077682631" targx="-155.1578807379337">
+     <photometry emag_r="" emag_i="" emag_rp="0.001" emag_bp="0.004" mag_gg="15.02" emag_gg="0.001" mag_bp="15.381" mag_r="" mag_rp="14.493" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6911913963493060480" fibreid="501" cname="WVE_21055356-0541029" targclass="STAR" targparal="1.009" targprog="" targsrvy="GUIDES" targy="-200.3070437129454" targra="316.4729376049814" targpmdec="-5.844" targpmra="-4.637" targepoch="2015.5" targuse="G" targname="guide_12278_305" targcat="Guides_S4.fits" targprio="10" configid="6" targdec="-5.68110693716841" targx="-11.75568633264979">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.003" mag_gg="14.519" emag_gg="0.0" mag_bp="14.853" mag_r="" mag_rp="14.023" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912156715044579968" fibreid="249" cname="WVE_21091292-0430068" targclass="STAR" targparal="0.496" targprog="" targsrvy="GUIDES" targy="10.50845174814508" targra="317.303881265635" targpmdec="4.128" targpmra="3.707" targepoch="2015.5" targuse="G" targname="guide_12278_487" targcat="Guides_S4.fits" targprio="10" configid="7" targdec="-4.504439983931003" targx="195.6995152096538">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.002" mag_gg="14.847" emag_gg="0.0" mag_bp="15.207" mag_r="" mag_rp="14.323" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912205162275919872" cname="WVE_21014427-0500346" targclass="STAR" targparal="0.628" targprog="" targsrvy="GUIDES" targy="-28.45581764105367" targra="315.4344297174225" targpmdec="-9.48" targpmra="-1.742" targepoch="2015.5" targuse="G" targname="guide_12278_26" targcat="Guides_S4.fits" targprio="10" configid="8" targdec="-5.004539843754102" targx="-198.9728435451105">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.003" mag_gg="14.921" emag_gg="0.0" mag_bp="15.376" mag_r="" mag_rp="14.32" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <!-- The sky bundle -->
+    <!-- -\- I think this is generated at point of configure, so we don't need to add this! -->
+    <!-- <target targx="%%%" targy="%%%" cname="" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="S" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" ifu_pa="%%%" automatic="%%%" targparal="0.0"/> -->
+    <!-- The white dwarf bundle -->
+    <target ifu_pa="98.42060467813606" targid="WD340676" fibreid="1919" cname="WVE_21074339-0511305" targclass="STAR" targparal="17.637" targprog="" targsrvy="WD" targy="-118.8449622961494" targra="316.9212503643429" targpmdec="30.11" ifu_spaxel="m09C19" targpmra="26.512" targepoch="2015.5" targuse="C" targname="da006500_800.dat" targcat="WD_S4" targprio="10" configid="9" targdec="-5.208889124251014" targx="94.14774753620635">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.002" mag_gg="17.479" emag_gg="0.002" mag_bp="17.694" mag_r="" mag_rp="17.088" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <!-- At least 18 science targets -->
+    <target ifu_pa="%%%" targid="PGC_91697" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-149.4573222154596" targra="316.9561230213615" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_91697" targcat="WC_S4" targprio="1" configid="10" targdec="-5.352730824350898" targx="96.60720046124263">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_65950" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-54.62771209175901" targra="315.5611228734439" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_65950" targcat="WC_S4" targprio="1" configid="11" targdec="-5.113330299291073" targx="-176.6278021338742">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1051614" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-28.38455192835944" targra="315.9082216636562" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1051614" targcat="WC_S4" targprio="1" configid="12" targdec="-4.928031148717496" targx="-99.63587826474485">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1048686" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-71.06656020207075" targra="315.8578215792662" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1048686" targcat="WC_S4" targprio="1" configid="13" targdec="-5.147731597340812" targx="-117.3180136177585">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1058689" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="85.62341681360249" targra="315.6703224832818" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1058689" targcat="WC_S4" targprio="1" configid="14" targdec="-4.401630088299656" targx="-130.4875708442248">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1044404" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-161.2656855870654" targra="316.6399231142145" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1044404" targcat="WC_S4" targprio="1" configid="15" targdec="-5.464631144514726" targx="29.11335582183748">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1045221" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-136.171589667857" targra="316.2861227237588" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1045221" targcat="WC_S4" targprio="1" configid="16" targdec="-5.400232216537394" targx="-39.79448363486006">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1054814" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-8.505987816247062" targra="316.7649238135265" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1054814" targcat="WC_S4" targprio="1" configid="17" targdec="-4.688030895713611" targx="79.72099892474355">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1041786" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-195.9085993271534" targra="316.3961228672125" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1041786" targcat="WC_S4" targprio="1" configid="18" targdec="-5.672432372597422" targx="-26.96411712633698">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1048019" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-108.2230601921202" targra="316.7053242303605" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1048019" targcat="WC_S4" targprio="1" configid="19" targdec="-5.19353243358359" targx="51.13057322631656">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="-105.9434337866112" targid="PGC_1065694" fibreid="1119" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="161.8541806766174" targra="316.5486236618181" targpmdec="" ifu_spaxel="m01C19" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1065694" targcat="WC_S4" targprio="1" configid="20" targdec="-3.881030987937184" targx="63.8064891787827">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1051735" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-53.07560050631587" targra="316.7128236821795" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1051735" targcat="WC_S4" targprio="1" configid="21" targdec="-4.918831138368618" targx="61.63125259630114">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1053791" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-15.12977134267515" targra="316.4899226830951" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1053791" targcat="WC_S4" targprio="1" configid="22" targdec="-4.766630521484593" targx="22.08977630126721">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1060024" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="88.37096940330923" targra="316.1365228311944" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1060024" targcat="WC_S4" targprio="1" configid="23" targdec="-4.309129690033926" targx="-33.3953886770256">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1059931" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="61.28591562898584" targra="316.9232249562544" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1059931" targcat="WC_S4" targprio="1" configid="24" targdec="-4.315230027127706" targx="124.3426407814288">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1063030" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="148.2722475263065" targra="315.6949232757308" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1063030" targcat="WC_S4" targprio="1" configid="25" targdec="-4.089930338632043" targx="-115.608164124044">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1053595" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-32.09697687762559" targra="316.9182251496827" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1053595" targcat="WC_S4" targprio="1" configid="26" targdec="-4.779931203465369" targx="107.5368075850084">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1055624" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="27.39312183174721" targra="316.061523431065" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1055624" targcat="WC_S4" targprio="1" configid="27" targdec="-4.624930659867378" targx="-58.77023880151638">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1049654" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-85.56211942736357" targra="316.7357243052647" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1049654" targcat="WC_S4" targprio="1" configid="28" targdec="-5.076331988206412" targx="61.06166564953225">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1060631" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="93.92466193693609" targra="316.2370231163326" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1060631" targcat="WC_S4" targprio="1" configid="29" targdec="-4.264929627976064" targx="-11.80802526377575">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1058049" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="44.79494934968513" targra="316.5970234330111" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1058049" targcat="WC_S4" targprio="1" configid="30" targdec="-4.449930870203841" targx="54.0401246346716">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1056295" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="6.12225347532533" targra="316.9828253668613" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1056295" targcat="WC_S4" targprio="1" configid="31" targdec="-4.579130615226935" targx="127.3487024988275">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target automatic="1" configid="32" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5477509449012" targdec="-3.880396038264942" targx="63.65232810133096" targuse="T" ifu_spaxel="m01C01" fibreid="1101" targy="162.013457295397"/>
+    <target automatic="1" configid="33" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5477112866936" targdec="-3.88074715237799" targx="63.63203072396146" targuse="T" ifu_spaxel="m01C02" fibreid="1102" targy="161.9424071167425"/>
+    <target automatic="1" configid="34" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5476716278039" targdec="-3.881098270090233" targx="63.61173362325606" targuse="T" ifu_spaxel="m01C03" fibreid="1103" targy="161.8713579045595"/>
+    <target automatic="1" configid="35" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5476319671588" targdec="-3.881449400903204" targx="63.59143624983673" targuse="T" ifu_spaxel="m01C04" fibreid="1104" targy="161.8003077357593"/>
+    <target automatic="1" configid="36" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5480814921877" targdec="-3.880256626891702" targx="63.72400830675006" targuse="T" ifu_spaxel="m01C05" fibreid="1105" targy="162.0314047167364"/>
+    <target automatic="1" configid="37" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5480418373689" targdec="-3.880607736947705" targx="63.70371092835553" targuse="T" ifu_spaxel="m01C06" fibreid="1106" targy="161.9603545351094"/>
+    <target automatic="1" configid="38" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5480021813303" targdec="-3.880958855355548" targx="63.68341355194839" targuse="T" ifu_spaxel="m01C07" fibreid="1107" targy="161.8893043584474"/>
+    <target automatic="1" configid="39" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5479625240723" targdec="-3.881309982113238" targx="63.6631161775283" targuse="T" ifu_spaxel="m01C08" fibreid="1108" targy="161.8182541867112"/>
+    <target automatic="1" configid="40" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5479228655948" targdec="-3.881661117218744" targx="63.64281880506405" targuse="T" ifu_spaxel="m01C09" fibreid="1109" targy="161.7472040198765"/>
+    <target automatic="1" configid="41" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5484120349614" targdec="-3.880117224297736" targx="63.79568823797008" targuse="T" ifu_spaxel="m01C10" fibreid="1110" targy="162.0493511782021"/>
+    <target automatic="1" configid="42" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5483723835323" targdec="-3.880468330295695" targx="63.77539085853589" targuse="T" ifu_spaxel="m01C11" fibreid="1111" targy="161.9783009935977"/>
+    <target automatic="1" configid="43" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5483327308826" targdec="-3.880819444646331" targx="63.7550934811178" targuse="T" ifu_spaxel="m01C12" fibreid="1112" targy="161.9072508139722"/>
+    <target automatic="1" configid="44" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5482930775491" targdec="-3.881170562595854" targx="63.73479638035483" targuse="T" ifu_spaxel="m01C13" fibreid="1113" targy="161.8362016008145"/>
+    <target automatic="1" configid="45" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5482534224586" targdec="-3.881521693645724" targx="63.71449900688862" targuse="T" ifu_spaxel="m01C14" fibreid="1114" targy="161.7651514310508"/>
+    <target automatic="1" configid="46" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5482137661477" targdec="-3.881872833042221" targx="63.69420163537595" targuse="T" ifu_spaxel="m01C15" fibreid="1115" targy="161.6941012661682"/>
+    <target automatic="1" configid="47" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5487425742923" targdec="-3.879977820980877" targx="63.8673684443264" targuse="T" ifu_spaxel="m01C16" fibreid="1116" targy="162.0672986028693"/>
+    <target automatic="1" configid="48" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5487029262539" targdec="-3.880328922919612" targx="63.84707106386379" targuse="T" ifu_spaxel="m01C17" fibreid="1117" targy="161.99624841527"/>
+    <target automatic="1" configid="49" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.548663276994" targdec="-3.880680033211889" targx="63.82677368541506" targuse="T" ifu_spaxel="m01C18" fibreid="1118" targy="161.9251982326653"/>
+    <target automatic="1" configid="50" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.54858397481" targdec="-3.881382278848917" targx="63.7861789344765" targuse="T" ifu_spaxel="m01C20" fibreid="1120" targy="161.7830978823217"/>
+    <target automatic="1" configid="51" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5485443218862" targdec="-3.881733414189647" targx="63.76588156196564" targuse="T" ifu_spaxel="m01C21" fibreid="1121" targy="161.7120477145145"/>
+    <target automatic="1" configid="52" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5485046677414" targdec="-3.882084557875799" targx="63.74558419141635" targuse="T" ifu_spaxel="m01C22" fibreid="1122" targy="161.6409975515795"/>
+    <target automatic="1" configid="53" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5490334644574" targdec="-3.880189524323537" targx="63.91875099498964" targuse="T" ifu_spaxel="m01C23" fibreid="1123" targy="162.0141948770772"/>
+    <target automatic="1" configid="54" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5489938185881" targdec="-3.880540630556459" targx="63.89845361550603" targuse="T" ifu_spaxel="m01C24" fibreid="1124" targy="161.9431446914851"/>
+    <target automatic="1" configid="55" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5489541714965" targdec="-3.880891745141688" targx="63.87815623801345" targuse="T" ifu_spaxel="m01C25" fibreid="1125" targy="161.8720945108813"/>
+    <target automatic="1" configid="56" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5489145237192" targdec="-3.881242863325425" targx="63.85785913720823" targuse="T" ifu_spaxel="m01C26" fibreid="1126" targy="161.8010452967504"/>
+    <target automatic="1" configid="57" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5488748741833" targdec="-3.881593994609166" targx="63.83756176368969" targuse="T" ifu_spaxel="m01C27" fibreid="1127" targy="161.7299951260111"/>
+    <target automatic="1" configid="58" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5488352234256" targdec="-3.881945134239207" targx="63.81726439215133" targuse="T" ifu_spaxel="m01C28" fibreid="1128" targy="161.6589449601538"/>
+    <target automatic="1" configid="59" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.549324356735" targdec="-3.880401227177691" targx="63.97013382075293" targuse="T" ifu_spaxel="m01C29" fibreid="1129" targy="161.9610921134976"/>
+    <target automatic="1" configid="60" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5492847130339" targdec="-3.880752337703205" targx="63.9498364422346" targuse="T" ifu_spaxel="m01C30" fibreid="1130" targy="161.8900419299083"/>
+    <target automatic="1" configid="61" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5492450681098" targdec="-3.881103456579871" targx="63.9295390657153" targuse="T" ifu_spaxel="m01C31" fibreid="1131" targy="161.8189917512892"/>
+    <target automatic="1" configid="62" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5492054219627" targdec="-3.881454583805657" targx="63.90924169118467" targuse="T" ifu_spaxel="m01C32" fibreid="1132" targy="161.7479415776059"/>
+    <target automatic="1" configid="63" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5491657745928" targdec="-3.881805719378565" targx="63.88894431863221" targuse="T" ifu_spaxel="m01C33" fibreid="1133" targy="161.6768914088238"/>
+    <target automatic="1" configid="64" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5496152500488" targdec="-3.880612939044487" targx="64.02151637223595" targuse="T" ifu_spaxel="m01C34" fibreid="1134" targy="161.9079883890693"/>
+    <target automatic="1" configid="65" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5495756085152" targdec="-3.880964053861281" targx="64.00121899469482" targuse="T" ifu_spaxel="m01C35" fibreid="1135" targy="161.8369382074758"/>
+    <target automatic="1" configid="66" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5495359662943" targdec="-3.881315172276229" targx="63.98092189382173" targuse="T" ifu_spaxel="m01C36" fibreid="1136" targy="161.7658889923608"/>
+    <target automatic="1" configid="67" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5494963223132" targdec="-3.881666303790799" targx="63.96062452025607" targuse="T" ifu_spaxel="m01C37" fibreid="1137" targy="161.6948388206422"/>
+    <target automatic="1" configid="68" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.711675576237" targdec="-4.275262121509486" targx="82.99016154541127" targuse="S" ifu_spaxel="m03C01" fibreid="1301" targy="76.22169176949866"/>
+    <target automatic="1" configid="69" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7114074098085" targdec="-4.275502413020884" targx="82.92791854470968" targuse="S" ifu_spaxel="m03C02" fibreid="1302" targy="76.18186667569373"/>
+    <target automatic="1" configid="70" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7111392425527" targdec="-4.275742705489209" targx="82.865676384932" targuse="S" ifu_spaxel="m03C03" fibreid="1303" targy="76.1420421195189"/>
+    <target automatic="1" configid="71" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7108710672141" targdec="-4.275983005416014" targx="82.80343338141915" targuse="S" ifu_spaxel="m03C04" fibreid="1304" targy="76.1022170230634"/>
+    <target automatic="1" configid="72" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7120207934162" targdec="-4.275374872462979" targx="83.05577280336489" targuse="S" ifu_spaxel="m03C05" fibreid="1305" targy="76.18770081619007"/>
+    <target automatic="1" configid="73" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.711752630193" targdec="-4.275615163473709" targx="82.99352980309349" targuse="S" ifu_spaxel="m03C06" fibreid="1306" targy="76.14787572289319"/>
+    <target automatic="1" configid="74" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7114844625112" targdec="-4.275855458693646" targx="82.93128680138767" targuse="S" ifu_spaxel="m03C07" fibreid="1307" targy="76.10805062827366"/>
+    <target automatic="1" configid="75" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7112162903737" targdec="-4.276095758120535" targx="82.86904379831262" targuse="S" ifu_spaxel="m03C08" fibreid="1308" targy="76.06822553232647"/>
+    <target automatic="1" configid="76" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7109481137827" targdec="-4.276336061752121" targx="82.80680079382073" targuse="S" ifu_spaxel="m03C09" fibreid="1309" targy="76.02840043505836"/>
+    <target automatic="1" configid="77" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7123660044016" targdec="-4.275487627697216" targx="83.12138321890963" targuse="S" ifu_spaxel="m03C10" fibreid="1310" targy="76.15370932377513"/>
+    <target automatic="1" configid="78" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7120978443858" targdec="-4.275727918206902" targx="83.05914021903605" targuse="S" ifu_spaxel="m03C11" fibreid="1311" targy="76.11388423099005"/>
+    <target automatic="1" configid="79" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7118296799094" targdec="-4.275968212926188" targx="82.9968972177858" targuse="S" ifu_spaxel="m03C12" fibreid="1312" targy="76.07405913687367"/>
+    <target automatic="1" configid="80" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7115615146043" targdec="-4.27620850860075" targx="82.93465505746954" targuse="S" ifu_spaxel="m03C13" fibreid="1313" targy="76.03423458039317"/>
+    <target automatic="1" configid="81" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7112933412146" targdec="-4.276448811732308" targx="82.87241205341161" targuse="S" ifu_spaxel="m03C14" fibreid="1314" targy="75.99440948363406"/>
+    <target automatic="1" configid="82" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7110251633721" targdec="-4.276689119066606" targx="82.81016904794717" targuse="S" ifu_spaxel="m03C15" fibreid="1315" targy="75.95458438555605"/>
+    <target automatic="1" configid="83" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7127112164475" targdec="-4.275600380707126" targx="83.18699447669506" targuse="S" ifu_spaxel="m03C16" fibreid="1316" targy="76.11971837016731"/>
+    <target automatic="1" configid="84" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7124430596414" targdec="-4.275840670715304" targx="83.12475147727035" targuse="S" ifu_spaxel="m03C17" fibreid="1317" targy="76.07989327789116"/>
+    <target automatic="1" configid="85" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7121748983726" targdec="-4.276080964933449" targx="83.06250847644469" targuse="S" ifu_spaxel="m03C18" fibreid="1318" targy="76.040068184288"/>
+    <target automatic="1" configid="86" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7119067326436" targdec="-4.276321263359276" targx="83.0002654742016" targuse="S" ifu_spaxel="m03C19" fibreid="1319" targy="76.00024308935971"/>
+    <target automatic="1" configid="87" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7116385624573" targdec="-4.276561565990504" targx="82.93802247057566" targuse="S" ifu_spaxel="m03C20" fibreid="1320" targy="75.96041799310628"/>
+    <target automatic="1" configid="88" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7113703878161" targdec="-4.276801872824812" targx="82.87577946553981" targuse="S" ifu_spaxel="m03C21" fibreid="1321" targy="75.92059289553933"/>
+    <target automatic="1" configid="89" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7111022087226" targdec="-4.277042183859963" targx="82.81353645910767" targuse="S" ifu_spaxel="m03C22" fibreid="1322" targy="75.88076779665364"/>
+    <target automatic="1" configid="90" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7127882686977" targdec="-4.275953427501356" targx="83.19036189307234" targuse="S" ifu_spaxel="m03C23" fibreid="1323" targy="76.04590178568722"/>
+    <target automatic="1" configid="91" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7125201106385" targdec="-4.276193721218059" targx="83.1281188926696" targuse="S" ifu_spaxel="m03C24" fibreid="1324" targy="76.00607669259166"/>
+    <target automatic="1" configid="92" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7122519481172" targdec="-4.276434019142767" targx="83.06587589086627" targuse="S" ifu_spaxel="m03C25" fibreid="1325" targy="75.96625159817651"/>
+    <target automatic="1" configid="93" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7119837847655" targdec="-4.276674318021179" targx="83.00363372999669" targuse="S" ifu_spaxel="m03C26" fibreid="1326" targy="75.92642704139382"/>
+    <target automatic="1" configid="94" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7117156133278" targdec="-4.276914624355071" targx="82.941390725389" targuse="S" ifu_spaxel="m03C27" fibreid="1327" targy="75.88660194433095"/>
+    <target automatic="1" configid="95" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7114474374358" targdec="-4.277154934890149" targx="82.87914771940208" targuse="S" ifu_spaxel="m03C28" fibreid="1328" targy="75.84677684595387"/>
+    <target automatic="1" configid="96" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7128653239615" targdec="-4.276306475274676" targx="83.19373015114874" targuse="S" ifu_spaxel="m03C29" fibreid="1329" targy="75.97208573970796"/>
+    <target automatic="1" configid="97" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.71259716465" targdec="-4.276546772697862" targx="83.13148714978493" targuse="S" ifu_spaxel="m03C30" fibreid="1330" targy="75.9322606457992"/>
+    <target automatic="1" configid="98" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.712329000877" targdec="-4.276787074327141" targx="83.06924414701041" targuse="S" ifu_spaxel="m03C31" fibreid="1331" targy="75.8924355505669"/>
+    <target automatic="1" configid="99" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7120608326449" targdec="-4.277027380160263" targx="83.00700114281882" targuse="S" ifu_spaxel="m03C32" fibreid="1332" targy="75.85261045401731"/>
+    <target automatic="1" configid="100" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7117926599564" targdec="-4.277267690194924" targx="82.94475813725475" targuse="S" ifu_spaxel="m03C33" fibreid="1333" targy="75.81278535614862"/>
+    <target automatic="1" configid="101" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7129423749803" targdec="-4.276659530527173" targx="83.19709756627684" targuse="S" ifu_spaxel="m03C34" fibreid="1334" targy="75.89826915431644"/>
+    <target automatic="1" configid="102" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7126742144172" targdec="-4.276899831654913" targx="83.13485456394677" targuse="S" ifu_spaxel="m03C35" fibreid="1335" targy="75.8584440595949"/>
+    <target automatic="1" configid="103" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.712406053022" targdec="-4.277140133734763" targx="83.07261240252963" targuse="S" ifu_spaxel="m03C36" fibreid="1336" targy="75.81861950251229"/>
+    <target automatic="1" configid="104" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7121378835392" targdec="-4.277380443268575" targx="83.01036939737787" targuse="S" ifu_spaxel="m03C37" fibreid="1337" targy="75.77879440515498"/>
+    <target automatic="1" configid="105" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9223044364886" targdec="-5.209108045575935" targx="94.35402034800481" targuse="T" ifu_spaxel="m09C01" fibreid="1901" targy="-118.9266599888671"/>
+    <target automatic="1" configid="106" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9221967943853" targdec="-5.208767380817179" targx="94.34320006224303" targuse="T" ifu_spaxel="m09C02" fibreid="1902" targy="-118.8535641405266"/>
+    <target automatic="1" configid="107" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9220891506164" targdec="-5.208426714522344" targx="94.33237992255802" targuse="T" ifu_spaxel="m09C03" fibreid="1903" targy="-118.7804692802822"/>
+    <target automatic="1" configid="108" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9219815022687" targdec="-5.208086037473733" targx="94.32155963610545" targuse="T" ifu_spaxel="m09C04" fibreid="1904" targy="-118.7073734297131"/>
+    <target automatic="1" configid="109" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9220609854348" targdec="-5.209375970051227" targx="94.29612760189698" targuse="T" ifu_spaxel="m09C05" fibreid="1905" targy="-118.9725798115779"/>
+    <target automatic="1" configid="110" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.921953342826" targdec="-5.209035307929059" targx="94.28530731597742" targuse="T" ifu_spaxel="m09C06" fibreid="1906" targy="-118.8994839636849"/>
+    <target automatic="1" configid="111" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9218456970951" targdec="-5.208694639658423" targx="94.27448702969723" targuse="T" ifu_spaxel="m09C07" fibreid="1907" targy="-118.8263881146764"/>
+    <target automatic="1" configid="112" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9217380482428" targdec="-5.208353965242276" targx="94.26366674305731" targuse="T" ifu_spaxel="m09C08" fibreid="1908" targy="-118.7532922645495"/>
+    <target automatic="1" configid="113" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9216303962696" targdec="-5.208013284683567" targx="94.25284645604818" targuse="T" ifu_spaxel="m09C09" fibreid="1909" targy="-118.6801964133009"/>
+    <target automatic="1" configid="114" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9218175306934" targdec="-5.209643887995437" targx="94.23823470908934" targuse="T" ifu_spaxel="m09C10" fibreid="1910" targy="-119.018498644706"/>
+    <target automatic="1" configid="115" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9217098875783" targdec="-5.209303228511859" targx="94.22741442297853" targuse="T" ifu_spaxel="m09C11" fibreid="1911" targy="-118.9454027972541"/>
+    <target automatic="1" configid="116" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9216022413415" targdec="-5.208962562877852" targx="94.21659413651" targuse="T" ifu_spaxel="m09C12" fibreid="1912" targy="-118.8723069486908"/>
+    <target automatic="1" configid="117" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9214945934406" targdec="-5.208621895706707" targx="94.2057739961256" targuse="T" ifu_spaxel="m09C13" fibreid="1913" targy="-118.7992120882248"/>
+    <target automatic="1" configid="118" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9213869409628" targdec="-5.208281217780669" targx="94.19495370895893" targuse="T" ifu_spaxel="m09C14" fibreid="1914" targy="-118.7261162374224"/>
+    <target automatic="1" configid="119" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9212792853652" targdec="-5.207940533712964" targx="94.18413342140612" targuse="T" ifu_spaxel="m09C15" fibreid="1915" targy="-118.6530203854873"/>
+    <target automatic="1" configid="120" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.92157407518" targdec="-5.209911808625828" targx="94.18034196239226" targuse="T" ifu_spaxel="m09C16" fibreid="1916" targy="-119.064418466662"/>
+    <target automatic="1" configid="121" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.921466431558" targdec="-5.20957115178309" targx="94.16952167611721" targuse="T" ifu_spaxel="m09C17" fibreid="1917" targy="-118.9913226196593"/>
+    <target automatic="1" configid="122" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9213587848148" targdec="-5.209230488787935" targx="94.15870138946673" targuse="T" ifu_spaxel="m09C18" fibreid="1918" targy="-118.9182267715455"/>
+    <target automatic="1" configid="123" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.921143481968" targdec="-5.208549144351915" targx="94.13706081512511" targuse="T" ifu_spaxel="m09C20" fibreid="1920" targy="-118.7720350719547"/>
+    <target automatic="1" configid="124" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9210358258655" targdec="-5.208208462916899" targx="94.12624052739444" targuse="T" ifu_spaxel="m09C21" fibreid="1921" targy="-118.6989392204621"/>
+    <target automatic="1" configid="125" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9209281666446" targdec="-5.2078677753412" targx="94.11542023931196" targuse="T" ifu_spaxel="m09C22" fibreid="1922" targy="-118.6258433678411"/>
+    <target automatic="1" configid="126" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9212229718545" targdec="-5.209839068519402" targx="94.11162878251596" targuse="T" ifu_spaxel="m09C23" fibreid="1923" targy="-119.0372414524772"/>
+    <target automatic="1" configid="127" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9211153246044" targdec="-5.209498408165097" targx="94.10080849571168" targuse="T" ifu_spaxel="m09C24" fibreid="1924" targy="-118.9641456048096"/>
+    <target automatic="1" configid="128" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9210076742343" targdec="-5.209157741659245" targx="94.0899882085357" targuse="T" ifu_spaxel="m09C25" fibreid="1925" targy="-118.8910497560213"/>
+    <target automatic="1" configid="129" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9209000222019" targdec="-5.208817073615203" targx="94.0791680674407" targuse="T" ifu_spaxel="m09C26" fibreid="1926" targy="-118.8179548953238"/>
+    <target automatic="1" configid="130" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9207923655939" targdec="-5.208476394815148" targx="94.06834777953853" targuse="T" ifu_spaxel="m09C27" fibreid="1927" targy="-118.7448590442782"/>
+    <target automatic="1" configid="131" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.920684705868" targdec="-5.208135709872336" targx="94.05752749127714" targuse="T" ifu_spaxel="m09C28" fibreid="1928" targy="-118.671763192101"/>
+    <target automatic="1" configid="132" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9208718636264" targdec="-5.209766330226901" targx="94.04291574807566" targuse="T" ifu_spaxel="m09C29" fibreid="1929" targy="-119.0100654269105"/>
+    <target automatic="1" configid="133" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9207642127492" targdec="-5.209425666362126" targx="94.03209546073455" targuse="T" ifu_spaxel="m09C30" fibreid="1930" targy="-118.9369695785663"/>
+    <target automatic="1" configid="134" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9206565587532" targdec="-5.209084996346743" targx="94.02127517301518" targuse="T" ifu_spaxel="m09C31" fibreid="1931" targy="-118.8638737291005"/>
+    <target automatic="1" configid="135" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9205489016392" targdec="-5.208744320183678" targx="94.01045488494906" targuse="T" ifu_spaxel="m09C32" fibreid="1932" targy="-118.7907778785052"/>
+    <target automatic="1" configid="136" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9204412414076" targdec="-5.208403637875867" targx="93.99963459649577" targuse="T" ifu_spaxel="m09C33" fibreid="1933" targy="-118.7176820267744"/>
+    <target automatic="1" configid="137" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9205207475848" targdec="-5.209693584528282" targx="93.97420256619152" targuse="T" ifu_spaxel="m09C34" fibreid="1934" targy="-118.9828884115243"/>
+    <target automatic="1" configid="138" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9204130930815" targdec="-5.209352917154011" targx="93.96338227830719" targuse="T" ifu_spaxel="m09C35" fibreid="1935" targy="-118.9097925625052"/>
+    <target automatic="1" configid="139" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9203054369177" targdec="-5.209012248240476" targx="93.95256213649033" targuse="T" ifu_spaxel="m09C36" fibreid="1936" targy="-118.836697701568"/>
+    <target automatic="1" configid="140" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.92019777618" targdec="-5.20867156856985" targx="93.94174184786179" targuse="T" ifu_spaxel="m09C37" fibreid="1937" targy="-118.7636018502835"/>
+   </field>
+   <field Dec_d="-4.71037282585587" order="5" RA_d="316.369286275316">
+    <!-- The guide stars -->
+    <target targid="6912080947526457344" cname="WVE_21091716-0457340" targclass="STAR" targparal="0.758" targprog="" targsrvy="GUIDES" targy="-81.8117519897279" targra="317.3207754041618" targpmdec="-5.484" targpmra="-0.937" targepoch="2015.5" targuse="G" targname="guide_12278_490" targcat="Guides_S4.fits" targprio="10" configid="1" targdec="-4.95614183020778" targx="184.0849678343062">
+     <photometry emag_r="" emag_i="" emag_rp="0.007" emag_bp="0.01" mag_gg="15.297" emag_gg="0.001" mag_bp="15.703" mag_r="" mag_rp="14.709" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912106721625236480" cname="WVE_21092791-0438500" targclass="STAR" targparal="1.105" targprog="" targsrvy="GUIDES" targy="-20.39213735515565" targra="317.3653355472368" targpmdec="-1.862" targpmra="3.12" targepoch="2015.5" targuse="G" targname="guide_12278_492" targcat="Guides_S4.fits" targprio="10" configid="2" targdec="-4.645956275082846" targx="203.6760420051909">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.005" mag_gg="15.382" emag_gg="0.001" mag_bp="15.863" mag_r="" mag_rp="14.708" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912556078283760768" cname="WVE_21084167-0411470" targclass="STAR" targparal="0.855" targprog="" targsrvy="GUIDES" targy="77.80467533447772" targra="317.1728136057519" targpmdec="-4.381" targpmra="-1.291" targepoch="2015.5" targuse="G" targname="guide_12279_59" targcat="Guides_S4.fits" targprio="10" configid="3" targdec="-4.193716396958825" targx="179.8111567600403">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.002" mag_gg="15.243" emag_gg="0.0" mag_bp="15.648" mag_r="" mag_rp="14.684" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6911971344256088576" cname="WVE_21035464-0535555" targclass="STAR" targparal="0.721" targprog="" targsrvy="GUIDES" targy="-166.6863483453209" targra="315.9769400513361" targpmdec="-3.565" targpmra="2.268" targepoch="2015.5" targuse="G" targname="guide_12278_146" targcat="Guides_S4.fits" targprio="10" configid="4" targdec="-5.596514937348489" targx="-108.9433876323961">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.003" mag_gg="15.051" emag_gg="0.0" mag_bp="15.333" mag_r="" mag_rp="14.603" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6915322861856359936" fibreid="879" cname="WVE_21020650-0415151" targclass="STAR" targparal="0.833" targprog="" targsrvy="GUIDES" targy="120.8718451853631" targra="315.5263080009768" targpmdec="-1.941" targpmra="-0.604" targepoch="2015.5" targuse="G" targname="guide_12284_487" targcat="Guides_S4.fits" targprio="10" configid="5" targdec="-4.252863424165193" targx="-155.1578807379337">
+     <photometry emag_r="" emag_i="" emag_rp="0.001" emag_bp="0.004" mag_gg="15.02" emag_gg="0.001" mag_bp="15.381" mag_r="" mag_rp="14.493" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6911913963493060480" fibreid="501" cname="WVE_21055356-0541029" targclass="STAR" targparal="1.009" targprog="" targsrvy="GUIDES" targy="-200.3070437129454" targra="316.4722919054739" targpmdec="-5.844" targpmra="-4.637" targepoch="2015.5" targuse="G" targname="guide_12278_305" targcat="Guides_S4.fits" targprio="10" configid="6" targdec="-5.680645359255573" targx="-11.75568633264979">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.003" mag_gg="14.519" emag_gg="0.0" mag_bp="14.853" mag_r="" mag_rp="14.023" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912156715044579968" fibreid="249" cname="WVE_21091292-0430068" targclass="STAR" targparal="0.496" targprog="" targsrvy="GUIDES" targy="10.50845174814508" targra="317.3032339573757" targpmdec="4.128" targpmra="3.707" targepoch="2015.5" targuse="G" targname="guide_12278_487" targcat="Guides_S4.fits" targprio="10" configid="7" targdec="-4.503977695727998" targx="195.6995152096538">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.002" mag_gg="14.847" emag_gg="0.0" mag_bp="15.207" mag_r="" mag_rp="14.323" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <target targid="6912205162275919872" cname="WVE_21014427-0500346" targclass="STAR" targparal="0.628" targprog="" targsrvy="GUIDES" targy="-28.45581764105367" targra="315.4337841263781" targpmdec="-9.48" targpmra="-1.742" targepoch="2015.5" targuse="G" targname="guide_12278_26" targcat="Guides_S4.fits" targprio="10" configid="8" targdec="-5.004079288177651" targx="-198.9728435451105">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.003" mag_gg="14.921" emag_gg="0.0" mag_bp="15.376" mag_r="" mag_rp="14.32" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <!-- The sky bundle -->
+    <!-- -\- I think this is generated at point of configure, so we don't need to add this! -->
+    <!-- <target targx="%%%" targy="%%%" cname="" targid="%%%" targra="%%%" targdec="%%%" targpmra="%%%" targpmdec="%%%" targprio="%%%" targuse="S" targsrvy="%%%" targname="%%%" targprog="%%%" targclass="%%%" targcat="%%%" targepoch="%%%" ifu_spaxel="C03" ifu_pa="%%%" automatic="%%%" targparal="0.0"/> -->
+    <!-- The white dwarf bundle -->
+    <target ifu_pa="98.42060467813606" targid="WD340676" fibreid="1919" cname="WVE_21074339-0511305" targclass="STAR" targparal="17.637" targprog="" targsrvy="WD" targy="-118.8449622961494" targra="316.9206039012472" targpmdec="30.11" ifu_spaxel="m09C19" targpmra="26.512" targepoch="2015.5" targuse="C" targname="da006500_800.dat" targcat="WD_S4" targprio="10" configid="9" targdec="-5.208427151189919" targx="94.14774753620635">
+     <photometry emag_r="" emag_i="" emag_rp="0.002" emag_bp="0.002" mag_gg="17.479" emag_gg="0.002" mag_bp="17.694" mag_r="" mag_rp="17.088" emag_g="" mag_g="" mag_i=""/>
+    </target>
+    <!-- At least 18 science targets -->
+    <target ifu_pa="%%%" targid="PGC_91697" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-149.4573222154596" targra="316.9554766551094" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_91697" targcat="WC_S4" targprio="1" configid="10" targdec="-5.35226882189331" targx="96.60720046124263">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_65950" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-54.62771209175901" targra="315.5604773073617" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_65950" targcat="WC_S4" targprio="1" configid="11" targdec="-5.112869610907405" targx="-176.6278021338742">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1051614" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-28.38455192835944" targra="315.9075756629329" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1051614" targcat="WC_S4" targprio="1" configid="12" targdec="-4.92757010760355" targx="-99.63587826474485">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1048686" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-71.06656020207075" targra="315.8571758345315" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1048686" targcat="WC_S4" targprio="1" configid="13" targdec="-5.147270606562884" targx="-117.3180136177585">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1058689" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="85.62341681360249" targra="315.6696761043191" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1058689" targcat="WC_S4" targprio="1" configid="14" targdec="-4.401169286548495" targx="-130.4875708442248">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1044404" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-161.2656855870654" targra="316.6392770868267" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1044404" targcat="WC_S4" targprio="1" configid="15" targdec="-5.464169416079566" targx="29.11335582183748">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1045221" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-136.171589667857" targra="316.2854769077546" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1045221" targcat="WC_S4" targprio="1" configid="16" targdec="-5.399770811217188" targx="-39.79448363486006">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1054814" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-8.505987816247062" targra="316.7642770081378" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1054814" targcat="WC_S4" targprio="1" configid="17" targdec="-4.687569056637799" targx="79.72099892474355">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1041786" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-195.9085993271534" targra="316.3954772211096" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1041786" targcat="WC_S4" targprio="1" configid="18" targdec="-5.671970865149723" targx="-26.96411712633698">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1048019" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-108.2230601921202" targra="316.7046779121438" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1048019" targcat="WC_S4" targprio="1" configid="19" targdec="-5.193070647103529" targx="51.13057322631656">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="-105.9434337866112" targid="PGC_1065694" fibreid="1119" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="161.8541806766174" targra="316.5479762676824" targpmdec="" ifu_spaxel="m01C19" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1065694" targcat="WC_S4" targprio="1" configid="20" targdec="-3.880569339837052" targx="63.8064891787827">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1051735" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-53.07560050631587" targra="316.712177115321" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1051735" targcat="WC_S4" targprio="1" configid="21" targdec="-4.918369345060611" targx="61.63125259630114">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1053791" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-15.12977134267515" targra="316.4892761311793" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1053791" targcat="WC_S4" targprio="1" configid="22" targdec="-4.766168927310527" targx="22.08977630126721">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1060024" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="88.37096940330923" targra="316.1358760746402" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1060024" targcat="WC_S4" targprio="1" configid="23" targdec="-4.308668425705336" targx="-33.3953886770256">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1059931" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="61.28591562898584" targra="316.9225777280029" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1059931" targcat="WC_S4" targprio="1" configid="24" targdec="-4.31476805161824" targx="124.3426407814288">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1063030" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="148.2722475263065" targra="315.6942765614574" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1063030" targcat="WC_S4" targprio="1" configid="25" targdec="-4.089469511438521" targx="-115.608164124044">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1053595" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-32.09697687762559" targra="316.9175783216748" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1053595" targcat="WC_S4" targprio="1" configid="26" targdec="-4.779469232603326" targx="107.5368075850084">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1055624" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="27.39312183174721" targra="316.060877028084" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1055624" targcat="WC_S4" targprio="1" configid="27" targdec="-4.624469468157935" targx="-58.77023880151638">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1049654" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="-85.56211942736357" targra="316.7350778614179" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1049654" targcat="WC_S4" targprio="1" configid="28" targdec="-5.075870174957976" targx="61.06166564953225">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1060631" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="93.92466193693609" targra="316.2363762568845" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1060631" targcat="WC_S4" targprio="1" configid="29" targdec="-4.264468267907475" targx="-11.80802526377575">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1058049" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="44.79494934968513" targra="316.5963765240829" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1058049" targcat="WC_S4" targprio="1" configid="30" targdec="-4.449469179138213" targx="54.0401246346716">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target ifu_pa="%%%" targid="PGC_1056295" cname="%%%" targclass="%%%" targparal="0.0" targprog="LR" targsrvy="WC" targy="6.12225347532533" targra="316.9821783254922" targpmdec="" ifu_spaxel="%%%" targpmra="" targepoch="2015.5" targuse="T" targname="PGC_1056295" targcat="WC_S4" targprio="1" configid="31" targdec="-4.578668589614379" targx="127.3487024988275">
+     <photometry emag_r="%%%" emag_i="%%%" emag_rp="%%%" emag_bp="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" mag_r="%%%" mag_rp="%%%" emag_g="%%%" mag_g="%%%" mag_i="%%%"/>
+    </target>
+    <target automatic="1" configid="32" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5471035506666" targdec="-3.879934390950955" targx="63.65232810133096" targuse="T" ifu_spaxel="m01C01" fibreid="1101" targy="162.013457295397"/>
+    <target automatic="1" configid="33" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5470638927987" targdec="-3.880285505100047" targx="63.63203072396146" targuse="T" ifu_spaxel="m01C02" fibreid="1102" targy="161.9424071167425"/>
+    <target automatic="1" configid="34" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5470242342486" targdec="-3.880636622848361" targx="63.61173362325606" targuse="T" ifu_spaxel="m01C03" fibreid="1103" targy="161.8713579045595"/>
+    <target automatic="1" configid="35" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5469845739431" targdec="-3.880987753697396" targx="63.59143624983673" targuse="T" ifu_spaxel="m01C04" fibreid="1104" targy="161.8003077357593"/>
+    <target automatic="1" configid="36" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5474340976465" targdec="-3.879794979279605" targx="63.72400830675006" targuse="T" ifu_spaxel="m01C05" fibreid="1105" targy="162.0314047167364"/>
+    <target automatic="1" configid="37" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5473944431673" targdec="-3.88014608937166" targx="63.70371092835553" targuse="T" ifu_spaxel="m01C06" fibreid="1106" targy="161.9603545351094"/>
+    <target automatic="1" configid="38" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5473547874684" targdec="-3.88049720781556" targx="63.68341355194839" targuse="T" ifu_spaxel="m01C07" fibreid="1107" targy="161.8893043584474"/>
+    <target automatic="1" configid="39" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5473151305499" targdec="-3.880848334609315" targx="63.6631161775283" targuse="T" ifu_spaxel="m01C08" fibreid="1108" targy="161.8182541867112"/>
+    <target automatic="1" configid="40" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.547275472412" targdec="-3.881199469750868" targx="63.64281880506405" targuse="T" ifu_spaxel="m01C09" fibreid="1109" targy="161.7472040198765"/>
+    <target automatic="1" configid="41" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5477646401136" targdec="-3.879655576387554" targx="63.79568823797008" targuse="T" ifu_spaxel="m01C10" fibreid="1110" targy="162.0493511782021"/>
+    <target automatic="1" configid="42" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.547724989024" targdec="-3.880006682421557" targx="63.77539085853589" targuse="T" ifu_spaxel="m01C11" fibreid="1111" targy="161.9783009935977"/>
+    <target automatic="1" configid="43" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5476853367141" targdec="-3.880357796808259" targx="63.7550934811178" targuse="T" ifu_spaxel="m01C12" fibreid="1112" targy="161.9072508139722"/>
+    <target automatic="1" configid="44" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5476456837201" targdec="-3.880708914793833" targx="63.73479638035483" targuse="T" ifu_spaxel="m01C13" fibreid="1113" targy="161.8362016008145"/>
+    <target automatic="1" configid="45" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5476060289692" targdec="-3.881060045879737" targx="63.71449900688862" targuse="T" ifu_spaxel="m01C14" fibreid="1114" targy="161.7651514310508"/>
+    <target automatic="1" configid="46" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5475663729979" targdec="-3.881411185312313" targx="63.69420163537595" targuse="T" ifu_spaxel="m01C15" fibreid="1115" targy="161.6941012661682"/>
+    <target automatic="1" configid="47" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.548095179138" targdec="-3.87951617277262" targx="63.8673684443264" targuse="T" ifu_spaxel="m01C16" fibreid="1116" targy="162.0672986028693"/>
+    <target automatic="1" configid="48" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5480555314391" targdec="-3.879867274747427" targx="63.84707106386379" targuse="T" ifu_spaxel="m01C17" fibreid="1117" targy="161.99624841527"/>
+    <target automatic="1" configid="49" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5480158825188" targdec="-3.880218385075747" targx="63.82677368541506" targuse="T" ifu_spaxel="m01C18" fibreid="1118" targy="161.9251982326653"/>
+    <target automatic="1" configid="50" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5479365810139" targdec="-3.880920630784862" targx="63.7861789344765" targuse="T" ifu_spaxel="m01C20" fibreid="1120" targy="161.7830978823217"/>
+    <target automatic="1" configid="51" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5478969284298" targdec="-3.881271766161635" targx="63.76588156196564" targuse="T" ifu_spaxel="m01C21" fibreid="1121" targy="161.7120477145145"/>
+    <target automatic="1" configid="52" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5478572746246" targdec="-3.881622909883854" targx="63.74558419141635" targuse="T" ifu_spaxel="m01C22" fibreid="1122" targy="161.6409975515795"/>
+    <target automatic="1" configid="53" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5483860693361" targdec="-3.8797278758533" targx="63.91875099498964" targuse="T" ifu_spaxel="m01C23" fibreid="1123" targy="162.0141948770772"/>
+    <target automatic="1" configid="54" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5483464238063" targdec="-3.880078982122264" targx="63.89845361550603" targuse="T" ifu_spaxel="m01C24" fibreid="1124" targy="161.9431446914851"/>
+    <target automatic="1" configid="55" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5483067770542" targdec="-3.880430096743533" targx="63.87815623801345" targuse="T" ifu_spaxel="m01C25" fibreid="1125" targy="161.8720945108813"/>
+    <target automatic="1" configid="56" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5482671296165" targdec="-3.880781214963307" targx="63.85785913720823" targuse="T" ifu_spaxel="m01C26" fibreid="1126" targy="161.8010452967504"/>
+    <target automatic="1" configid="57" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5482274804202" targdec="-3.881132346283104" targx="63.83756176368969" targuse="T" ifu_spaxel="m01C27" fibreid="1127" targy="161.7299951260111"/>
+    <target automatic="1" configid="58" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5481878300021" targdec="-3.881483485949179" targx="63.81726439215133" targuse="T" ifu_spaxel="m01C28" fibreid="1128" targy="161.6589449601538"/>
+    <target automatic="1" configid="59" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5486769616465" targdec="-3.879939578445446" targx="63.97013382075293" targuse="T" ifu_spaxel="m01C29" fibreid="1129" targy="161.9610921134976"/>
+    <target automatic="1" configid="60" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.548637318285" targdec="-3.880290689007012" targx="63.9498364422346" targuse="T" ifu_spaxel="m01C30" fibreid="1130" targy="161.8900419299083"/>
+    <target automatic="1" configid="61" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5485976737005" targdec="-3.880641807919716" targx="63.9295390657153" targuse="T" ifu_spaxel="m01C31" fibreid="1131" targy="161.8189917512892"/>
+    <target automatic="1" configid="62" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.548558027893" targdec="-3.880992935181542" targx="63.90924169118467" targuse="T" ifu_spaxel="m01C32" fibreid="1132" targy="161.7479415776059"/>
+    <target automatic="1" configid="63" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5485183808627" targdec="-3.881344070790486" targx="63.88894431863221" targuse="T" ifu_spaxel="m01C33" fibreid="1133" targy="161.6768914088238"/>
+    <target automatic="1" configid="64" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5489678549933" targdec="-3.880151290050259" targx="64.02151637223595" targuse="T" ifu_spaxel="m01C34" fibreid="1134" targy="161.9079883890693"/>
+    <target automatic="1" configid="65" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5489282137993" targdec="-3.880502404903096" targx="64.00121899469482" targuse="T" ifu_spaxel="m01C35" fibreid="1135" targy="161.8369382074758"/>
+    <target automatic="1" configid="66" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5488885719179" targdec="-3.88085352335407" targx="63.98092189382173" targuse="T" ifu_spaxel="m01C36" fibreid="1136" targy="161.7658889923608"/>
+    <target automatic="1" configid="67" targname="auto generated mIFU target" ifu_pa="-105.9434337866112" targra="316.5488489282764" targdec="-3.881204654904683" targx="63.96062452025607" targuse="T" ifu_spaxel="m01C37" fibreid="1137" targy="161.6948388206422"/>
+    <target automatic="1" configid="68" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7110284411754" targdec="-4.274800328651599" targx="82.99016154541127" targuse="S" ifu_spaxel="m03C01" fibreid="1301" targy="76.22169176949866"/>
+    <target automatic="1" configid="69" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7107602751205" targdec="-4.275040620398797" targx="82.92791854470968" targuse="S" ifu_spaxel="m03C02" fibreid="1302" targy="76.18186667569373"/>
+    <target automatic="1" configid="70" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7104921082384" targdec="-4.275280913102915" targx="82.865676384932" targuse="S" ifu_spaxel="m03C03" fibreid="1303" targy="76.1420421195189"/>
+    <target automatic="1" configid="71" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7102239332734" targdec="-4.27552121326555" targx="82.80343338141915" targuse="S" ifu_spaxel="m03C04" fibreid="1304" targy="76.1022170230634"/>
+    <target automatic="1" configid="72" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7113736582465" targdec="-4.274913079301963" targx="83.05577280336489" targuse="S" ifu_spaxel="m03C05" fibreid="1305" targy="76.18770081619007"/>
+    <target automatic="1" configid="73" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7111054953969" targdec="-4.275153370548447" targx="82.99352980309349" targuse="S" ifu_spaxel="m03C06" fibreid="1306" targy="76.14787572289319"/>
+    <target automatic="1" configid="74" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7108373280887" targdec="-4.275393666004183" targx="82.93128680138767" targuse="S" ifu_spaxel="m03C07" fibreid="1307" targy="76.10805062827366"/>
+    <target automatic="1" configid="75" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7105691563248" targdec="-4.275633965666871" targx="82.86904379831262" targuse="S" ifu_spaxel="m03C08" fibreid="1308" targy="76.06822553232647"/>
+    <target automatic="1" configid="76" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7103009801075" targdec="-4.275874269534233" targx="82.80680079382073" targuse="S" ifu_spaxel="m03C09" fibreid="1309" targy="76.02840043505836"/>
+    <target automatic="1" configid="77" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7117188691238" targdec="-4.275025834233076" targx="83.12138321890963" targuse="S" ifu_spaxel="m03C10" fibreid="1310" targy="76.15370932377513"/>
+    <target automatic="1" configid="78" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7114507094815" targdec="-4.275266124978513" targx="83.05914021903605" targuse="S" ifu_spaxel="m03C11" fibreid="1311" targy="76.11388423099005"/>
+    <target automatic="1" configid="79" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7111825453787" targdec="-4.275506419933556" targx="82.9968972177858" targuse="S" ifu_spaxel="m03C12" fibreid="1312" targy="76.07405913687367"/>
+    <target automatic="1" configid="80" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7109143804473" targdec="-4.275746715843905" targx="82.93465505746954" targuse="S" ifu_spaxel="m03C13" fibreid="1313" targy="76.03423458039317"/>
+    <target automatic="1" configid="81" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7106462074312" targdec="-4.275987019211256" targx="82.87241205341161" targuse="S" ifu_spaxel="m03C14" fibreid="1314" targy="75.99440948363406"/>
+    <target automatic="1" configid="82" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7103780299625" targdec="-4.276227326781354" targx="82.81016904794717" targuse="S" ifu_spaxel="m03C15" fibreid="1315" targy="75.95458438555605"/>
+    <target automatic="1" configid="83" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7120640810616" targdec="-4.275138586939859" targx="83.18699447669506" targuse="S" ifu_spaxel="m03C16" fibreid="1316" targy="76.11971837016731"/>
+    <target automatic="1" configid="84" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.711795924629" targdec="-4.275378877183783" targx="83.12475147727035" targuse="S" ifu_spaxel="m03C17" fibreid="1317" targy="76.07989327789116"/>
+    <target automatic="1" configid="85" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7115277637338" targdec="-4.275619171637675" targx="83.06250847644469" targuse="S" ifu_spaxel="m03C18" fibreid="1318" targy="76.040068184288"/>
+    <target automatic="1" configid="86" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7112595983785" targdec="-4.275859470299274" targx="83.0002654742016" targuse="S" ifu_spaxel="m03C19" fibreid="1319" targy="76.00024308935971"/>
+    <target automatic="1" configid="87" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7109914285658" targdec="-4.276099773166282" targx="82.93802247057566" targuse="S" ifu_spaxel="m03C20" fibreid="1320" targy="75.96041799310628"/>
+    <target automatic="1" configid="88" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7107232542983" targdec="-4.276340080236374" targx="82.87577946553981" targuse="S" ifu_spaxel="m03C21" fibreid="1321" targy="75.92059289553933"/>
+    <target automatic="1" configid="89" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7104550755785" targdec="-4.27658039150733" targx="82.81353645910767" targuse="S" ifu_spaxel="m03C22" fibreid="1322" targy="75.88076779665364"/>
+    <target automatic="1" configid="90" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7121411335771" targdec="-4.275491633666736" targx="83.19036189307234" targuse="S" ifu_spaxel="m03C23" fibreid="1323" targy="76.04590178568722"/>
+    <target automatic="1" configid="91" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7118729758915" targdec="-4.275731927619161" targx="83.1281188926696" targuse="S" ifu_spaxel="m03C24" fibreid="1324" targy="76.00607669259166"/>
+    <target automatic="1" configid="92" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7116048137439" targdec="-4.275972225779612" targx="83.06587589086627" targuse="S" ifu_spaxel="m03C25" fibreid="1325" targy="75.96625159817651"/>
+    <target automatic="1" configid="93" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7113366507658" targdec="-4.276212524893795" targx="83.00363372999669" targuse="S" ifu_spaxel="m03C26" fibreid="1326" targy="75.92642704139382"/>
+    <target automatic="1" configid="94" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7110684797018" targdec="-4.27645283146347" targx="82.941390725389" targuse="S" ifu_spaxel="m03C27" fibreid="1327" targy="75.88660194433095"/>
+    <target automatic="1" configid="95" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7108003041835" targdec="-4.276693142234322" targx="82.87914771940208" targuse="S" ifu_spaxel="m03C28" fibreid="1328" targy="75.84677684595387"/>
+    <target automatic="1" configid="96" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7122181891064" targdec="-4.2758446813727" targx="83.19373015114874" targuse="S" ifu_spaxel="m03C29" fibreid="1329" targy="75.97208573970796"/>
+    <target automatic="1" configid="97" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7119500301686" targdec="-4.276084979031586" targx="83.13148714978493" targuse="S" ifu_spaxel="m03C30" fibreid="1330" targy="75.9322606457992"/>
+    <target automatic="1" configid="98" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7116818667692" targdec="-4.276325280896618" targx="83.06924414701041" targuse="S" ifu_spaxel="m03C31" fibreid="1331" targy="75.8924355505669"/>
+    <target automatic="1" configid="99" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7114136989107" targdec="-4.27656558696551" targx="83.00700114281882" targuse="S" ifu_spaxel="m03C32" fibreid="1332" targy="75.85261045401731"/>
+    <target automatic="1" configid="100" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7111455265959" targdec="-4.276805897235943" targx="82.94475813725475" targuse="S" ifu_spaxel="m03C33" fibreid="1333" targy="75.81278535614862"/>
+    <target automatic="1" configid="101" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7122952403907" targdec="-4.27619773655781" targx="83.19709756627684" targuse="S" ifu_spaxel="m03C34" fibreid="1334" targy="75.89826915431644"/>
+    <target automatic="1" configid="102" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7120270802012" targdec="-4.276438037921282" targx="83.13485456394677" targuse="S" ifu_spaxel="m03C35" fibreid="1335" targy="75.8584440595949"/>
+    <target automatic="1" configid="103" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7117589191796" targdec="-4.27667834023687" targx="83.07261240252963" targuse="S" ifu_spaxel="m03C36" fibreid="1336" targy="75.81861950251229"/>
+    <target automatic="1" configid="104" targname="auto generated mIFU target" ifu_pa="-147.3876035915752" targra="316.7114907500705" targdec="-4.276918650006458" targx="83.01036939737787" targuse="S" ifu_spaxel="m03C37" fibreid="1337" targy="75.77879440515498"/>
+    <target automatic="1" configid="105" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9216579728063" targdec="-5.208646071620227" targx="94.35402034800481" targuse="T" ifu_spaxel="m09C01" fibreid="1901" targy="-118.9266599888671"/>
+    <target automatic="1" configid="106" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9215503304906" targdec="-5.208305406952563" targx="94.34320006224303" targuse="T" ifu_spaxel="m09C02" fibreid="1902" targy="-118.8535641405266"/>
+    <target automatic="1" configid="107" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.921442686509" targdec="-5.207964740748812" targx="94.33237992255802" targuse="T" ifu_spaxel="m09C03" fibreid="1903" targy="-118.7804692802822"/>
+    <target automatic="1" configid="108" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9213350379488" targdec="-5.207624063791275" targx="94.32155963610545" targuse="T" ifu_spaxel="m09C04" fibreid="1904" targy="-118.7073734297131"/>
+    <target automatic="1" configid="109" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9214145221606" targdec="-5.208913996302418" targx="94.29612760189698" targuse="T" ifu_spaxel="m09C05" fibreid="1905" targy="-118.9725798115779"/>
+    <target automatic="1" configid="110" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9213068793393" targdec="-5.208573334271322" targx="94.28530731597742" targuse="T" ifu_spaxel="m09C06" fibreid="1906" targy="-118.8994839636849"/>
+    <target automatic="1" configid="111" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9211992333959" targdec="-5.208232666091781" targx="94.27448702969723" targuse="T" ifu_spaxel="m09C07" fibreid="1907" targy="-118.8263881146764"/>
+    <target automatic="1" configid="112" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.921091584331" targdec="-5.207891991766719" targx="94.26366674305731" targuse="T" ifu_spaxel="m09C08" fibreid="1908" targy="-118.7532922645495"/>
+    <target automatic="1" configid="113" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9209839321451" targdec="-5.207551311299103" targx="94.25284645604818" targuse="T" ifu_spaxel="m09C09" fibreid="1909" targy="-118.6801964133009"/>
+    <target automatic="1" configid="114" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9211710678273" targdec="-5.209181914453509" targx="94.23823470908934" targuse="T" ifu_spaxel="m09C10" fibreid="1910" targy="-119.018498644706"/>
+    <target automatic="1" configid="115" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9210634244996" targdec="-5.208841255061026" targx="94.22741442297853" targuse="T" ifu_spaxel="m09C11" fibreid="1911" targy="-118.9454027972541"/>
+    <target automatic="1" configid="116" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9209557780502" targdec="-5.208500589518104" targx="94.21659413651" targuse="T" ifu_spaxel="m09C12" fibreid="1912" targy="-118.8723069486908"/>
+    <target automatic="1" configid="117" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9208481299368" targdec="-5.208159922438047" targx="94.2057739961256" targuse="T" ifu_spaxel="m09C13" fibreid="1913" targy="-118.7992120882248"/>
+    <target automatic="1" configid="118" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9207404772465" targdec="-5.207819244603098" targx="94.19495370895893" targuse="T" ifu_spaxel="m09C14" fibreid="1914" targy="-118.7261162374224"/>
+    <target automatic="1" configid="119" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9206328214362" targdec="-5.207478560626506" targx="94.18413342140612" targuse="T" ifu_spaxel="m09C15" fibreid="1915" targy="-118.6530203854873"/>
+    <target automatic="1" configid="120" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.920927612722" targdec="-5.209449835290803" targx="94.18034196239226" targuse="T" ifu_spaxel="m09C16" fibreid="1916" targy="-119.064418466662"/>
+    <target automatic="1" configid="121" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9208199688874" targdec="-5.209109178539159" targx="94.16952167611721" targuse="T" ifu_spaxel="m09C17" fibreid="1917" targy="-118.9913226196593"/>
+    <target automatic="1" configid="122" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9207123219317" targdec="-5.208768515635097" targx="94.15870138946673" targuse="T" ifu_spaxel="m09C18" fibreid="1918" targy="-118.9182267715455"/>
+    <target automatic="1" configid="123" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9204970186597" targdec="-5.208087171381266" targx="94.13706081512511" targuse="T" ifu_spaxel="m09C20" fibreid="1920" targy="-118.7720350719547"/>
+    <target automatic="1" configid="124" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9203893623446" targdec="-5.207746490037367" targx="94.12624052739444" targuse="T" ifu_spaxel="m09C21" fibreid="1921" targy="-118.6989392204621"/>
+    <target automatic="1" configid="125" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.920281702911" targdec="-5.20740580255276" targx="94.11542023931196" targuse="T" ifu_spaxel="m09C22" fibreid="1922" targy="-118.6258433678411"/>
+    <target automatic="1" configid="126" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9205765095921" targdec="-5.209377095482392" targx="94.11162878251596" targuse="T" ifu_spaxel="m09C23" fibreid="1923" targy="-119.0372414524772"/>
+    <target automatic="1" configid="127" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9204688621294" targdec="-5.209036435219172" targx="94.10080849571168" targuse="T" ifu_spaxel="m09C24" fibreid="1924" targy="-118.9641456048096"/>
+    <target automatic="1" configid="128" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9203612115467" targdec="-5.208695768804434" targx="94.0899882085357" targuse="T" ifu_spaxel="m09C25" fibreid="1925" targy="-118.8910497560213"/>
+    <target automatic="1" configid="129" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9202535593017" targdec="-5.208355100851477" targx="94.0791680674407" targuse="T" ifu_spaxel="m09C26" fibreid="1926" targy="-118.8179548953238"/>
+    <target automatic="1" configid="130" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9201459024811" targdec="-5.208014422142537" targx="94.06834777953853" targuse="T" ifu_spaxel="m09C27" fibreid="1927" targy="-118.7448590442782"/>
+    <target automatic="1" configid="131" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9200382425426" targdec="-5.207673737290857" targx="94.05752749127714" targuse="T" ifu_spaxel="m09C28" fibreid="1928" targy="-118.671763192101"/>
+    <target automatic="1" configid="132" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9202254015594" targdec="-5.209304357487908" targx="94.04291574807566" targuse="T" ifu_spaxel="m09C29" fibreid="1929" targy="-119.0100654269105"/>
+    <target automatic="1" configid="133" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9201177504697" targdec="-5.208963693714237" targx="94.03209546073455" targuse="T" ifu_spaxel="m09C30" fibreid="1930" targy="-118.9369695785663"/>
+    <target automatic="1" configid="134" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.920010096261" targdec="-5.20862302378997" targx="94.02127517301518" targuse="T" ifu_spaxel="m09C31" fibreid="1931" targy="-118.8638737291005"/>
+    <target automatic="1" configid="135" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9199024389344" targdec="-5.208282347718024" targx="94.01045488494906" targuse="T" ifu_spaxel="m09C32" fibreid="1932" targy="-118.7907778785052"/>
+    <target automatic="1" configid="136" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9197947784902" targdec="-5.20794166550133" targx="93.99963459649577" targuse="T" ifu_spaxel="m09C33" fibreid="1933" targy="-118.7176820267744"/>
+    <target automatic="1" configid="137" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9198742857134" targdec="-5.209231612087343" targx="93.97420256619152" targuse="T" ifu_spaxel="m09C34" fibreid="1934" targy="-118.9828884115243"/>
+    <target automatic="1" configid="138" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9197666309976" targdec="-5.2088909448042" targx="93.96338227830719" targuse="T" ifu_spaxel="m09C35" fibreid="1935" targy="-118.9097925625052"/>
+    <target automatic="1" configid="139" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9196589746211" targdec="-5.208550275981765" targx="93.95256213649033" targuse="T" ifu_spaxel="m09C36" fibreid="1936" targy="-118.836697701568"/>
+    <target automatic="1" configid="140" targname="auto generated mIFU target" ifu_pa="98.42060467813606" targra="316.9195513136707" targdec="-5.208209596402257" targx="93.94174184786179" targuse="T" ifu_spaxel="m09C37" fibreid="1937" targy="-118.7636018502835"/>
+   </field>
   </fields>
-
-    </observation> 
+ </observation>
 </root>

@@ -1,0 +1,17 @@
+Utils
+=====
+
+**Contributors:** David Murphy, Luis Peralta
+
+This directory contains software which is used in several stages. In particular,
+it contains:
+
+* *populate_fits_table_template.py*:
+
+  A module to populate a FITS template with the information contained in a
+  dictionary.
+
+* *get_data_from_xmls.py*:
+
+  A module used for getting data from the XML files.
+

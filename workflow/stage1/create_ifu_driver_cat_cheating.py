@@ -23,8 +23,8 @@ import glob
 
 import numpy as np
 
-from get_data_from_xmls import get_spa_data_of_targets_from_xmls
-from populate_fits_table_template import populate_fits_table_template
+from workflow.utils import get_spa_data_of_targets_from_xmls
+from workflow.utils import populate_fits_table_template
 
 
 if __name__ == '__main__':
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     ifu_driver_template = './aux/ifu_driver_template.fits'
     
     output_dir = './output/'
-    output_filename = output_dir + 'WC_IFU.fits'
+    output_filename = output_dir + 'WC_2020B2-ifu_driver_cat.fits'
     
     ############################################################################
     # Create the output directory if it does not exist
@@ -45,9 +45,9 @@ if __name__ == '__main__':
     
     ############################################################################
     # Get the dictionary with the data which will populate the template from the
-    # stage-5 XMLs
+    # stage-4 XMLs
     
-    xml_filename_list = glob.glob('../stage5/input/*.xml')
+    xml_filename_list = glob.glob('../stage4/input/*.xml')
     xml_filename_list.sort()
     
     data_dict = get_spa_data_of_targets_from_xmls(xml_filename_list)

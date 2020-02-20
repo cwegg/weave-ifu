@@ -4,7 +4,9 @@
 log.txt
 *#*
 
-workflow/stage1/aux/Aladin.jar
+# Stage 1 files:
 workflow/stage1/aux/Master_CatalogueTemplate.fits
+workflow/stage1/aux/progtemp.dat
+workflow/stage1/aux/Aladin.jar
 workflow/stage1/output/
 
