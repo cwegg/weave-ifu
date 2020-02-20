@@ -13,7 +13,7 @@ Input, output and auxiliar file(s)
 
 * **Output:**
 
-  + A FITS file containing the *input IFU driver catalogue*.  
+  + A FITS file containing the *input IFU driver catalogue*.
 
 * **Auxiliar file(s):**
 
@@ -24,11 +24,6 @@ Input, output and auxiliar file(s)
 Software
 --------
 
-* *populate_fits_table_template.py*:
-
-  A Python module to populate the template of the *input IFU driver catalogue*
-  with the information contained in a dictionary.
-
 * *create_ifu_driver_cat.py*:
 
   An example script illustrating how to use the module
@@ -36,7 +31,7 @@ Software
 
 * *plot_ifu_driver_cat_with_aladin.py*:
 
-  A script for plotting the contents of an *input IFU driver catalogue* with
+  A module for plotting the contents of an *input IFU driver catalogue* with
   Aladin.
 
 
@@ -45,7 +40,7 @@ Extra software
 
 * *create_ifu_driver_template.py*:
 
-  A script for creating the template with the structure of the *input IFU driver
+  A module for creating the template with the structure of the *input IFU driver
   catalogue*.
   **Only useful for CPS team.**
 
@@ -54,10 +49,5 @@ Extra software
   A script for creating an *input IFU driver catalogue*, cheating its data from
   the input XML files of stage 5.
   **Only useful for CPS team.**
-
-* *get_data_from_xmls.py*:
-
-  A Python module used in *create_ifu_driver_cat_cheating.py* for cheating the
-  information from stage 5.
   **Obviously, this module will not be needed in real workflow.**
 
