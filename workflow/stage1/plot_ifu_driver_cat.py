@@ -219,6 +219,6 @@ if __name__ == '__main__':
         logging.info('Downloading the Java JAR file of Aladin')
         get_aladin_jar(file_path=args.aladin)
     
-    plot_ifu_driver_cat_with_aladin(args.catalogue, output_dir=args.dir,
-                                    aladin_jar=args.aladin)
+    plot_ifu_driver_cat(args.catalogue, output_dir=args.dir,
+                        aladin_jar=args.aladin)
 
