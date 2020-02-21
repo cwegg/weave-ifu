@@ -96,3 +96,87 @@ def test_compare_ifu_driver_template(ifu_driver_template,
     
     assert returncode == 0
 
+
+@pytest.fixture(scope='session')
+def ifu_driver_cat(ifu_driver_template, tmpdir_factory):
+
+    file_path = str(tmpdir_factory.mktemp('output').join(
+                        'ifu_driver_cat.fits'))
+
+    data_dict = workflow.stage1._get_data_dict_for_example()
+
+    trimester, author, report_verbosity, cc_report = \
+        workflow.stage1._set_keywords_info_for_example()
+    
+    workflow.stage1.create_ifu_driver_cat(ifu_driver_template, data_dict,
+                                          file_path, trimester, author,
+                                          report_verbosity=report_verbosity,
+                                          cc_report=cc_report)
+    
+    return file_path
+
+
+def test_create_ifu_driver_cat(ifu_driver_cat):
+
+    assert os.path.exists(ifu_driver_cat)
+
+
+@pytest.fixture(scope='session')
+def pkg_ifu_driver_cat():
+
+    pkg_file_path = str(pathlib.Path(workflow.__path__[0]) / 'stage2' /
+                        'input' / 'WC_2020A1-ifu_driver_cat.fits')
+    
+    return pkg_file_path
+
+
+def test_pkg_ifu_driver_cat(pkg_ifu_driver_cat):
+
+    assert os.path.exists(pkg_ifu_driver_cat)
+
+
+def test_compare_ifu_driver_cat(ifu_driver_cat, pkg_ifu_driver_cat):
+
+    returncode = subprocess.call(
+                     ['fitsdiff', '-k', 'DATETIME',
+                      ifu_driver_cat, pkg_ifu_driver_cat])
+    
+    assert returncode == 0
+
+
+@pytest.fixture(scope='session')
+def ifu_driver_cat_cheating(ifu_driver_template, tmpdir_factory):
+
+    file_path = str(tmpdir_factory.mktemp('output').join(
+                        'ifu_driver_cat-cheating.fits'))
+    
+    xml_files_pattern = str(pathlib.Path(workflow.__path__[0]) / 'stage4' /
+                            'input' / '*.xml')
+
+    data_dict = workflow.stage1._get_data_dict_for_cheating(xml_files_pattern)
+
+    trimester, author, report_verbosity, cc_report = \
+        workflow.stage1._set_keywords_info_for_cheating()
+    
+    workflow.stage1.create_ifu_driver_cat(ifu_driver_template, data_dict,
+                                          file_path, trimester, author,
+                                          report_verbosity=report_verbosity,
+                                          cc_report=cc_report)
+    
+    return file_path
+
+
+def test_create_ifu_driver_cat_cheating(ifu_driver_cat_cheating):
+
+    assert os.path.exists(ifu_driver_cat_cheating)
+
+
+def test_compare_ifu_driver_cat_cheating(ifu_driver_cat_cheating,
+                                         pkg_ifu_driver_cat):
+
+    returncode = subprocess.call(
+                     ['fitsdiff', '-k', 'DATETIME',
+                      ifu_driver_cat_cheating, pkg_ifu_driver_cat])
+    
+    assert returncode == 0
+
