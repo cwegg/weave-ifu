@@ -18,11 +18,14 @@
 #
 
 
+import datetime
+
 from astropy.io import fits
 
 
 def populate_fits_table_template(fits_template, data_dict, output_filename,
-                                 overwrite=False, kwd_value_list=[]):
+                                 primary_kwds={}, update_datetime=True,
+                                 overwrite=False):
     """
     Populate a FITS table template with the provided data.
 
@@ -36,11 +39,13 @@ def populate_fits_table_template(fits_template, data_dict, output_filename,
         values should be array-like with the data to populate the table.
     output_filename : str
         The name of the output file which will be created.
+    primary_kwds : dict, optional
+        A dictionary with a list of keywords and their corresponding values
+        which will be written a in the primary header (updated or added).
+    update_datetime : bool, optional
+        Update DATETIME keyword in the output file.
     overwrite : bool, optional
         Overwrite the output FITS file.
-    kwd_value_list : dict, optional
-        A dictionary with a list of keywords and their corresponding values
-        which will be written a in the primary HDU.
     """
     
     # Read the FITS template
@@ -82,8 +87,15 @@ def populate_fits_table_template(fits_template, data_dict, output_filename,
     
     primary_hdu = template_primary_hdu
     
-    for kwd, value in kwd_value_list:
-        primary_hdu.header[kwd] = value
+    for kwd in primary_kwds.keys():
+        primary_hdu.header[kwd] = primary_kwds[kwd]
+
+    # Update the keyword DATETIME if requested (and it exists)
+    
+    if (update_datetime is True) and ('DATETIME' in primary_hdu.header.keys()):
+        datetime_str = datetime.datetime.utcnow().strftime(
+                           '%Y-%m-%d %H:%M:%S.%f')
+        primary_hdu.header['DATETIME'] = datetime_str
     
     # Create a HDU list and save it to a file
     
