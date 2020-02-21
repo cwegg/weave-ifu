@@ -1,5 +1,5 @@
+__all__ = ['get_progtemp_info', 'get_resources']
+
 from .create_sub_template import create_sub_template
-from .get_data_from_xmls import get_spa_data_of_target_fibres_from_xmls
-from .get_data_from_xmls import get_spa_data_of_target_and_sky_fibres_from_xmls
 from .populate_fits_table_template import populate_fits_table_template
 

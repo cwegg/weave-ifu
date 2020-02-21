@@ -25,7 +25,30 @@ def get_master_cat(file_path='Master_CatalogueTemplate.fits',
                    url=('http://casu.ast.cam.ac.uk/weave/data_model/cats/' +
                         'Master_CatalogueTemplate.fits')):
     """
-    Download the latest version of the master catalogue available.
+    Download the latest version of the master catalogue.
+
+    Parameters
+    ----------
+    file_path : str, optional
+        The path used to save the downloaded file.
+    url : str, optional
+        The URL with the location ot the file in Internet.
+
+    Returns
+    -------
+    file_path : str
+        The path used to save the downloaded file.
+    """
+    
+    _urlretrieve(url, file_path)
+    
+    return file_path
+
+
+def get_aladin_jar(file_path='Aladin.jar',
+                   url='https://aladin.u-strasbg.fr/java/Aladin.jar'):
+    """
+    Download the latest version of Aladin.
 
     Parameters
     ----------

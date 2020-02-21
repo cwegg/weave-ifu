@@ -24,7 +24,9 @@ import os
 import numpy as np
 
 from workflow.stage1 import create_ifu_driver_cat
-from workflow.utils import get_spa_data_of_target_fibres_from_xmls
+from workflow.utils.get_data_from_xmls \
+    import get_spa_data_of_target_fibres_from_xmls
+from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
 
     
 if __name__ == '__main__':
@@ -60,9 +62,11 @@ if __name__ == '__main__':
     # Add a column with the IFU_PA_REQUEST values. It will be 0 for LIFU and
     # NULL for mIFU
     
-    data_dict['IFU_PA_REQUEST'] = [0. if progtemp[0] in ['4', '5', '6']
-                                   else np.nan
-                                   for progtemp in data_dict['PROGTEMP']]
+    data_dict['IFU_PA_REQUEST'] = [
+        0. if get_obsmode_from_progtemp(progtemp) == 'LIFU'
+           else np.nan
+        for progtemp in data_dict['PROGTEMP']
+    ]
     
     ############################################################################
     # Set the needed information to populate some keywords of the primary header

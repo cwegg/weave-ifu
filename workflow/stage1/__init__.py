@@ -1,4 +1,4 @@
 from .create_ifu_driver_template import create_ifu_driver_template
 from .create_ifu_driver_cat import create_ifu_driver_cat
-from .plot_ifu_driver_cat_with_aladin import plot_ifu_driver_cat_with_aladin
+from .plot_ifu_driver_cat import plot_ifu_driver_cat
 
