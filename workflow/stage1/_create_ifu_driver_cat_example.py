@@ -25,6 +25,16 @@ import numpy as np
 from workflow.stage1 import create_ifu_driver_cat
 
 
+def set_keywords_info():
+
+    trimester = '2020A1'
+    author = 'a@domain.com'
+    report_verbosity = 1
+    cc_report = 'b@domain.com,c@domain.com'
+    
+    return trimester, author, report_verbosity, cc_report
+
+
 def get_data_dict():
     
     data_dict = {}
@@ -214,10 +224,7 @@ if __name__ == '__main__':
     ############################################################################
     # Set the needed information to populate some keywords of the primary header
 
-    trimester = '2020A1'
-    author = 'a@domain.com'
-    report_verbosity = 1
-    cc_report = 'b@domain.com,c@domain.com'
+    trimester, author, report_verbosity, cc_report = set_keywords_info()
     
     ############################################################################
     # Create the IFU driver catalogue

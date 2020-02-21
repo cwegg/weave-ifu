@@ -24,9 +24,28 @@ import os
 import numpy as np
 
 from workflow.stage1 import create_ifu_driver_cat
-from workflow.utils.get_data_from_xmls \
-    import get_spa_data_of_target_fibres_from_xmls
+from workflow.stage1 import _set_keywords_info_for_example as set_keywords_info
+from workflow.utils.get_data_from_xmls import get_spa_data_of_target_fibres_from_xmls
 from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
+
+
+def get_data_dict(xml_files_pattern):
+    
+    xml_filename_list = glob.glob(xml_files_pattern)
+    xml_filename_list.sort()
+    
+    data_dict = get_spa_data_of_target_fibres_from_xmls(xml_filename_list)
+    
+    # Add a column with the IFU_PA_REQUEST values. It will be 0 for LIFU and
+    # NULL for mIFU
+    
+    data_dict['IFU_PA_REQUEST'] = [
+        0. if get_obsmode_from_progtemp(progtemp) == 'LIFU'
+           else np.nan
+        for progtemp in data_dict['PROGTEMP']
+    ]
+    
+    return data_dict
 
     
 if __name__ == '__main__':
@@ -54,27 +73,12 @@ if __name__ == '__main__':
     # Get the dictionary with the data which will populate the template from the
     # XMLs
     
-    xml_filename_list = glob.glob(xml_files_pattern)
-    xml_filename_list.sort()
-    
-    data_dict = get_spa_data_of_target_fibres_from_xmls(xml_filename_list)
-    
-    # Add a column with the IFU_PA_REQUEST values. It will be 0 for LIFU and
-    # NULL for mIFU
-    
-    data_dict['IFU_PA_REQUEST'] = [
-        0. if get_obsmode_from_progtemp(progtemp) == 'LIFU'
-           else np.nan
-        for progtemp in data_dict['PROGTEMP']
-    ]
+    data_dict = get_data_dict(xml_files_pattern)
     
     ############################################################################
     # Set the needed information to populate some keywords of the primary header
 
-    trimester = '2020A1'
-    author = 'a@domain.com'
-    report_verbosity = 1
-    cc_report = 'b@domain.com,c@domain.com'
+    trimester, author, report_verbosity, cc_report = set_keywords_info()
     
     ############################################################################
     # Create the IFU driver catalogue
