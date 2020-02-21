@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<root version="1.13" report_verbosity="1" cc_report="daniela.bettoni@oapd.inaf.it,jalfonso@iac.es" author="jairomendezabreu@gmail.com">
+<root version="1.13" report_verbosity="1" cc_report="b@domain.com,c@domain.com" author="a@domain.com">
  <!--
       This file represents a blank XML template (version indicated in <root>) that is ready to be filled with:
 
@@ -164,7 +164,7 @@
 
       -->
  </programme>
- <observation obs_type="mIFU" ob_class="science" trimester="2016B2" obsgroup="%%%" obsgroup_validity="%%%" coordinate_system="ICRS" ob_priority="1.0" chained="False" pa="0.0" progtemp="71334" linkedgroup="%%%" name="125_psz1_A" casuid="-1">
+ <observation obs_type="mIFU" ob_class="science" trimester="2020A1" obsgroup="%%%" obsgroup_validity="%%%" coordinate_system="ICRS" ob_priority="1.0" chained="False" pa="0.0" progtemp="71334" linkedgroup="%%%" name="125_psz1_A" casuid="-1">
   <!-- [["name": identifier for this OB (OB-id?)]]-->
   <configure max_guide="8" seed="%%%" config_file_version="0.0002" plate="PLATE_B" max_sky="73" num_sky_fibres="740" plate_version="test_0009" max_calibration="20" configure_version="2.4.2" maximum_gate_angle="14.1">
    <conditions temperature="283" tlr="0.0065" relative_humidity="0.2" ha="0.01543142591439456" epoch="0.0003219202260424936" pressure="0"/>
