@@ -132,7 +132,66 @@ def _get_xml_data(xml_filename):
     return xml_data
 
 
-def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S']):
+def _get_value_from_xml_data(xml_data, target, key, formats):
+
+    # Get the column, element and attribute name
+    
+    element_name, attribute_name = key.split(':')
+    
+    # It the name of the element is 'target', choose as the element
+    # the current target; otherwise, get the element from the
+    # xml_data
+    
+    if element_name == 'target':
+        element = target
+    elif element_name == 'photometry':
+        photometry_element_list = target.getElementsByTagName('photometry')
+        
+        # If the photometry element exist, select it and continue
+        
+        if len(photometry_element_list) > 0:
+            element = photometry_element_list[0]
+        
+        # If there is not a photometry element (like for the sky fibres), the
+        # key should correspond to a float in the formats dictionary, so a NaN
+        # will be returned
+        
+        else:
+            
+            assert (formats[key] == float)
+            
+            formatted_value = np.nan
+            
+            return formatted_value
+        
+    else:
+        element = xml_data[element_name]
+    
+    # Get the raw value from the XML
+
+    raw_value = str(element.getAttribute(attribute_name))
+
+    if key in formats.keys():
+        
+        format_func = formats[key]
+        
+        if raw_value not in ['', '%%%']:
+            formatted_value = format_func(raw_value)
+        elif (raw_value == '') and (format_func == float):
+            formatted_value = np.nan
+        elif (raw_value == '%%%') and (format_func == float):
+            formatted_value = np.nan
+        else:
+            raise ValueError(
+                      'raw value {}, format {}'.format(raw_value, format_func))
+    else:
+        formatted_value = raw_value
+    
+    return formatted_value
+
+
+def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'],
+                               replace_triple_percent=True):
 
     # Get dictionaries with the lookup information and the formats
 
@@ -164,45 +223,21 @@ def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S']):
             # For each key in the lookup dictionary
             
             for key in lookup.keys():
-            
-                # Get the column, element and attribute name
+                
+                # Get its column name and its value and save them
                 
                 col_name = lookup[key]
-                element_name, attribute_name = key.split(':')
                 
-                # It the name of the element is 'target', choose as the element
-                # the current target; otherwise, get the element from the
-                # xml_data
+                value = _get_value_from_xml_data(xml_data, target, key, formats)
                 
-                if element_name == 'target':
-                    element = target
-                elif element_name == 'photometry':
-                    element = target.getElementsByTagName('photometry')[0]
-                else:
-                    element = xml_data[element_name]
+                # Replace the triple percent if requested
                 
-                # Get the raw value from the XML
+                if (replace_triple_percent is True) and (value == '%%%'):
+                    value = ''
 
-                raw_value = str(element.getAttribute(attribute_name))
-
-                if key in formats.keys():
-                    
-                    format_func = formats[key]
-                    
-                    if raw_value not in ['', '%%%']:
-                        formatted_value = format_func(raw_value)
-                    elif (raw_value == '') and (format_func == float):
-                        formatted_value = np.nan
-                    elif (raw_value == '%%%') and (format_func == float):
-                        formatted_value = np.nan
-                    else:
-                        raise ValueError(
-                                  'raw value {}, format {}'.format(
-                                  raw_value, format_func))
-                else:
-                    formatted_value = raw_value
-
-                data_dict[col_name].append(formatted_value)
+                # Save the value in the corresponding column
+                
+                data_dict[col_name].append(value)
 
     return data_dict
 
