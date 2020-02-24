@@ -3,7 +3,7 @@ Stage 1
 
 **Contributors:** David Murphy, Luis Peralta
 
-Input, output and auxiliar file(s)
+Input, auxiliar file(s) and output
 ----------------------------------
 
 * **Input:**
@@ -11,14 +11,14 @@ Input, output and auxiliar file(s)
   + A Python dictionary which items contain the information needed to fill the
     columns of the *IFU driver catalogue*.
 
-* **Output:**
-
-  + A FITS file containing the *IFU driver catalogue*.
-
 * **Auxiliar file(s):**
 
   + *aux/ifu_driver_template.fits*:
     A template with the structure of the *IFU driver catalogue*.
+
+* **Output:**
+
+  + A FITS file containing the *IFU driver catalogue*.
 
 
 Software
@@ -35,8 +35,8 @@ Software
 
 * *check_ifu_driver_cat.py*:
 
-  A Python script/function script for making some verifications on the contents
-  of an *IFU driver catalogue*.
+  A Python script/function for making some verifications on the contents of an
+  *IFU driver catalogue*.
   **To be developed.**
 
 * *plot_ifu_driver_cat.py*:
