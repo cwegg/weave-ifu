@@ -43,10 +43,10 @@ Stage 1: Creation of IFU driver catalogue
 **Contributors:** David Murphy, Luis Peralta
 
 The information from stage 0 needs to be standardised into a
-preliminary FITS catalogue containing "input IFU drivers": IFU target
+preliminary FITS catalogue containing "IFU drivers": IFU target
 positions in each row alongside other critical columns that need to be
 propagated through into the XML-based OB files. The example data in
-Stage1 provides a template for what quantities must be included, but
+stage1 provides a template for what quantities must be included, but
 should ideally encompass specific SPA-columns required for assembling
 the XML files.
 
@@ -84,7 +84,7 @@ to Configure.
 Stage 4: Configuring the XML files
 ----------------------------------
 
-**Contributors:** David Murphy, Luis Peralta
+**Contributors:** David Terrett
 
 End-users are required to have a copy of Configure installed and
 running for this stage. XML files are passed to the Configure
@@ -117,6 +117,8 @@ to be added later.
 Stage 6: Improving the IFU FITS catalogue (optional, but recommended)
 ---------------------------------------------------------------------
 
+**Contributors:** Jesús Falcón-Barroso
+
 This code collection takes the stage 5 FITS catalogue and populates
 all relevant missing columns. These fall into 3 categories:
 
@@ -136,6 +138,8 @@ all relevant missing columns. These fall into 3 categories:
 Stage 7: Creation of the combo FITS catalogue
 ---------------------------------------------
 
+**Contributors:** David Murphy, Luis Peralta
+
 The output of Stage 6 can now be merged with the equivalent MOS-based
 catalogue. In any given submission round, each survey must submit just
 one FITS file to the WASP for validation. This stage therefore simply
@@ -148,6 +152,8 @@ merge.
 
 Stage 8: Submission to WASP of the combo FITS catalogue
 -------------------------------------------------------
+
+**Contributors:** David Murphy, Clare Worley
 
 The combo FITS file is submitted to WASP for validation.
 After WASP has validated the combined FITS catalogue, a copy of the
@@ -173,6 +179,8 @@ mifu2 above lifu1 and lifu2.
 
 Stage 10: Submission to WASP of the XML files
 ---------------------------------------------
+
+**Contributors:** David Murphy, Clare Worley
 
 Once the XML files in stage 9 have been generated, end-users must
 wait until WASP opens for OB submissions for this round. Users will
