@@ -3,7 +3,29 @@ Stage 5
 
 **Contributors:** David Murphy, Luis Peralta
 
-It is worth noting that the modules **populate_fits_table_template.py** and **get_data_from_xmls.py** of *utils* were developed thinking in this stage too.
+Input, auxiliar file(s) and output
+----------------------------------
 
-Therefore, they could be used probably too for this stage directly, or after some trivial changes in order to extend the capabilities of these modules.
+* **Input:**
+
+  + A set of configured IFU XML files of one specific survey or PI proposal.
+
+* **Auxiliar file(s):**
+
+  + *aux/&ast;_CatalogueTemplate.fits*:
+    A template with the structure of the FITS catalogue of one specific survey
+    or PI proposal.
+
+* **Output:**
+
+  + An IFU FITS catalogue populated with the information available in the input
+    XML files.
+
+
+Software
+--------
+
+* *create_ifu_fits_cat.py*:
+
+  A Python script/function to create an IFU FITS catalogue.
 
