@@ -10,3 +10,6 @@ workflow/stage1/aux/progtemp.dat
 workflow/stage1/aux/Aladin.jar
 workflow/stage1/output/
 
+# Testing files:
+workflow_test/.cache/
+

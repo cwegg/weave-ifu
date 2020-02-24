@@ -575,8 +575,8 @@ if __name__ == '__main__':
     import os
     import glob
 
-    input_fits = './input/WC_IFU.fits'
-    trimester = '2016B2'
+    input_fits = './input/WC_2020A1-ifu_driver_cat.fits'
+    trimester = '2020A1'
     
     try:
         assert os.path.isfile(input_fits)

@@ -132,22 +132,7 @@ def _get_xml_data(xml_filename):
     return xml_data
 
 
-def get_spa_data_of_targets_from_xmls(xml_filename_list):
-    """
-    Get SPA data of the targets contained in a list of configure XML files.
-
-    Parameters
-    ----------
-    xml_filename_list: list of str
-        A list of configure XML files.
-
-    Returns
-    -------
-    data_dict : dict
-        A dictionary with the data. Its keys are the name of the SPA columns
-        which are expected to be potencially in the configure XML files, while
-        its values are lists containing these data.
-    """
+def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S']):
 
     # Get dictionaries with the lookup information and the formats
 
@@ -173,7 +158,7 @@ def get_spa_data_of_targets_from_xmls(xml_filename_list):
 
             # Skip the target if it is a guide or sky fibre
 
-            if str(target.getAttribute('targuse')) != 'T':
+            if str(target.getAttribute('targuse')) not in targuse_list:
                 continue
 
             # For each key in the lookup dictionary
@@ -218,6 +203,50 @@ def get_spa_data_of_targets_from_xmls(xml_filename_list):
                     formatted_value = raw_value
 
                 data_dict[col_name].append(formatted_value)
+
+    return data_dict
+
+
+def get_spa_data_of_target_fibres_from_xmls(xml_filename_list):
+    """
+    Get SPA data of the target fibres contained in a list of XML files.
+
+    Parameters
+    ----------
+    xml_filename_list: list of str
+        A list of configure XML files.
+
+    Returns
+    -------
+    data_dict : dict
+        A dictionary with the data. Its keys are the name of the SPA columns
+        which are expected to be potencially in the configure XML files, while
+        its values are lists containing these data.
+    """
+    data_dict = \
+        _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T'])
+
+    return data_dict
+
+
+def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list):
+    """
+    Get SPA data of the target and sky fibres contained in a list of XML files.
+
+    Parameters
+    ----------
+    xml_filename_list: list of str
+        A list of configure XML files.
+
+    Returns
+    -------
+    data_dict : dict
+        A dictionary with the data. Its keys are the name of the SPA columns
+        which are expected to be potencially in the configure XML files, while
+        its values are lists containing these data.
+    """
+    data_dict = \
+        _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'])
 
     return data_dict
 

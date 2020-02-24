@@ -18,213 +18,46 @@
 #
 
 
-import os
-import glob
-
-import numpy as np
-
 from workflow.utils import populate_fits_table_template
 
 
-def get_data_dict():
-    
-    data_dict = {}
-    
-    data_dict['TARGSRVY'] = \
-        ['WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC',
-         'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC',
-         'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC',
-         'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC',
-         'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC', 'WC']
-    
-    data_dict['TARGPROG'] = \
-        ['LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR',
-         'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR',
-         'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR',
-         'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR',
-         'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR', 'LR']
-    
-    data_dict['TARGID'] = \
-        ['PSZ1_125A', 'PSZ1_125A', 'PSZ1_125A', 'PSZ1_125A', 'PGC_91697',
-           'PGC_65950', 'PGC_1051614', 'PGC_1048686', 'PGC_1058689', 'PGC_1044404',
-         'PGC_1045221', 'PGC_1054814', 'PGC_1041786', 'PGC_1048019', 'PGC_1065694',
-           'PGC_1051735', 'PGC_1053791', 'PGC_1060024', 'PGC_1059931', 'PGC_1063030',
-         'PGC_1053595', 'PGC_1055624', 'PGC_1049654', 'PGC_1060631', 'PGC_1058049',
-           'PGC_1056295', 'PGC_91697', 'PGC_65950', 'PGC_1051614', 'PGC_1048686',
-         'PGC_1058689', 'PGC_1044404', 'PGC_1045221', 'PGC_1054814', 'PGC_1041786',
-           'PGC_1048019', 'PGC_1065694', 'PGC_1051735', 'PGC_1053791', 'PGC_1060024',
-         'PGC_1059931', 'PGC_1063030', 'PGC_1053595', 'PGC_1055624', 'PGC_1049654',
-           'PGC_1060631', 'PGC_1058049', 'PGC_1056295']
-    
-    data_dict['TARGNAME'] = \
-        ['PSZ1_125A', 'PSZ1_125A', 'PSZ1_125A', 'PSZ1_125A', 'CLUSTER1',
-           'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
-         'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
-           'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
-         'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
-           'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
-         'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
-           'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
-         'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1', 'CLUSTER1',
-           'CLUSTER1', 'CLUSTER1', 'CLUSTER1']
-    
-    data_dict['TARGPRIO'] = \
-        [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-         1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-         1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-         1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-         1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-    
-    data_dict['PROGTEMP'] = \
-        ['41334', '41334', '41334', '41334', '71334',
-           '71334', '71334', '71334', '71334', '71334',
-         '71334', '71334', '71334', '71334', '71334',
-           '71334', '71334', '71334', '71334', '71334',
-         '71334', '71334', '71334', '71334', '71334',
-           '71334', '71334', '71334', '71334', '71334',
-         '71334', '71334', '71334', '71334', '71334',
-           '71334', '71334', '71334', '71334', '71334',
-         '71334', '71334', '71334', '71334', '71334',
-           '71334', '71334', '71334']
-    
-    data_dict['OBSTEMP'] = \
-        ['IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
-           'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
-         'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
-           'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
-         'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
-           'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
-         'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
-           'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
-         'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
-           'IAEEB', 'IAEEB', 'IAEEB']
-    
-    data_dict['GAIA_RA'] = \
-        [316.369609537, 316.369609537, 316.369058752, 316.370143237, 316.9558,
-           315.5608, 315.9079, 315.8575, 315.67, 316.6396,
-         316.2858, 316.7646, 316.3958, 316.705, 316.5483,
-           316.7125, 316.4896, 316.1362, 316.9229, 315.6946,
-         316.9179, 316.0612, 316.7354, 316.2367, 316.5967,
-           316.9825, 316.9558, 315.5608, 315.9079, 315.8575,
-         315.67, 316.6396, 316.2858, 316.7646, 316.3958,
-           316.705, 316.5483, 316.7125, 316.4896, 316.1362,
-         316.9229, 315.6946, 316.9179, 316.0612, 316.7354,
-           316.2367, 316.5967, 316.9825]
-    
-    data_dict['GAIA_DEC'] = \
-        [-4.71060356792, -4.71060356792, -4.70967250147, -4.70966298315, -5.3525,
-           -5.1131, -4.9278, -5.1475, -4.4014, -5.4644,
-         -5.4, -4.6878, -5.6722, -5.1933, -3.8808,
-           -4.9186, -4.7664, -4.3089, -4.315, -4.0897,
-         -4.7797, -4.6247, -5.0761, -4.2647, -4.4497,
-           -4.5789, -5.3525, -5.1131, -4.9278, -5.1475,
-         -4.4014, -5.4644, -5.4, -4.6878, -5.6722,
-           -5.1933, -3.8808, -4.9186, -4.7664, -4.3089,
-         -4.315, -4.0897, -4.7797, -4.6247, -5.0761,
-           -4.2647, -4.4497, -4.5789]
-    
-    data_dict['GAIA_EPOCH'] = \
-        [2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-           2015.5, 2015.5, 2015.5]
-    
-    data_dict['GAIA_PMRA'] = \
-        [np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan]
-    
-    data_dict['GAIA_PMDEC'] = \
-        [np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan]
-    
-    data_dict['GAIA_PARAL'] = \
-        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    
-    data_dict['IFU_PA_REQUEST'] = \
-        [0.0, 0.0, 0.0, 0.0, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan]
-    
-    data_dict['IFU_DITHER'] = \
-        [3, -1, -1, -1, 3, 3, 3, 3, 3, 3,
-         3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-         3, 3, 3, 3, 3, 3, 5, 5, 5, 5,
-         5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-         5, 5, 5, 5, 5, 5, 5, 5]
-    
-    return data_dict
+def create_ifu_driver_cat(ifu_driver_template, data_dict, output_filename,
+                          trimester, author, report_verbosity=1, cc_report='',
+                          overwrite=False):
+    """
+    Create a IFU driver catalogue using a template and the needed information.
 
+    Parameters
+    ----------
+    ifu_driver_template : str
+        A FITS file containing an IFU driver template.
+    data_dict : dict
+        A dictionary with the information needed to populate the columns of the
+        IFU driver template. The keys of the dictionary should be the column
+        names, while their values should be list or array-like objects with the
+        information of each column.
+    output_filename : str
+        The name of the output file for the new IFU driver catalogue.
+    trimester : str
+        The trimester of the catalogue (e.g. 2020A1).
+    author : str
+        The email address of the author of the catalogue.
+    report_verbosity : {0, 1}, optional
+        The level of verbosity which will be inherited in the files to be
+        submitted to WASP.
+    cc_report : str, optional
+        A comma separated list of email addresses to be CC'ed in WASP
+        submisions.
+    overwrite : bool, optional
+        Overwrite the output FITS file containing the IFU driver catalogue.
+    """
 
-if __name__ == '__main__':
-    
-    ############################################################################
-    # Set the location of the template and the output file and directory
-    
-    ifu_driver_template = './aux/ifu_driver_template.fits'
-    
-    output_dir = './output/'
-    output_filename = output_dir + 'WC_2020B2-ifu_driver_cat.fits'
-    
-    ############################################################################
-    # Create the output directory if it does not exist
-    
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    
-    ############################################################################
-    # Get a dictionary with the data which will populate the template
-    
-    # NOTE: See the above function _get_data_dict to understand the structure of
-    # the dictionary
-    
-    data_dict = get_data_dict()
-    
-    ############################################################################
-    # Create a list with the information needed to populate the keywords of
-    # of the primary header of the template
-    
-    kwd_value_list = [
-        ('AUTHOR',   'jairomendezabreu@gmail.com'),
-        ('CCREPORT', 'daniela.bettoni@oapd.inaf.it,jalfonso@iac.es'),
-        ('VERBOSE',   1)
-    ]
-    
-    ############################################################################
-    # Populate the template with the provided data
+    assert report_verbosity in [0, 1]
+
+    primary_kwds = {'TRIMESTE': trimester, 'VERBOSE': report_verbosity,
+                    'AUTHOR': author, 'CCREPORT': cc_report}
     
     populate_fits_table_template(ifu_driver_template, data_dict,
-                                 output_filename, kwd_value_list=kwd_value_list)
+                                 output_filename, primary_kwds=primary_kwds,
+                                 update_datetime=True, overwrite=overwrite)
 

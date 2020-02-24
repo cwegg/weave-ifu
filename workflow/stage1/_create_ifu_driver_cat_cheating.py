@@ -18,16 +18,42 @@
 #
 
 
-import os
 import glob
+import os
 
 import numpy as np
 
-from workflow.utils import get_spa_data_of_targets_from_xmls
-from workflow.utils import populate_fits_table_template
+from workflow.stage1 import create_ifu_driver_cat
+from workflow.stage1 import _set_keywords_info_for_example as set_keywords_info
+from workflow.utils.get_data_from_xmls import get_spa_data_of_target_fibres_from_xmls
+from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
 
 
+def get_data_dict(xml_files_pattern):
+    
+    xml_filename_list = glob.glob(xml_files_pattern)
+    xml_filename_list.sort()
+    
+    data_dict = get_spa_data_of_target_fibres_from_xmls(xml_filename_list)
+    
+    # Add a column with the IFU_PA_REQUEST values. It will be 0 for LIFU and
+    # NULL for mIFU
+    
+    data_dict['IFU_PA_REQUEST'] = [
+        0. if get_obsmode_from_progtemp(progtemp) == 'LIFU'
+           else np.nan
+        for progtemp in data_dict['PROGTEMP']
+    ]
+    
+    return data_dict
+
+    
 if __name__ == '__main__':
+
+    ############################################################################
+    # Set the filename pattern of the XMLs used for cheating
+    
+    xml_files_pattern = '../stage4/input/*.xml'
     
     ############################################################################
     # Set the location of the template and the output file and directory
@@ -35,7 +61,7 @@ if __name__ == '__main__':
     ifu_driver_template = './aux/ifu_driver_template.fits'
     
     output_dir = './output/'
-    output_filename = output_dir + 'WC_2020B2-ifu_driver_cat.fits'
+    output_filename = output_dir + 'WC_2020A1-ifu_driver_cat-cheating.fits'
     
     ############################################################################
     # Create the output directory if it does not exist
@@ -45,33 +71,19 @@ if __name__ == '__main__':
     
     ############################################################################
     # Get the dictionary with the data which will populate the template from the
-    # stage-4 XMLs
+    # XMLs
     
-    xml_filename_list = glob.glob('../stage4/input/*.xml')
-    xml_filename_list.sort()
-    
-    data_dict = get_spa_data_of_targets_from_xmls(xml_filename_list)
-    
-    # Add a column with the IFU_PA_REQUEST values. It will be 0 for LIFU and
-    # NULL for mIFU
-    
-    data_dict['IFU_PA_REQUEST'] = [0. if progtemp[0] in ['4', '5', '6']
-                                   else np.nan
-                                   for progtemp in data_dict['PROGTEMP']]
+    data_dict = get_data_dict(xml_files_pattern)
     
     ############################################################################
-    # Create a list with the information needed to populate the keywords of
-    # of the primary header of the template
-    
-    kwd_value_list = [
-        ('AUTHOR',   'jairomendezabreu@gmail.com'),
-        ('CCREPORT', 'daniela.bettoni@oapd.inaf.it,jalfonso@iac.es'),
-        ('VERBOSE',   1)
-    ]
+    # Set the needed information to populate some keywords of the primary header
+
+    trimester, author, report_verbosity, cc_report = set_keywords_info()
     
     ############################################################################
-    # Populate the template with the provided data
+    # Create the IFU driver catalogue
     
-    populate_fits_table_template(ifu_driver_template, data_dict,
-                                 output_filename, kwd_value_list=kwd_value_list)
+    create_ifu_driver_cat(ifu_driver_template, data_dict, output_filename,
+                          trimester, author, report_verbosity=report_verbosity,
+                          cc_report=cc_report)
 

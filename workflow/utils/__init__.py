@@ -1,3 +1,3 @@
-from .get_data_from_xmls import get_spa_data_of_targets_from_xmls
+from .create_sub_template import create_sub_template
 from .populate_fits_table_template import populate_fits_table_template
 

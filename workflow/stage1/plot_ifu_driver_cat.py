@@ -21,18 +21,12 @@
 import argparse
 import os.path
 import logging
-import urllib.request
 import subprocess
 
 from astropy.io import fits
 
-
-def _get_aladin_jar(aladin_jar_path='Aladin.jar',
-                  aladin_jar_url='https://aladin.u-strasbg.fr/java/Aladin.jar'):
-
-    urllib.request.urlretrieve(aladin_jar_url, aladin_jar_path)
-
-    return aladin_jar_path
+from workflow.utils.get_resources import get_aladin_jar
+from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
 
 
 def _send_command(cmd, p, option='write', encoding='utf-8'):
@@ -51,24 +45,8 @@ def _send_command(cmd, p, option='write', encoding='utf-8'):
     send_func('{}\n'.format(cmd).encode(encoding))
 
 
-def _get_obsmode_from_progtemp(progtemp):
-
-    first_char = progtemp[0]
-
-    if first_char in ['1', '2', '3']:
-        result = 'MOS'
-    elif first_char in ['4', '5', '6']:
-        result = 'LIFU'
-    elif first_char in ['7', '8', '9']:
-        result = 'mIFU'
-    else:
-        raise ValueError
-
-    return result
-
-
-def plot_ifu_driver_cat_with_aladin(cat_filename, output_dir='output/',
-                                    aladin_jar='Aladin.jar'):
+def plot_ifu_driver_cat(cat_filename, output_dir='output/',
+                        aladin_jar='Aladin.jar'):
     """
     Plot targets contained in an IFU driver catalogue with Aladin.
 
@@ -98,10 +76,6 @@ def plot_ifu_driver_cat_with_aladin(cat_filename, output_dir='output/',
     # Set the grid one
 
     _send_command('grid on', p)
-
-    # # Load the catalogue
-
-    # _send_command('load {}'.format(cat_filename), p)
 
     # Open the catalogue
 
@@ -144,7 +118,7 @@ def plot_ifu_driver_cat_with_aladin(cat_filename, output_dir='output/',
 
             # Guess the obsmode and set some parameters acording to it
 
-            obsmode = _get_obsmode_from_progtemp(progtemp)
+            obsmode = get_obsmode_from_progtemp(progtemp)
 
             if obsmode == 'LIFU':
                 zoom_size_str = '30arcmin'
@@ -243,8 +217,8 @@ if __name__ == '__main__':
 
     if not os.path.exists(args.aladin):
         logging.info('Downloading the Java JAR file of Aladin')
-        _get_aladin_jar(aladin_jar_path=args.aladin)
+        get_aladin_jar(file_path=args.aladin)
     
-    plot_ifu_driver_cat_with_aladin(args.catalogue, output_dir=args.dir,
-                                    aladin_jar=args.aladin)
+    plot_ifu_driver_cat(args.catalogue, output_dir=args.dir,
+                        aladin_jar=args.aladin)
 

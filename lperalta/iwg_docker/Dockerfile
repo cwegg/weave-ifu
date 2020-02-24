@@ -4,10 +4,10 @@ MAINTAINER Luis Peralta
 
 LABEL name="iwg"
 LABEL description="Image to create an environment to run WEAVE IWG software"
-LABEL version="0.01"
+LABEL version="0.03"
 
 RUN apt-get update
-RUN apt-get install -y python3-astropy python3-ipdb
+RUN apt-get install -y python3-ipdb python3-astropy astropy-utils
 
 COPY entrypoint.sh /
 

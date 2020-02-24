@@ -6,8 +6,11 @@ Documentation for IFU workflow
 This document details the workflow shown in the relevant html file
 included within this repository. Please use this guide in conjunction
 with the html file. Hyperlinks therein (depicted as globes) provide
-access to the resources described here. Bitbucket does not render the
-html in-page, so please use the following mirror:
+access to the resources described here.
+
+Bitbucket does not render the html in-page. You can use the following link
+to quickly access to a mirror (which eventually could *not* be synched with
+the latest version of any branch of this repository):
 
 http://casu.ast.cam.ac.uk/~dmurphy/weave/ifu_workflow/ifu_workflow.html
 
