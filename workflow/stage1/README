@@ -9,16 +9,16 @@ Input, output and auxiliar file(s)
 * **Input:**
 
   + A Python dictionary which items contain the information needed to fill the
-    columns of the *input IFU driver catalogue*.
+    columns of the *IFU driver catalogue*.
 
 * **Output:**
 
-  + A FITS file containing the *input IFU driver catalogue*.
+  + A FITS file containing the *IFU driver catalogue*.
 
 * **Auxiliar file(s):**
 
   + *aux/ifu_driver_template.fits*:
-    A template with the structure of the *input IFU driver catalogue*.
+    A template with the structure of the *IFU driver catalogue*.
 
 
 Software
@@ -26,19 +26,23 @@ Software
 
 * *create_ifu_driver_cat.py*:
 
-  An example script illustrating how to use the module
-  *populate_fits_table_template* to create an *input IFU driver catalogue*.
+  A Python function to create an *IFU driver catalogue*.
+
+* *_create_ifu_driver_cat_example.py*:
+
+  A Python script which illustrates how to use the Python function in
+  *create_ifu_driver_cat.py* to create an *IFU driver catalogue*.
 
 * *check_ifu_driver_cat.py*:
 
-  A script for making some verifications on the contents of an *input IFU driver
-  catalogue*.
+  A Python script/function script for making some verifications on the contents
+  of an *IFU driver catalogue*.
   **To be developed.**
 
-* *plot_ifu_driver_cat_with_aladin.py*:
+* *plot_ifu_driver_cat.py*:
 
-  A module for plotting the contents of an *input IFU driver catalogue* with
-  Aladin.
+  A Python script/function for plotting the contents of an *IFU driver
+  catalogue* with Aladin.
 
 
 Extra software
@@ -46,14 +50,15 @@ Extra software
 
 * *create_ifu_driver_template.py*:
 
-  A module for creating the template with the structure of the *input IFU driver
-  catalogue*.
+  A Python script/function for creating the template with the structure of the
+  *IFU driver catalogue*.
   **Only useful for CPS team.**
 
-* *create_ifu_driver_cat_cheating.py*:
+* *_create_ifu_driver_cat_cheating.py*:
 
-  A script for creating an *input IFU driver catalogue*, cheating its data from
-  the input XML files of stage 5.
+  A Python script which uses the Python function in *create_ifu_driver_cat.py*
+  to create an *IFU driver catalogue* from the XML files available at the input
+  of stage 4.
   **Only useful for CPS team.**
-  **Obviously, this module will not be needed in real workflow.**
+  **Obviously, this script will not be needed in real workflow.**
 
