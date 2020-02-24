@@ -29,6 +29,12 @@ Software
   An example script illustrating how to use the module
   *populate_fits_table_template* to create an *input IFU driver catalogue*.
 
+* *check_ifu_driver_cat.py*:
+
+  A script for making some verifications on the contents of an *input IFU driver
+  catalogue*.
+  **To be developed.**
+
 * *plot_ifu_driver_cat_with_aladin.py*:
 
   A module for plotting the contents of an *input IFU driver catalogue* with
