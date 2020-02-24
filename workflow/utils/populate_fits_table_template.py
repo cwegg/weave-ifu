@@ -32,7 +32,7 @@ def populate_fits_table_template(fits_template, data_dict, output_filename,
     Parameters
     ----------
     fits_template : list of str
-        A FITS template with a primary HDU and a primary extension with a table.
+        A FITS template with a primary HDU and a first extension with a table.
     data_dict : dict
         A dictionary with the data. Its keys should contain the name of the
         columns of the table in the first extension of the FITS template. Its
