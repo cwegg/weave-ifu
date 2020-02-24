@@ -164,6 +164,8 @@ version that has CASU-generated CNAMES. The WEAVE Survey Working Group
 Stage 9: Finishing the XML files
 --------------------------------
 
+**Contributors:** ?
+
 End-users for the IFU workflow also take the WASP-validated FITS
 catalogue and generate XML OB files. The code collection in stage 9
 takes the output from the WASP validation and combines it with the
