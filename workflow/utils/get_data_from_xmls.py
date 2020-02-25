@@ -285,3 +285,27 @@ def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list):
 
     return data_dict
 
+
+def get_trimester_from_xml(xml_file):
+    """
+    Get the trimester from a XML file.
+
+    Parameters
+    ----------
+    xml_file: str
+        The name of a XML file.
+
+    Returns
+    -------
+    trimester : str
+        The trimester present in the XML file.
+    """
+    
+    dom = xml.dom.minidom.parse(xml_file)
+    
+    observation_element = dom.getElementsByTagName('observation')[0]
+    
+    trimester = observation_element.getAttribute('trimester')
+    
+    return trimester
+
