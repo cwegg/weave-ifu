@@ -242,7 +242,8 @@ def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'],
     return data_dict
 
 
-def get_spa_data_of_target_fibres_from_xmls(xml_filename_list):
+def get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
+                                            replace_triple_percent=True):
     """
     Get SPA data of the target fibres contained in a list of XML files.
 
@@ -250,6 +251,8 @@ def get_spa_data_of_target_fibres_from_xmls(xml_filename_list):
     ----------
     xml_filename_list : list of str
         A list of configure XML files.
+    replace_triple_percent : bool, optional
+        It will replace the values of '%%%' by '' also for data of type string.
 
     Returns
     -------
@@ -259,12 +262,14 @@ def get_spa_data_of_target_fibres_from_xmls(xml_filename_list):
         its values are lists containing these data.
     """
     data_dict = \
-        _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T'])
+        _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T'],
+                                  replace_triple_percent=replace_triple_percent)
 
     return data_dict
 
 
-def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list):
+def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list,
+                                                   replace_triple_percent=True):
     """
     Get SPA data of the target and sky fibres contained in a list of XML files.
 
@@ -272,6 +277,8 @@ def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list):
     ----------
     xml_filename_list : list of str
         A list of configure XML files.
+    replace_triple_percent : bool, optional
+        It will replace the values of '%%%' by '' also for data of type string.
 
     Returns
     -------
@@ -281,7 +288,8 @@ def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list):
         its values are lists containing these data.
     """
     data_dict = \
-        _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'])
+        _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'],
+                                  replace_triple_percent=replace_triple_percent)
 
     return data_dict
 
