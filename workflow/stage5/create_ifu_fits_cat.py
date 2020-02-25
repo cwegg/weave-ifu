@@ -27,22 +27,8 @@ import numpy as np
 from astropy.io import fits
 
 from workflow.utils import populate_fits_table_template
-from workflow.utils.get_data_from_xmls import get_trimester_from_xml
+from workflow.utils.get_data_from_xmls import get_trimester_from_xmls
 from workflow.utils.get_data_from_xmls import get_spa_data_of_target_and_sky_fibres_from_xmls
-
-
-def _get_trimester_from_xml_list(xml_filename_list):
-    
-    trimester_list = [get_trimester_from_xml(xml_file)
-                      for xml_file in xml_filename_list]
-    
-    trimester_set = set(trimester_set)
-    
-    assert len(trimester_set) == 1
-    
-    trimester = trimester_list[0]
-    
-    return trimester
 
 
 def _get_col_null_dict_of_template(fits_template):
@@ -185,7 +171,7 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
     
     # Get the trimester of the files (which should be the same for all them)
     
-    trimester = _get_trimester_from_xml_list(xml_filename_list)
+    trimester = get_trimester_from_xmls(xml_filename_list)
     
     primary_kwds = {'TRIMESTE': trimester}
     

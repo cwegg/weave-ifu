@@ -156,7 +156,7 @@ def ifu_driver_cat_cheating(ifu_driver_template, tmpdir_factory):
     data_dict = workflow.stage1._get_data_dict_for_cheating(xml_files_pattern)
 
     trimester, author, report_verbosity, cc_report = \
-        workflow.stage1._set_keywords_info_for_cheating()
+        workflow.stage1._get_keywords_info_for_cheating(xml_files_pattern)
     
     workflow.stage1.create_ifu_driver_cat(ifu_driver_template, data_dict,
                                           file_path, trimester, author,

@@ -248,7 +248,7 @@ def get_spa_data_of_target_fibres_from_xmls(xml_filename_list):
 
     Parameters
     ----------
-    xml_filename_list: list of str
+    xml_filename_list : list of str
         A list of configure XML files.
 
     Returns
@@ -270,7 +270,7 @@ def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list):
 
     Parameters
     ----------
-    xml_filename_list: list of str
+    xml_filename_list : list of str
         A list of configure XML files.
 
     Returns
@@ -286,14 +286,37 @@ def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list):
     return data_dict
 
 
-def get_trimester_from_xml(xml_file):
+def _get_attribute_in_simple_element_of_xml_file(xml_file, element_name,
+                                                 attribute_name):
+    
+    dom = xml.dom.minidom.parse(xml_file)
+    
+    element = dom.getElementsByTagName(element_name)[0]
+    
+    attribute = element.getAttribute(attribute_name)
+    
+    return attribute
+
+
+def _get_single_value_from_list(value_list):
+
+    value_set = set(value_list)
+    
+    assert len(value_set) == 1
+    
+    value = value_list[0]
+    
+    return value
+
+
+def get_trimester_from_xmls(input_xmls):
     """
-    Get the trimester from a XML file.
+    Get the trimester from a list of XML files or a single file.
 
     Parameters
     ----------
-    xml_file: str
-        The name of a XML file.
+    input_xmls : list of str or str
+        A list of XML filenames or a single filename.
 
     Returns
     -------
@@ -301,11 +324,107 @@ def get_trimester_from_xml(xml_file):
         The trimester present in the XML file.
     """
     
-    dom = xml.dom.minidom.parse(xml_file)
+    if type(input_xmls) is list:
+        xml_filename_list = input_xmls
+    else:
+        xml_filename_list = [input_xmls]
     
-    observation_element = dom.getElementsByTagName('observation')[0]
+    trimester_list = [_get_attribute_in_simple_element_of_xml_file(
+                          xml_file, 'observation', 'trimester')
+                      for xml_file in xml_filename_list]
     
-    trimester = observation_element.getAttribute('trimester')
+    trimester = _get_single_value_from_list(trimester_list)
     
     return trimester
+
+
+def get_author_from_xmls(input_xmls):
+    """
+    Get the author from a list of XML files or a single file.
+
+    Parameters
+    ----------
+    input_xmls : list of str or str
+        A list of XML filenames or a single filename.
+
+    Returns
+    -------
+    author : str
+        The author present in the XML file.
+    """
+    
+    if type(input_xmls) is list:
+        xml_filename_list = input_xmls
+    else:
+        xml_filename_list = [input_xmls]
+    
+    author_list = [_get_attribute_in_simple_element_of_xml_file(
+                       xml_file, 'root', 'author')
+                   for xml_file in xml_filename_list]
+    
+    author = _get_single_value_from_list(author_list)
+    
+    return author
+
+
+def get_cc_report_from_xmls(input_xmls):
+    """
+    Get the cc_report from a list of XML files or a single file.
+
+    Parameters
+    ----------
+    input_xmls : list of str or str
+        A list of XML filenames or a single filename.
+
+    Returns
+    -------
+    cc_report : str
+        The cc_report present in the XML file.
+    """
+    
+    if type(input_xmls) is list:
+        xml_filename_list = input_xmls
+    else:
+        xml_filename_list = [input_xmls]
+    
+    cc_report_list = [_get_attribute_in_simple_element_of_xml_file(xml_file,
+                          'root', 'cc_report')
+                      for xml_file in xml_filename_list]
+    
+    cc_report = _get_single_value_from_list(cc_report_list)
+    
+    return cc_report
+
+
+def get_report_verbosity_from_xmls(input_xmls):
+    """
+    Get the report_verbosity from a list of XML files or a single file.
+
+    Parameters
+    ----------
+    input_xmls : list of str or str
+        A list of XML filenames or a single filename.
+
+    Returns
+    -------
+    report_verbosity : str
+        The report_verbosity present in the XML file.
+    """
+    
+    if type(input_xmls) is list:
+        xml_filename_list = input_xmls
+    else:
+        xml_filename_list = [input_xmls]
+    
+    report_verbosity_list = [_get_attribute_in_simple_element_of_xml_file(
+                                 xml_file, 'root', 'report_verbosity')
+                      for xml_file in xml_filename_list]
+    
+    report_verbosity = _get_single_value_from_list(report_verbosity_list)
+    
+    report_verbosity = int(report_verbosity)
+    print(report_verbosity)
+    
+    return report_verbosity
+
 
