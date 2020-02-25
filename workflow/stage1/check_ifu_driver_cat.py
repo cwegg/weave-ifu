@@ -26,7 +26,7 @@ from workflow.utils import check_equal_headers
 
 def _check_versus_template(cat_filename, template):
 
-    ignore_values = ['TRISMESTE', 'DATETIME', 'VERBOSE', 'AUTHOR', 'CCREPORT']
+    ignore_values = ['TRIMESTE', 'DATETIME', 'VERBOSE', 'AUTHOR', 'CCREPORT']
 
     result = check_equal_headers(cat_filename, template,
                                  ignore_values=ignore_values)
