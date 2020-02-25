@@ -193,20 +193,20 @@ if __name__ == '__main__':
         """)
 
     parser.add_argument('catalogue',
-                        help='A FITS file with an IFU driver catalogue')
+                        help='a FITS file with an IFU driver catalogue')
 
     parser.add_argument('--dir', default='output/', help=
                         """
-                        The directory which will contain the plots generated
+                        the directory which will contain the plots generated
                         with Aladin
                         """)
 
     parser.add_argument('--aladin', default='aux/Aladin.jar',
-                        help='The location of the Java JAR file of Aladin')
+                        help='the location of the Java JAR file of Aladin')
 
     parser.add_argument('--log_level', default='info',
                         choices=['debug', 'info', 'warning', 'error'],
-                        help='The level for the logging messages')
+                        help='the level for the logging messages')
 
     args = parser.parse_args()
     
