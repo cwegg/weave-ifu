@@ -8,5 +8,6 @@ from ._create_ifu_driver_cat_cheating import get_keywords_info \
     as _get_keywords_info_for_cheating
 from ._create_ifu_driver_cat_cheating import get_data_dict \
     as _get_data_dict_for_cheating
+from .check_ifu_driver_cat import check_ifu_driver_cat
 from .plot_ifu_driver_cat import plot_ifu_driver_cat
 

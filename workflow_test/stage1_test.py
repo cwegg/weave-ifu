@@ -180,3 +180,8 @@ def test_compare_ifu_driver_cat_cheating(ifu_driver_cat_cheating,
     
     assert returncode == 0
 
+
+def test_check_ifu_driver_cat(ifu_driver_cat):
+    
+    assert workflow.stage1.check_ifu_driver_cat(ifu_driver_cat)
+
