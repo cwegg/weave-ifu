@@ -51,6 +51,11 @@ def _check_equal_one_header(fits_filename1, fits_filename2, ext_i,
     
     extra_kwd_list = ['COMMENT', 'HISTORY']
     
+    # Get the list of the integrity keywords (which will be ignored in the
+    # comparison of the values)
+    
+    integrity_kwd_list = ['CHECKSUM', 'DATASUM']
+    
     # Get the list of regular expresions for the basic keywords which values
     # will not be compared
     
@@ -93,7 +98,8 @@ def _check_equal_one_header(fits_filename1, fits_filename2, ext_i,
             if ((not _match_in_regex_list(kwd, basic_kwd_regex_list)) and
                 (kwd not in extra_kwd_list)):
             
-                if kwd not in ignore_values:
+                if ((kwd not in ignore_values) and
+                    (kwd not in integrity_kwd_list)):
                     
                     if hdr1[kwd] != hdr2[kwd]:
                         logging.error(
