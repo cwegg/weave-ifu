@@ -4,12 +4,18 @@
 log.txt
 *#*
 
-# Stage 1 files:
+# Testing files:
+workflow_test/.cache/
+
+# Stage-1 files:
 workflow/stage1/aux/Master_CatalogueTemplate.fits
 workflow/stage1/aux/progtemp.dat
 workflow/stage1/aux/Aladin.jar
 workflow/stage1/output/
 
-# Testing files:
-workflow_test/.cache/
+# Stage-5 files:
+workflow/stage5/output/
+
+# Stage-7 files:
+workflow/stage7/output/
 
