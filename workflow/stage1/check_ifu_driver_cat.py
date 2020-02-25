@@ -21,8 +21,153 @@
 import argparse
 import logging
 
+from workflow.utils import check_equal_headers
 
-def check_ifu_driver_cat(cat_filename):
+
+def _check_versus_template(cat_filename, template):
+
+    ignore_values = ['TRISMESTE', 'DATETIME', 'VERBOSE', 'AUTHOR', 'CCREPORT']
+
+    result = check_equal_headers(cat_filename, template,
+                                 ignore_values=ignore_values)
+
+    return result
+
+
+def _check_trimester(cat_filename):
+
+    raise NotImplementedError
+
+
+def _check_verbose(cat_filename):
+
+    raise NotImplementedError
+
+
+def _check_author(cat_filename):
+
+    raise NotImplementedError
+
+
+def _check_ccreport(cat_filename):
+
+    raise NotImplementedError
+
+
+def _check_ccreport(cat_filename):
+
+    raise NotImplementedError
+
+
+def _check_targsrvy(cat_filename):
+
+    # Avoid non empty
+
+    raise NotImplementedError
+
+
+def _check_targid(cat_filename):
+
+    # Avoid non empty
+
+    raise NotImplementedError
+
+
+def _check_targname(cat_filename):
+
+    # Avoid non empty
+
+    raise NotImplementedError
+
+
+def _check_targprio(cat_filename):
+
+    # Avoid null
+    # Check in range
+
+    raise NotImplementedError
+
+
+def _check_progtemp(cat_filename):
+
+    raise NotImplementedError
+
+
+def _check_obstemp(cat_filename):
+
+    raise NotImplementedError
+
+
+def _check_gaia_ra(cat_filename):
+
+    # Avoid null
+    # Check in range
+
+    raise NotImplementedError
+
+
+def _check_gaia_dec(cat_filename):
+
+    # Avoid null
+    # Check in range
+
+    raise NotImplementedError
+
+
+def _check_gaia_epoch(cat_filename):
+
+    # Check in range
+
+    raise NotImplementedError
+
+
+def _check_gaia_paral(cat_filename):
+
+    # Check in range
+
+    raise NotImplementedError
+
+
+def _check_gaia_ifu_request(cat_filename):
+
+    # Check in range
+
+    raise NotImplementedError
+
+
+def _check_gaia_ifu_dither(cat_filename):
+
+    # Check specific values
+
+    raise NotImplementedError
+
+
+def _check_consistency_progtemp_dither(cat_filename):
+
+    raise NotImplementedError
+
+
+def _check_dither_size(cat_filename):
+
+    raise NotImplementedError
+
+
+def _check_custom_dither(cat_filename):
+
+    # Check the size depending on the mode
+
+    # Check that some values are the same for different rows
+    # (e.g. ifu_pa_request)
+
+    raise NotImplementedError
+
+
+def _check_locations_for_names(cat_filename):
+
+    raise NotImplementedError
+
+
+def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
     """
     Check the contents of an IFU driver catalogue.
 
@@ -30,6 +175,11 @@ def check_ifu_driver_cat(cat_filename):
     ----------
     cat_filename : str
         A FITS file with an IFU driver catalogue.
+    template : str, optional
+        A FITS file containing an IFU driver template.
+    check_vs_template: bool, optional
+        An option to indicate whether the file should be checked against a
+        template or not.
 
     Returns
     ----------
@@ -38,6 +188,21 @@ def check_ifu_driver_cat(cat_filename):
     """
     
     result = True
+
+    if check_vs_template is True:
+
+        if template is not None:
+
+            if not _check_versus_template(cat_filename, template):
+                logging.error(
+                    '{} does not match the template {}'.format(
+                        cat_filename, template))
+                result = False
+
+        else:
+            logging.error(
+                'a template for making the checks has not been provided')
+            result = False
     
     return result
 
@@ -50,6 +215,14 @@ if __name__ == '__main__':
     parser.add_argument('catalogue',
                         help='a FITS file with an IFU driver catalogue')
     
+    parser.add_argument('--template', default='./aux/ifu_driver_template.fits',
+                        help='a FITS file containing an IFU driver template')
+
+    parser.add_argument('--no_check_vs_template', dest='check_vs_template',
+                        action='store_false',
+                        help=
+                        'skip the check of the catalogue versus the template')
+    
     parser.add_argument('--log_level', default='info',
                         choices=['debug', 'info', 'warning', 'error'],
                         help='the level for the logging messages')
@@ -61,5 +234,6 @@ if __name__ == '__main__':
     
     logging.basicConfig(level=level_dict[args.log_level])
     
-    check_ifu_driver_cat(args.catalogue)
+    check_ifu_driver_cat(args.catalogue, template=arg.template,
+                         check_vs_template=args.check_vs_template)
 

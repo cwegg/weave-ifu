@@ -181,7 +181,9 @@ def test_compare_ifu_driver_cat_cheating(ifu_driver_cat_cheating,
     assert returncode == 0
 
 
-def test_check_ifu_driver_cat(ifu_driver_cat):
+def test_check_ifu_driver_cat(ifu_driver_cat, ifu_driver_template):
     
-    assert workflow.stage1.check_ifu_driver_cat(ifu_driver_cat)
+    assert workflow.stage1.check_ifu_driver_cat(ifu_driver_cat,
+                                                template=ifu_driver_template,
+                                                check_vs_template=True)
 
