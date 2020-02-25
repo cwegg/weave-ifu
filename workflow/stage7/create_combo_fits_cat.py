@@ -71,7 +71,8 @@ def create_combo_fits_cat(mos_cat, ifu_cat, output_filename, overwrite=False):
     
     assert check_equal_headers(mos_cat, ifu_cat)
     
-    combo_data_dict = _get_combo_data_dict(mos_cat, ifu_cat)
+    combo_data_dict = _get_combo_data_dict(mos_cat, ifu_cat,
+                                           ignore_values=['DATETIME'])
     
     populate_fits_table_template(mos_cat, combo_data_dict, output_filename,
                                  update_datetime=True, overwrite=overwrite)
