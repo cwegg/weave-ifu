@@ -18,37 +18,38 @@
 #
 
 
-from astropy.table import Table, vstack
+import argparse
+import logging
+import os
+
+from astropy.io import fits
 
 from workflow.utils import check_equal_headers
 from workflow.utils import populate_fits_table_template
 
 
-def _get_combo_table(fits_filename1, fits_filename2):
-    
-    table1 = Table.read(fits_filename1, format='fits')
-    table2 = Table.read(fits_filename2, format='fits')
-    
-    combo_table = vstack([table1, table2])
-    
-    return combo_table
-
-
-def _convert_table_to_data_dict(table):
+def _get_data_dict(fits_filename):
     
     data_dict = {}
     
-    for col_name in table.colnames:
-        data_dict[col_name] = list(table[col_name].data)
+    with fits.open(fits_filename) as hdu_list:
+        data = hdu_list[1].data
+        
+        for col in data.names:
+            data_dict[col] = list(data[col])
     
     return data_dict
 
 
 def _get_combo_data_dict(fits_filename1, fits_filename2):
     
-    combo_table = _get_combo_table(fits_filename1, fits_filename2)
+    data_dict1 = _get_data_dict(fits_filename1)
+    data_dict2 = _get_data_dict(fits_filename2)
     
-    combo_data_dict = _convert_table_to_data_dict(combo_table)
+    combo_data_dict = {}
+    
+    for key in data_dict1.keys():
+        combo_data_dict[key] = data_dict1[key] + data_dict2[key]
     
     return combo_data_dict
 
@@ -69,10 +70,15 @@ def create_combo_fits_cat(mos_cat, ifu_cat, output_filename, overwrite=False):
         Overwrite the output FITS file.
     """
     
-    assert check_equal_headers(mos_cat, ifu_cat)
+    equal_headers = check_equal_headers(mos_cat, ifu_cat,
+                                        ignore_values=['DATETIME'])
     
-    combo_data_dict = _get_combo_data_dict(mos_cat, ifu_cat,
-                                           ignore_values=['DATETIME'])
+    if not equal_headers:
+        logging.error('equal headers are expected to create a combo FITS file')
+        
+        assert equal_headers
+    
+    combo_data_dict = _get_combo_data_dict(mos_cat, ifu_cat)
     
     populate_fits_table_template(mos_cat, combo_data_dict, output_filename,
                                  update_datetime=True, overwrite=overwrite)

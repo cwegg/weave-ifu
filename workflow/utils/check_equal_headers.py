@@ -32,14 +32,29 @@ def _get_num_ext_in_fits_file(filename):
     return num_ext
 
 
+def _match_in_regex_list(string, regex_list):
+    
+    result = False
+    
+    for regex in regex_list:
+        if re.match(regex, string):
+            result = True
+            break
+    
+    return result
+
 
 def _check_equal_one_header(fits_filename1, fits_filename2, ext_i,
                             ignore_values=[]):
     
+    # Get the list of extra keywords which will be ignored in the comparison
+    
+    extra_kwd_list = ['COMMENT', 'HISTORY']
+    
     # Get the list of regular expresions for the basic keywords which values
     # will not be compared
     
-    basic_kwd_regex_list =['SIMPLE', 'BITPIX', 'NAXIS', 'EXTEND', 'COMMENT',
+    basic_kwd_regex_list =['SIMPLE', 'BITPIX', 'NAXIS', 'EXTEND', 
                            'XTENSION', 'PCOUNT', 'GCOUNT', 'NAXIS([0-9]+)']
 
     # Get the headers of each file in the requested extension
@@ -57,15 +72,15 @@ def _check_equal_one_header(fits_filename1, fits_filename2, ext_i,
     result = True
     
     for kwd in kwd_list1:
-        if kwd not in kwd_list2:
+        if (kwd not in kwd_list2) and (kwd not in extra_kwd_list):
             logging.error('keyword {} of {} is missing in {}'.format(
-                          fits_filename1, fits_filename2))
+                          kwd, fits_filename1, fits_filename2))
             result = False
     
     for kwd in kwd_list2:
-        if kwd not in kwd_list1:
+        if (kwd not in kwd_list2) and (kwd not in extra_kwd_list):
             logging.error('keyword {} of {} is missing in {}'.format(
-                          fits_filename2, fits_filename1))
+                          kwd, fits_filename2, fits_filename1))
             result = False
     
     # If both files have the same keywords in the requested extension, check
@@ -75,14 +90,15 @@ def _check_equal_one_header(fits_filename1, fits_filename2, ext_i,
     
         for kwd in kwd_list1:
         
-            if not re.match(basic_kwd_regex_list, kwd):
+            if ((not _match_in_regex_list(kwd, basic_kwd_regex_list)) and
+                (kwd not in extra_kwd_list)):
             
                 if kwd not in ignore_values:
                     
                     if hdr1[kwd] != hdr2[kwd]:
                         logging.error(
                           'keyword {} has different values in {} and {}'.format(
-                             kwd, fits_filename1, fits_filename1))
+                             kwd, fits_filename1, fits_filename2))
                         result = False
     
     return result
@@ -126,7 +142,7 @@ def check_equal_headers(fits_filename1, fits_filename2, ignore_values=[]):
     
     if result == True:
     
-        for ext_i in range(len(hdu_list1)):
+        for ext_i in range(num_ext1):
         
             result_i = _check_equal_one_header(fits_filename1, fits_filename2,
                                                ext_i,
@@ -135,7 +151,7 @@ def check_equal_headers(fits_filename1, fits_filename2, ignore_values=[]):
             if result_i == False:
                 logging.error(
                     'headers of {} and {} are different in extension {}'.format(
-                        fits_filename1, fits_filename2, i))
+                        fits_filename1, fits_filename2, ext_i))
                 result = False
     
     return result
