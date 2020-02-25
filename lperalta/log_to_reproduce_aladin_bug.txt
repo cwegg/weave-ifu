@@ -1,0 +1,350 @@
+# $ java -jar Aladin.jar -nogui
+# $ java -jar /usr/local/aladin/Aladin.jar -nogui
+
+grid on
+
+reset
+316.3696095370 -4.7106035679
+get aladin 316.3696095370 -4.7106035679 1deg
+draw yellow circle(316.3696095370 -4.7106035679 1.51arcmin)
+draw green circle(316.3696095370 -4.7106035679 8.6arcmin)
+draw green circle(316.3696095370 -4.7106035679 8.28arcmin)
+zoom 30arcmin
+save 01-lifu.png
+
+reset
+316.3696095370 -4.7106035679
+get aladin 316.3696095370 -4.7106035679 1deg
+draw yellow circle(316.3696095370 -4.7106035679 1.51arcmin)
+draw green circle(316.3696095370 -4.7106035679 8.6arcmin)
+draw green circle(316.3696095370 -4.7106035679 8.28arcmin)
+zoom 30arcmin
+save 02-lifu.png
+
+reset
+316.3690587520 -4.7096725015
+get aladin 316.3690587520 -4.7096725015 1deg
+draw yellow circle(316.3690587520 -4.7096725015 1.51arcmin)
+draw green circle(316.3690587520 -4.7096725015 8.6arcmin)
+draw green circle(316.3690587520 -4.7096725015 8.28arcmin)
+zoom 30arcmin
+save 03-lifu.png
+
+reset
+316.3701432370 -4.7096629832
+get aladin 316.3701432370 -4.7096629832 1deg
+draw yellow circle(316.3701432370 -4.7096629832 1.51arcmin)
+draw green circle(316.3701432370 -4.7096629832 8.6arcmin)
+draw green circle(316.3701432370 -4.7096629832 8.28arcmin)
+zoom 30arcmin
+save 04-lifu.png
+
+reset
+316.9558000000 -5.3525000000
+get aladin 316.9558000000 -5.3525000000 2arcmin
+draw red circle(316.9558000000 -5.3525000000 8.7arcsec)
+zoom 60arcsec
+save 05-mifu.png
+
+reset
+315.5608000000 -5.1131000000
+get aladin 315.5608000000 -5.1131000000 2arcmin
+draw red circle(315.5608000000 -5.1131000000 8.7arcsec)
+zoom 60arcsec
+save 06-mifu.png
+
+reset
+315.9079000000 -4.9278000000
+get aladin 315.9079000000 -4.9278000000 2arcmin
+draw red circle(315.9079000000 -4.9278000000 8.7arcsec)
+zoom 60arcsec
+save 07-mifu.png
+
+reset
+315.8575000000 -5.1475000000
+get aladin 315.8575000000 -5.1475000000 2arcmin
+draw red circle(315.8575000000 -5.1475000000 8.7arcsec)
+zoom 60arcsec
+save 08-mifu.png
+
+reset
+315.6700000000 -4.4014000000
+get aladin 315.6700000000 -4.4014000000 2arcmin
+draw red circle(315.6700000000 -4.4014000000 8.7arcsec)
+zoom 60arcsec
+save 09-mifu.png
+
+reset
+316.6396000000 -5.4644000000
+get aladin 316.6396000000 -5.4644000000 2arcmin
+draw red circle(316.6396000000 -5.4644000000 8.7arcsec)
+zoom 60arcsec
+save 10-mifu.png
+
+reset
+316.2858000000 -5.4000000000
+get aladin 316.2858000000 -5.4000000000 2arcmin
+draw red circle(316.2858000000 -5.4000000000 8.7arcsec)
+zoom 60arcsec
+save 11-mifu.png
+
+reset
+316.7646000000 -4.6878000000
+get aladin 316.7646000000 -4.6878000000 2arcmin
+draw red circle(316.7646000000 -4.6878000000 8.7arcsec)
+zoom 60arcsec
+save 12-mifu.png
+
+reset
+316.3958000000 -5.6722000000
+get aladin 316.3958000000 -5.6722000000 2arcmin
+draw red circle(316.3958000000 -5.6722000000 8.7arcsec)
+zoom 60arcsec
+save 13-mifu.png
+
+reset
+316.7050000000 -5.1933000000
+get aladin 316.7050000000 -5.1933000000 2arcmin
+draw red circle(316.7050000000 -5.1933000000 8.7arcsec)
+zoom 60arcsec
+save 14-mifu.png
+
+reset
+316.5483000000 -3.8808000000
+get aladin 316.5483000000 -3.8808000000 2arcmin
+draw red circle(316.5483000000 -3.8808000000 8.7arcsec)
+zoom 60arcsec
+save 15-mifu.png
+
+reset
+316.7125000000 -4.9186000000
+get aladin 316.7125000000 -4.9186000000 2arcmin
+draw red circle(316.7125000000 -4.9186000000 8.7arcsec)
+zoom 60arcsec
+save 16-mifu.png
+
+reset
+316.4896000000 -4.7664000000
+get aladin 316.4896000000 -4.7664000000 2arcmin
+draw red circle(316.4896000000 -4.7664000000 8.7arcsec)
+zoom 60arcsec
+save 17-mifu.png
+
+reset
+316.1362000000 -4.3089000000
+get aladin 316.1362000000 -4.3089000000 2arcmin
+draw red circle(316.1362000000 -4.3089000000 8.7arcsec)
+zoom 60arcsec
+save 18-mifu.png
+
+reset
+316.9229000000 -4.3150000000
+get aladin 316.9229000000 -4.3150000000 2arcmin
+draw red circle(316.9229000000 -4.3150000000 8.7arcsec)
+zoom 60arcsec
+save 19-mifu.png
+
+reset
+315.6946000000 -4.0897000000
+get aladin 315.6946000000 -4.0897000000 2arcmin
+draw red circle(315.6946000000 -4.0897000000 8.7arcsec)
+zoom 60arcsec
+save 20-mifu.png
+
+reset
+316.9179000000 -4.7797000000
+get aladin 316.9179000000 -4.7797000000 2arcmin
+draw red circle(316.9179000000 -4.7797000000 8.7arcsec)
+zoom 60arcsec
+save 21-mifu.png
+
+reset
+316.0612000000 -4.6247000000
+get aladin 316.0612000000 -4.6247000000 2arcmin
+draw red circle(316.0612000000 -4.6247000000 8.7arcsec)
+zoom 60arcsec
+save 22-mifu.png
+
+reset
+316.7354000000 -5.0761000000
+get aladin 316.7354000000 -5.0761000000 2arcmin
+draw red circle(316.7354000000 -5.0761000000 8.7arcsec)
+zoom 60arcsec
+save 23-mifu.png
+
+reset
+316.2367000000 -4.2647000000
+get aladin 316.2367000000 -4.2647000000 2arcmin
+draw red circle(316.2367000000 -4.2647000000 8.7arcsec)
+zoom 60arcsec
+save 24-mifu.png
+
+reset
+316.5967000000 -4.4497000000
+get aladin 316.5967000000 -4.4497000000 2arcmin
+draw red circle(316.5967000000 -4.4497000000 8.7arcsec)
+zoom 60arcsec
+save 25-mifu.png
+
+reset
+316.9825000000 -4.5789000000
+get aladin 316.9825000000 -4.5789000000 2arcmin
+draw red circle(316.9825000000 -4.5789000000 8.7arcsec)
+zoom 60arcsec
+save 26-mifu.png
+
+reset
+316.9558000000 -5.3525000000
+get aladin 316.9558000000 -5.3525000000 2arcmin
+draw red circle(316.9558000000 -5.3525000000 8.7arcsec)
+zoom 60arcsec
+save 27-mifu.png
+
+reset
+315.5608000000 -5.1131000000
+get aladin 315.5608000000 -5.1131000000 2arcmin
+draw red circle(315.5608000000 -5.1131000000 8.7arcsec)
+zoom 60arcsec
+save 28-mifu.png
+
+reset
+315.9079000000 -4.9278000000
+get aladin 315.9079000000 -4.9278000000 2arcmin
+draw red circle(315.9079000000 -4.9278000000 8.7arcsec)
+zoom 60arcsec
+save 29-mifu.png
+
+reset
+315.8575000000 -5.1475000000
+get aladin 315.8575000000 -5.1475000000 2arcmin
+draw red circle(315.8575000000 -5.1475000000 8.7arcsec)
+zoom 60arcsec
+save 30-mifu.png
+
+reset
+315.6700000000 -4.4014000000
+get aladin 315.6700000000 -4.4014000000 2arcmin
+draw red circle(315.6700000000 -4.4014000000 8.7arcsec)
+zoom 60arcsec
+save 31-mifu.png
+
+reset
+316.6396000000 -5.4644000000
+get aladin 316.6396000000 -5.4644000000 2arcmin
+draw red circle(316.6396000000 -5.4644000000 8.7arcsec)
+zoom 60arcsec
+save 32-mifu.png
+
+reset
+316.2858000000 -5.4000000000
+get aladin 316.2858000000 -5.4000000000 2arcmin
+draw red circle(316.2858000000 -5.4000000000 8.7arcsec)
+zoom 60arcsec
+save 33-mifu.png
+
+reset
+316.7646000000 -4.6878000000
+get aladin 316.7646000000 -4.6878000000 2arcmin
+draw red circle(316.7646000000 -4.6878000000 8.7arcsec)
+zoom 60arcsec
+save 34-mifu.png
+
+reset
+316.3958000000 -5.6722000000
+get aladin 316.3958000000 -5.6722000000 2arcmin
+draw red circle(316.3958000000 -5.6722000000 8.7arcsec)
+zoom 60arcsec
+save 35-mifu.png
+
+reset
+316.7050000000 -5.1933000000
+get aladin 316.7050000000 -5.1933000000 2arcmin
+draw red circle(316.7050000000 -5.1933000000 8.7arcsec)
+zoom 60arcsec
+save 36-mifu.png
+
+reset
+316.5483000000 -3.8808000000
+get aladin 316.5483000000 -3.8808000000 2arcmin
+draw red circle(316.5483000000 -3.8808000000 8.7arcsec)
+zoom 60arcsec
+save 37-mifu.png
+
+reset
+316.7125000000 -4.9186000000
+get aladin 316.7125000000 -4.9186000000 2arcmin
+draw red circle(316.7125000000 -4.9186000000 8.7arcsec)
+zoom 60arcsec
+save 38-mifu.png
+
+reset
+316.4896000000 -4.7664000000
+get aladin 316.4896000000 -4.7664000000 2arcmin
+draw red circle(316.4896000000 -4.7664000000 8.7arcsec)
+zoom 60arcsec
+save 39-mifu.png
+
+reset
+316.1362000000 -4.3089000000
+get aladin 316.1362000000 -4.3089000000 2arcmin
+draw red circle(316.1362000000 -4.3089000000 8.7arcsec)
+zoom 60arcsec
+save 40-mifu.png
+
+reset
+316.9229000000 -4.3150000000
+get aladin 316.9229000000 -4.3150000000 2arcmin
+draw red circle(316.9229000000 -4.3150000000 8.7arcsec)
+zoom 60arcsec
+save 41-mifu.png
+
+reset
+315.6946000000 -4.0897000000
+get aladin 315.6946000000 -4.0897000000 2arcmin
+draw red circle(315.6946000000 -4.0897000000 8.7arcsec)
+zoom 60arcsec
+save 42-mifu.png
+
+reset
+316.9179000000 -4.7797000000
+get aladin 316.9179000000 -4.7797000000 2arcmin
+draw red circle(316.9179000000 -4.7797000000 8.7arcsec)
+zoom 60arcsec
+save 43-mifu.png
+
+reset
+316.0612000000 -4.6247000000
+get aladin 316.0612000000 -4.6247000000 2arcmin
+draw red circle(316.0612000000 -4.6247000000 8.7arcsec)
+zoom 60arcsec
+save 44-mifu.png
+
+reset
+316.7354000000 -5.0761000000
+get aladin 316.7354000000 -5.0761000000 2arcmin
+draw red circle(316.7354000000 -5.0761000000 8.7arcsec)
+zoom 60arcsec
+save 45-mifu.png
+
+reset
+316.2367000000 -4.2647000000
+get aladin 316.2367000000 -4.2647000000 2arcmin
+draw red circle(316.2367000000 -4.2647000000 8.7arcsec)
+zoom 60arcsec
+save 46-mifu.png
+
+reset
+316.5967000000 -4.4497000000
+get aladin 316.5967000000 -4.4497000000 2arcmin
+draw red circle(316.5967000000 -4.4497000000 8.7arcsec)
+zoom 60arcsec
+save 47-mifu.png
+
+reset
+316.9825000000 -4.5789000000
+get aladin 316.9825000000 -4.5789000000 2arcmin
+draw red circle(316.9825000000 -4.5789000000 8.7arcsec)
+zoom 60arcsec
+save 48-mifu.png
+
+
