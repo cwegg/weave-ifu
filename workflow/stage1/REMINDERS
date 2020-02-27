@@ -2,4 +2,5 @@
 * observation:pa should be set to 0.0 when the input is Null
   (and this should be always the case for mIFU)
 * obstemp has been duplicated: it appears in obscontraints and observations
+* targx and targy should NOT be written for T at this stage
 
