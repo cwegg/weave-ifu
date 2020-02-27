@@ -92,28 +92,28 @@ def _check_ccreport(ccreport):
     return result
 
 
-def _check_targsrvy(cat_filename):
+def _check_targsrvy(data):
 
     # Avoid non empty
 
     raise NotImplementedError
 
 
-def _check_targid(cat_filename):
+def _check_targid(data):
 
     # Avoid non empty
 
     raise NotImplementedError
 
 
-def _check_targname(cat_filename):
+def _check_targname(data):
 
     # Avoid non empty
 
     raise NotImplementedError
 
 
-def _check_targprio(cat_filename):
+def _check_targprio(data):
 
     # Avoid null
     # Check in range
@@ -121,17 +121,17 @@ def _check_targprio(cat_filename):
     raise NotImplementedError
 
 
-def _check_progtemp(cat_filename):
+def _check_progtemp(data):
 
     raise NotImplementedError
 
 
-def _check_obstemp(cat_filename):
+def _check_obstemp(data):
 
     raise NotImplementedError
 
 
-def _check_gaia_ra(cat_filename):
+def _check_gaia_ra(data):
 
     # Avoid null
     # Check in range
@@ -139,7 +139,7 @@ def _check_gaia_ra(cat_filename):
     raise NotImplementedError
 
 
-def _check_gaia_dec(cat_filename):
+def _check_gaia_dec(data):
 
     # Avoid null
     # Check in range
@@ -147,45 +147,45 @@ def _check_gaia_dec(cat_filename):
     raise NotImplementedError
 
 
-def _check_gaia_epoch(cat_filename):
+def _check_gaia_epoch(data):
 
     # Check in range
 
     raise NotImplementedError
 
 
-def _check_gaia_paral(cat_filename):
+def _check_gaia_paral(data):
 
     # Check in range
 
     raise NotImplementedError
 
 
-def _check_gaia_ifu_request(cat_filename):
+def _check_gaia_ifu_request(data):
 
     # Check in range
 
     raise NotImplementedError
 
 
-def _check_gaia_ifu_dither(cat_filename):
+def _check_gaia_ifu_dither(data):
 
     # Check specific values
 
     raise NotImplementedError
 
 
-def _check_consistency_progtemp_dither(cat_filename):
+def _check_consistency_progtemp_dither(data):
 
     raise NotImplementedError
 
 
-def _check_dither_size(cat_filename):
+def _check_dither_size(data):
 
     raise NotImplementedError
 
 
-def _check_custom_dither(cat_filename):
+def _check_custom_dither(data):
 
     # Check the size depending on the mode
 
@@ -195,7 +195,7 @@ def _check_custom_dither(cat_filename):
     raise NotImplementedError
 
 
-def _check_locations_for_names(cat_filename):
+def _check_locations_for_names(data):
 
     raise NotImplementedError
 
@@ -222,6 +222,8 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
     
     result = True
 
+    # Check the file versus a template (if requested)
+    
     if check_vs_template is True:
 
         if template is not None:
@@ -237,7 +239,11 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
                 'a template for making the checks has not been provided')
             result = False
 
+    # Open the catalogue file
+
     with fits.open(cat_filename) as hdu_list:
+
+        # Check the values of its primary header
 
         trimester = hdu_list[0].header['TRIMESTE']
         if not _check_trimester(trimester):
@@ -264,6 +270,10 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
                 'invalid email addresses in the CCREPORT keyword: {}'.format(
                     ccreport))
             result = False
+
+        # Check the data in the table of its first extension
+
+        data = hdu_list[1].data
 
     return result
 
