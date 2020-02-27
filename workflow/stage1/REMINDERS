@@ -4,4 +4,5 @@
 * obstemp has been duplicated: it appears in obscontraints and observations
 * targx and targy should NOT be written for T at this stage
 * ifu_pa and ifu_spaxel should NOT be written for T at this stage
+* targclass should be 'UNKNOWN' for the targets T at this stage
 
