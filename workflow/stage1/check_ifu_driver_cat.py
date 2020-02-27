@@ -295,6 +295,6 @@ if __name__ == '__main__':
     
     logging.basicConfig(level=level_dict[args.log_level])
     
-    check_ifu_driver_cat(args.catalogue, template=arg.template,
+    check_ifu_driver_cat(args.catalogue, template=args.template,
                          check_vs_template=args.check_vs_template)
 
