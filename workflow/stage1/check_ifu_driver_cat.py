@@ -92,28 +92,45 @@ def _check_ccreport(ccreport):
     return result
 
 
-def _check_targsrvy(data):
+def _check_targsrvy(array):
+
+    result = True
+
+    targsrvy_set = set(array)
+
+    logging.warning(
+        'please, make sure that the following TARGSRV values are allowed in ' +
+        'ICD-030: {}'.format(targsrvy_set)
+    )
+
+    if len(targsrvy_set) > 1:
+        logging.warning(
+            'there is more than one TARGSRV value in the catalogue, ' +
+            'are you sure?'
+        )
+        
+    if '' in targsrvy_set:
+        logging.error('TARGSRVY value should not be populated by empty strings')
+        result = False
+
+    return result
+
+
+def _check_targid(array):
 
     # Avoid non empty
 
     raise NotImplementedError
 
 
-def _check_targid(data):
+def _check_targname(array):
 
     # Avoid non empty
 
     raise NotImplementedError
 
 
-def _check_targname(data):
-
-    # Avoid non empty
-
-    raise NotImplementedError
-
-
-def _check_targprio(data):
+def _check_targprio(array):
 
     # Avoid null
     # Check in range
@@ -121,17 +138,17 @@ def _check_targprio(data):
     raise NotImplementedError
 
 
-def _check_progtemp(data):
+def _check_progtemp(array):
 
     raise NotImplementedError
 
 
-def _check_obstemp(data):
+def _check_obstemp(array):
 
     raise NotImplementedError
 
 
-def _check_gaia_ra(data):
+def _check_gaia_ra(array):
 
     # Avoid null
     # Check in range
@@ -139,7 +156,7 @@ def _check_gaia_ra(data):
     raise NotImplementedError
 
 
-def _check_gaia_dec(data):
+def _check_gaia_dec(array):
 
     # Avoid null
     # Check in range
@@ -147,45 +164,45 @@ def _check_gaia_dec(data):
     raise NotImplementedError
 
 
-def _check_gaia_epoch(data):
+def _check_gaia_epoch(array):
 
     # Check in range
 
     raise NotImplementedError
 
 
-def _check_gaia_paral(data):
+def _check_gaia_paral(array):
 
     # Check in range
 
     raise NotImplementedError
 
 
-def _check_gaia_ifu_request(data):
+def _check_gaia_ifu_request(array):
 
     # Check in range
 
     raise NotImplementedError
 
 
-def _check_gaia_ifu_dither(data):
+def _check_gaia_ifu_dither(array):
 
     # Check specific values
 
     raise NotImplementedError
 
 
-def _check_consistency_progtemp_dither(data):
+def _check_consistency_progtemp_dither(array):
 
     raise NotImplementedError
 
 
-def _check_dither_size(data):
+def _check_dither_size(array):
 
     raise NotImplementedError
 
 
-def _check_custom_dither(data):
+def _check_custom_dither(array):
 
     # Check the size depending on the mode
 
@@ -195,7 +212,7 @@ def _check_custom_dither(data):
     raise NotImplementedError
 
 
-def _check_locations_for_names(data):
+def _check_locations_for_names(array):
 
     raise NotImplementedError
 
@@ -274,6 +291,9 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
         # Check the data in the table of its first extension
 
         data = hdu_list[1].data
+
+        if not _check_targsrvy(data['TARGSRVY']):
+            result = False
 
     return result
 
