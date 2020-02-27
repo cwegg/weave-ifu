@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>  
 
-<root author="a@domain.com" cc_report="b@domain.com,c@domain.com" report_verbosity="1" version="1.13">
+<root author="a@domain.com" cc_report="b@domain.com,c@domain.com" datamver="7.00" report_verbosity="1">
   <!--
       This file represents a blank XML template (version indicated in <root>) that is ready to be filled with:
 
