@@ -20,6 +20,9 @@
 
 import argparse
 import logging
+import re
+
+from astropy.io import fits
 
 from workflow.utils import check_equal_headers
 
@@ -34,29 +37,59 @@ def _check_versus_template(cat_filename, template):
     return result
 
 
-def _check_trimester(cat_filename):
+def _check_trimester(trimester):
 
-    raise NotImplementedError
+    if re.match('[0-9]{4}[AB][12]', trimester):
+        result = True
+    else:
+        result = False
 
-
-def _check_verbose(cat_filename):
-
-    raise NotImplementedError
-
-
-def _check_author(cat_filename):
-
-    raise NotImplementedError
+    return result
 
 
-def _check_ccreport(cat_filename):
+def _check_verbose(verbose):
 
-    raise NotImplementedError
+    result = (verbose in [0, 1])
+
+    return result
 
 
-def _check_ccreport(cat_filename):
+def _check_email(string):
 
-    raise NotImplementedError
+    arroba_index = string.find('@')
+
+    if arroba_index != -1:
+
+        substring = string[arroba_index + 1:]
+        dot_index = substring.find('.')
+
+        if dot_index != -1:
+            result = True
+        else:
+            result = False
+
+    else:
+        result = False
+
+    return result
+
+
+def _check_author(author):
+
+    result = _check_email(author)
+
+    return result
+
+
+def _check_ccreport(ccreport):
+
+    result = True
+
+    for string in ccreport.split(','):
+        if not _check_email(string):
+           result = False
+
+    return result
 
 
 def _check_targsrvy(cat_filename):
@@ -203,7 +236,35 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
             logging.error(
                 'a template for making the checks has not been provided')
             result = False
-    
+
+    with fits.open(cat_filename) as hdu_list:
+
+        trimester = hdu_list[0].header['TRIMESTE']
+        if not _check_trimester(trimester):
+            logging.error(
+                'invalid value in the TRIMESTE keyword: {}'.format(trimester))
+            result = False
+
+        verbose = hdu_list[0].header['VERBOSE']
+        if not _check_verbose(verbose):
+            logging.error(
+                'invalid value in the VERBOSE keyword: {}'.format(verbose))
+            result = False
+
+        author = hdu_list[0].header['AUTHOR']
+        if not _check_author(author):
+            logging.error(
+                'invalid email address in the AUTHOR keyword: {}'.format(
+                    author))
+            result = False
+
+        ccreport = hdu_list[0].header['CCREPORT']
+        if not _check_ccreport(ccreport):
+            logging.error(
+                'invalid email addresses in the CCREPORT keyword: {}'.format(
+                    ccreport))
+            result = False
+
     return result
 
     
