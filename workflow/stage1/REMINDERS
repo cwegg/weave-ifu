@@ -3,4 +3,5 @@
   (and this should be always the case for mIFU)
 * obstemp has been duplicated: it appears in obscontraints and observations
 * targx and targy should NOT be written for T at this stage
+* ifu_pa and ifu_spaxel should NOT be written for T at this stage
 
