@@ -1,0 +1,16 @@
+IFU fibre tables
+================
+
+The IFU fibre tables describe the (relative) position of the fibres in the focal
+plane for each LIFU/mIFU bundles as well the different IDs assigned to each
+fibre.
+
+These assets are centrally stored (and version controlled) in the WEAVE data
+model repository and this is why they have not been included in this directory.
+
+The contents of this directory are the following scripts related with that
+files:
+
+ * plot_fibre_table.py :
+   Plot the LIFU and mIFU fibre tables into PDF files.
+
