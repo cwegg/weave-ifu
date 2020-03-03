@@ -1,3 +1,8 @@
-* targx and targy should NOT be written for G/C at this stage
-* ifu_pa and ifu_spaxel should NOT be written for G/C at this stage
+* root:version is now root:datamver
+* observation:pa should be set to 0.0 when the input is Null
+  (and this should be always the case for mIFU)
+* obstemp has been duplicated: it appears in obscontraints and observations
+* targx and targy should NOT be written for T at this stage
+* ifu_pa and ifu_spaxel should NOT be written for T at this stage
+* targclass should be 'UNKNOWN' for the targets T at this stage
 
