@@ -60,7 +60,7 @@ def create_sub_template(catalogue_template, output_filename, col_list,
                         extname=None, inherit_primary_kwds=True,
                         inherited_kwds=[], new_primary_kwds={},
                         rename_col_dict={}, update_datetime=True,
-                        overwrite=False):
+                        checksum=True, overwrite=False):
     """
     Create a template from a subset of columns from other template.
 
@@ -96,6 +96,8 @@ def create_sub_template(catalogue_template, output_filename, col_list,
         the new name which will be used in the new sub-template.
     update_datetime : bool, optional
         Update DATETIME keyword in the new sub-template.
+    checksum : bool, optional
+        Add CHECKSUM and DATASUM keywords in the new sub-template.
     overwrite : bool, optional
         Overwrite the output FITS file containing the sub-template.
     """
@@ -230,5 +232,5 @@ def create_sub_template(catalogue_template, output_filename, col_list,
     
     hdulist = fits.HDUList([primary_hdu, hdu])
 
-    hdulist.writeto(output_filename, overwrite=overwrite)
+    hdulist.writeto(output_filename, overwrite=overwrite, checksum=checksum)
 
