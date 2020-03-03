@@ -37,7 +37,7 @@ def _get_lookup():
     lookup['target:targuse'] = 'TARGUSE'
     lookup['target:targclass'] = 'TARGCLASS'
     lookup['observation:progtemp'] = 'PROGTEMP'
-    lookup['obsconstraints:obstemp'] = 'OBSTEMP'
+    lookup['observation:obstemp'] = 'OBSTEMP'
     lookup[''] = 'GAIA_ID'
     lookup[''] = 'GAIA_DR'
     lookup['target:targra'] = 'GAIA_RA'
@@ -112,20 +112,11 @@ def _get_xml_data(xml_filename):
 
     dom = xml.dom.minidom.parse(xml_filename)
 
-    root = dom.childNodes[0]
-
-    # programme = root.childNodes[3]
-    observation = root.childNodes[5]
-
-    obsconstraints = dom.getElementsByTagName('obsconstraints')[0]
+    observation = dom.getElementsByTagName('observation')[0]
     dithering = dom.getElementsByTagName('dithering')[0]
     target = dom.getElementsByTagName('target')
 
-    # xml_data['dom'] = dom
-    # xml_data['root'] = root
-    # xml_data['programme'] = programme
     xml_data['observation'] = observation
-    xml_data['obsconstraints'] = obsconstraints
     xml_data['dithering'] = dithering
     xml_data['target'] = target
 
@@ -431,7 +422,6 @@ def get_report_verbosity_from_xmls(input_xmls):
     report_verbosity = _get_single_value_from_list(report_verbosity_list)
     
     report_verbosity = int(report_verbosity)
-    print(report_verbosity)
     
     return report_verbosity
 
