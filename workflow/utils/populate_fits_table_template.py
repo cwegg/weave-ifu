@@ -25,7 +25,7 @@ from astropy.io import fits
 
 def populate_fits_table_template(fits_template, data_dict, output_filename,
                                  primary_kwds={}, update_datetime=True,
-                                 overwrite=False):
+                                 checksum=True, overwrite=False):
     """
     Populate a FITS table template with the provided data.
 
@@ -44,6 +44,8 @@ def populate_fits_table_template(fits_template, data_dict, output_filename,
         which will be written a in the primary header (updated or added).
     update_datetime : bool, optional
         Update DATETIME keyword in the output file.
+    checksum : bool, optional
+        Add CHECKSUM and DATASUM keywords in the output file.
     overwrite : bool, optional
         Overwrite the output FITS file.
     """
@@ -101,5 +103,5 @@ def populate_fits_table_template(fits_template, data_dict, output_filename,
     
     hdulist = fits.HDUList([primary_hdu, hdu])
     
-    hdulist.writeto(output_filename, overwrite=overwrite)
+    hdulist.writeto(output_filename, checksum=checksum, overwrite=overwrite)
 
