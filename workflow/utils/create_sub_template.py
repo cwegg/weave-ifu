@@ -232,5 +232,5 @@ def create_sub_template(catalogue_template, output_filename, col_list,
     
     hdulist = fits.HDUList([primary_hdu, hdu])
 
-    hdulist.writeto(output_filename, overwrite=overwrite, checksum=checksum)
+    hdulist.writeto(output_filename, checksum=checksum, overwrite=overwrite)
 
