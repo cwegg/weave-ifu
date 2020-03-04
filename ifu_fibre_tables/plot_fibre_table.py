@@ -48,7 +48,7 @@ def _read_table(filename):
 
     # Get the units of x and y
     # They should be the same and appear in the third line:
-    # '# arcsec arcsec   --         --        --'
+    # '# mm     mm       --         --        --'
 
     third_line = lines[2]
 
@@ -113,16 +113,24 @@ def _mv_lifu_sky_fibres(input_data, shift_factor=4):
 
 
 def _plot_fibres(ax, x, y, fibre_size, id_array=None, color=(0.9, 0.9, 1.0),
-                 alpha=0.25, edge=True):
+                 alpha=0.25, edge=True, for_printing=False):
 
-    edge_outer_radius = 1.10 * fibre_size
-    edge_width = 0.10 * fibre_size
+    radius = fibre_size / 2.0
+    if for_printing is True:
+        radius *= 1.7
+    edge_outer_radius = 1.05 * radius
+    edge_width = 0.05 * radius
+    
+    if for_printing is True:
+        text_size = 3
+    else:
+        text_size = 2
     
     for i in range(len(x)):
 
         # Add a circle with the fibre size
 
-        circle = Circle((x[i], y[i]), radius=fibre_size, color=color)
+        circle = Circle((x[i], y[i]), radius=radius, color=color)
 
         ax.add_patch(circle)
 
@@ -137,15 +145,17 @@ def _plot_fibres(ax, x, y, fibre_size, id_array=None, color=(0.9, 0.9, 1.0),
         # Add a text with the ID
 
         if id_array is not None:
-            ax.text(x[i], y[i], id_array[i], size=3, ha='center', va='center')
+            ax.text(x[i], y[i], id_array[i], size=text_size,
+                    ha='center', va='center')
 
 
 def plot_lifu_table(lifu_filename, output_filename, id_name,
-                      sky_shift_factor=4, fibre_size=2.6, add_mini_ax=True):
+                    sky_shift_factor=4, fibre_size_mm=0.220, add_mini_ax=True,
+                    for_printing=False):
 
     datamver, units, data = _read_table(lifu_filename)
 
-    assert units == 'arcsec'
+    assert units == 'mm'
 
     fig, ax = plt.subplots(figsize=(11.69, 8.27))
 
@@ -154,13 +164,13 @@ def plot_lifu_table(lifu_filename, output_filename, id_name,
 
     mv_data = _mv_lifu_sky_fibres(data, shift_factor=sky_shift_factor)
 
-    _plot_fibres(ax, mv_data['x'], mv_data['y'], fibre_size,
-                 id_array=mv_data[id_name])
+    _plot_fibres(ax, mv_data['x'], mv_data['y'], fibre_size_mm,
+                 id_array=mv_data[id_name], for_printing=for_printing)
 
-    ax.set_xlim([np.min(mv_data['x']) - 2.5 * fibre_size,
-                 np.max(mv_data['x']) + 2.5 * fibre_size])
-    ax.set_ylim([np.min(mv_data['y']) - 1.5 * fibre_size,
-                 np.max(mv_data['y']) + 1.5 * fibre_size])
+    ax.set_xlim([np.min(mv_data['x']) - 2.5 * fibre_size_mm,
+                 np.max(mv_data['x']) + 2.5 * fibre_size_mm])
+    ax.set_ylim([np.min(mv_data['y']) - 1.5 * fibre_size_mm,
+                 np.max(mv_data['y']) + 1.5 * fibre_size_mm])
 
     ax.set_aspect('equal')
 
@@ -173,18 +183,19 @@ def plot_lifu_table(lifu_filename, output_filename, id_name,
 
         mini_ax = fig.add_axes((0.7, 0.12, 0.1, 0.1))
 
-        _plot_fibres(mini_ax, data['x'], data['y'], fibre_size,
-                     color=(0.5, 0.5, 0.75), alpha=1.0, edge=False)
+        _plot_fibres(mini_ax, data['x'], data['y'], fibre_size_mm,
+                     color=(0.5, 0.5, 0.75), alpha=1.0, edge=False,
+                     for_printing=for_printing)
 
         sky_ifu_spaxel = 'S18'
 
         sky_x = _get_value_from_ifu_spaxel(data, 'x', sky_ifu_spaxel)
         sky_y = _get_value_from_ifu_spaxel(data, 'y', sky_ifu_spaxel)
 
-        mini_ax.set_xlim([np.min(data['x']) - 20 * fibre_size,
-                          np.max(data['x']) + 20 * fibre_size])
-        mini_ax.set_ylim([np.min(data['y']) - 20 * fibre_size,
-                          np.max(data['y']) + 20 * fibre_size])
+        mini_ax.set_xlim([np.min(data['x']) - 20 * fibre_size_mm,
+                          np.max(data['x']) + 20 * fibre_size_mm])
+        mini_ax.set_ylim([np.min(data['y']) - 20 * fibre_size_mm,
+                          np.max(data['y']) + 20 * fibre_size_mm])
 
         mini_ax.set_aspect('equal')
 
@@ -195,11 +206,11 @@ def plot_lifu_table(lifu_filename, output_filename, id_name,
 
 
 def plot_mifu_table(mifu_filename, output_filename, id_name, num_mifu=20,
-                      fibre_size=1.3):
+                    fibre_size_mm=0.120, for_printing=False):
 
     datamver, units, data = _read_table(mifu_filename)
 
-    assert units == 'arcsec'
+    assert units == 'mm'
 
     mifu_id_array = np.array([int(ifu_spaxel[1:3])
                               for ifu_spaxel in data['ifu_spaxel']])
@@ -216,7 +227,7 @@ def plot_mifu_table(mifu_filename, output_filename, id_name, num_mifu=20,
     ax_vect = ax_array.flatten()
 
     fig.suptitle('{} (version {}): {}'.format(
-        mifu_filename, datamver, id_name.upper()), y=0.94)
+        mifu_filename, datamver, id_name.upper()), y=0.96)
 
     for i in range(num_mifu):
 
@@ -235,20 +246,24 @@ def plot_mifu_table(mifu_filename, output_filename, id_name, num_mifu=20,
             id_array = np.array(['{}\n{}'.format(value[:3], value[3:])
                                  for value in id_array])
 
-        _plot_fibres(ax_vect[i], x, y, fibre_size, id_array=id_array)
+        _plot_fibres(ax_vect[i], x, y, fibre_size_mm, id_array=id_array,
+                     for_printing=for_printing)
+        
+        assert np.min(mifu_i_data['x']) > -1.0
+        assert np.max(mifu_i_data['x']) < 1.0
+        assert np.min(mifu_i_data['y']) > -1.0
+        assert np.max(mifu_i_data['y']) < 1.0
 
-        ax_vect[i].set_xlim([np.min(mifu_i_data['x']) - 2.5 * fibre_size,
-                             np.max(mifu_i_data['x']) + 2.5 * fibre_size])
-        ax_vect[i].set_ylim([np.min(mifu_i_data['y']) - 1.5 * fibre_size,
-                             np.max(mifu_i_data['y']) + 1.5 * fibre_size])
+        ax_vect[i].set_xticks([-1, 0, 1])
+        ax_vect[i].set_yticks([-1, 0, 1])
+
+        ax_vect[i].set_xlim([-1.0, 1.0])
+        ax_vect[i].set_ylim([-1.0, 1.0])
 
         ax_vect[i].set_aspect('equal')
 
         ax_vect[i].tick_params(direction='in',
                                bottom=True, top=True, left=True, right=True)
-
-        ax_vect[i].set_xticks([-10, 0, 10])
-        ax_vect[i].set_yticks([-10, 0, 10])
 
         if ((i // ncols) != (nrows - 1)):
             ax_vect[i].set_xticklabels(['', '', ''])
@@ -267,7 +282,14 @@ def plot_mifu_table(mifu_filename, output_filename, id_name, num_mifu=20,
     fig.savefig(output_filename)
 
     
-def plot_fibre_table(lifu_filename, mifu_filename):
+def plot_fibre_table(lifu_filename, mifu_filename, for_printing=False):
+
+    # Set the patterng for the filenames    
+    
+    if for_printing is True:
+        filename_pattern = '{}-{}-for_printing.pdf'
+    else:
+        filename_pattern = '{}-{}.pdf'
 
     # For each kind of ID
 
@@ -275,17 +297,19 @@ def plot_fibre_table(lifu_filename, mifu_filename):
 
         # Plot it for the LIFU
         
-        lifu_output_filename = '{}-{}.pdf'.format(
+        lifu_output_filename = filename_pattern.format(
             os.path.splitext(lifu_filename)[0], id_name)
 
-        plot_lifu_table(lifu_filename, lifu_output_filename, id_name)
+        plot_lifu_table(lifu_filename, lifu_output_filename, id_name,
+                        for_printing=for_printing)
         
         # Plot it for the mIFU
 
-        mifu_output_filename = '{}-{}.pdf'.format(
+        mifu_output_filename = filename_pattern.format(
             os.path.splitext(mifu_filename)[0], id_name)
 
-        plot_mifu_table(mifu_filename, mifu_output_filename, id_name)
+        plot_mifu_table(mifu_filename, mifu_output_filename, id_name,
+                        for_printing=for_printing)
 
     
 if __name__ == '__main__':
@@ -301,7 +325,12 @@ if __name__ == '__main__':
                         default='mIFUfibreTable.dat',
                         help='mIFU fibre table')
 
+    parser.add_argument('--for_printing', dest='for_printing',
+                        action='store_true',
+                        help='scale the fibre sizes for easy printing')
+
     args = parser.parse_args()
 
-    plot_fibre_table(args.lifu_filename, args.mifu_filename)
+    plot_fibre_table(args.lifu_filename, args.mifu_filename,
+                     for_printing=args.for_printing)
 
