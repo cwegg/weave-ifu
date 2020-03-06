@@ -73,7 +73,7 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output/',
                          stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
 
-    # Set the grid one
+    # Set the grid on
 
     _send_command('grid on', p)
 
@@ -122,10 +122,10 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output/',
 
             if obsmode == 'LIFU':
                 zoom_size_str = '30arcmin'
-                get_radius_str = '1deg'
+                get_radius_str = zoom_size_str
             elif obsmode == 'mIFU':
                 zoom_size_str = '60arcsec'
-                get_radius_str = '2arcmin'
+                get_radius_str = zoom_size_str
             else:
                 logging.warning(
                     'Skipping plotting of target {} of {}'.format(
@@ -137,9 +137,12 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output/',
 
             cmd_list = []
 
-            # Reset and load the catalogue
+            # Reset
 
             cmd_list.append('reset')
+
+            # Load the catalogue
+
             cmd_list.append('load {}'.format(os.path.abspath(cat_filename)))
 
             # Set the coordinates
@@ -148,8 +151,9 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output/',
 
             # Get the image
 
-            cmd_list.append('get aladin {} {}'.format(coord_str,
-                                                      get_radius_str))
+            cmd_list.append('get hips(CDS/P/DSS2/color) {} {}'.format(coord_str,
+                                                                get_radius_str))
+
 
             # Draw some circles to show the field of view of the instrument:
             # - For LIFU, draw circles to show the central bundle and the sky
@@ -173,6 +177,12 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output/',
 
             # Save the image
 
+            cmd_list.append('save {}'.format(os.path.abspath(img_filename)))
+
+            # Repeat some commands from above due to a bug in Aladin
+
+            cmd_list.append(coord_str)
+            cmd_list.append('zoom {}'.format(zoom_size_str))
             cmd_list.append('save {}'.format(os.path.abspath(img_filename)))
 
             # Join the commands for this target and send them to Aladin
