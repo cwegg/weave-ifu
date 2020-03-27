@@ -49,7 +49,8 @@ def get_data_dict(xml_files_pattern):
     xml_filename_list = glob.glob(xml_files_pattern)
     xml_filename_list.sort()
     
-    data_dict = get_spa_data_of_target_fibres_from_xmls(xml_filename_list)
+    data_dict = get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
+                                                        post_configure=False)
     
     # Add a column with the IFU_PA_REQUEST values. It will be 0 for LIFU and
     # NULL for mIFU

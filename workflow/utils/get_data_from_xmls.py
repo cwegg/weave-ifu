@@ -23,7 +23,7 @@ import xml.dom.minidom
 import numpy as np
 
 
-def _get_lookup():
+def _get_lookup(post_configure=True):
 
     lookup = {}
 
@@ -51,7 +51,10 @@ def _get_lookup():
     lookup[''] = 'GAIA_PARAL_ERR'
     lookup[''] = 'HEALPIX'
     lookup['target:ifu_spaxel'] = 'IFU_SPAXEL'
-    lookup['observation:pa'] = 'IFU_PA'
+    if post_configure is True:
+        lookup['target:ifu_pa'] = 'IFU_PA'
+    else:
+        lookup['observation:pa'] = 'IFU_PA'
     lookup['dithering:apply_dither'] = 'IFU_DITHER'
     lookup['photometry:mag_g'] = 'MAG_G'
     lookup['photometry:emag_g'] = 'MAG_G_ERR'
@@ -71,7 +74,7 @@ def _get_lookup():
     return lookup
 
 
-def _get_formats():
+def _get_formats(post_configure=True):
 
     formats = {}
 
@@ -86,7 +89,10 @@ def _get_formats():
     formats['target:targparal'] = float
     formats[''] = float # 'GAIA_PARAL_ERR'
     formats[''] = int # 'HEALPIX'
-    formats['observation:pa'] = float
+    if post_configure is True:
+        formats['target:ifu_pa'] = float
+    else:
+        formats['observation:pa'] = float
     formats['dithering:apply_dither'] = int
     formats['photometry:mag_g'] = float
     formats['photometry:emag_g'] = float
@@ -182,12 +188,13 @@ def _get_value_from_xml_data(xml_data, target, key, formats):
 
 
 def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'],
-                               replace_triple_percent=True):
+                               replace_triple_percent=True,
+                               post_configure=True):
 
     # Get dictionaries with the lookup information and the formats
 
-    lookup = _get_lookup()
-    formats = _get_formats()
+    lookup = _get_lookup(post_configure=post_configure)
+    formats = _get_formats(post_configure=post_configure)
 
     # Create a dictionary with the desired keywords and empty lists in order to
     # get ready to store them the data
@@ -234,7 +241,8 @@ def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'],
 
 
 def get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
-                                            replace_triple_percent=True):
+                                            replace_triple_percent=True,
+                                            post_configure=True):
     """
     Get SPA data of the target fibres contained in a list of XML files.
 
@@ -244,6 +252,9 @@ def get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
         A list of configure XML files.
     replace_triple_percent : bool, optional
         It will replace the values of '%%%' by '' also for data of type string.
+    post_configure : bool, optional
+        An option to indicate whether the input XMLs has been processed by
+        configure or not.
 
     Returns
     -------
@@ -254,13 +265,15 @@ def get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
     """
     data_dict = \
         _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T'],
-                                  replace_triple_percent=replace_triple_percent)
+                                  replace_triple_percent=replace_triple_percent,
+                                  post_configure=post_configure)
 
     return data_dict
 
 
 def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list,
-                                                   replace_triple_percent=True):
+                                                   replace_triple_percent=True,
+                                                   post_configure=True):
     """
     Get SPA data of the target and sky fibres contained in a list of XML files.
 
@@ -270,6 +283,9 @@ def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list,
         A list of configure XML files.
     replace_triple_percent : bool, optional
         It will replace the values of '%%%' by '' also for data of type string.
+    post_configure : bool, optional
+        An option to indicate whether the input XMLs has been processed by
+        configure or not.
 
     Returns
     -------
@@ -280,7 +296,8 @@ def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list,
     """
     data_dict = \
         _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'],
-                                  replace_triple_percent=replace_triple_percent)
+                                  replace_triple_percent=replace_triple_percent,
+                                  post_configure=post_configure)
 
     return data_dict
 
@@ -327,6 +344,7 @@ def get_trimester_from_xmls(input_xmls):
         xml_filename_list = input_xmls
     else:
         xml_filename_list = [input_xmls]
+    
     
     trimester_list = [_get_attribute_in_simple_element_of_xml_file(
                           xml_file, 'observation', 'trimester')
