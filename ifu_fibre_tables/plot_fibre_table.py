@@ -124,7 +124,7 @@ def _plot_fibres(ax, x, y, fibre_size, id_array=None, color=(0.9, 0.9, 1.0),
     if for_printing is True:
         text_size = 3
     else:
-        text_size = 2
+        text_size = 2.5
     
     for i in range(len(x)):
 
@@ -150,7 +150,7 @@ def _plot_fibres(ax, x, y, fibre_size, id_array=None, color=(0.9, 0.9, 1.0),
 
 
 def plot_lifu_table(lifu_filename, output_filename, id_name,
-                    sky_shift_factor=4, fibre_size_mm=0.220, add_mini_ax=True,
+                    sky_shift_factor=4, fibre_size_mm=0.146, add_mini_ax=True,
                     for_printing=False):
 
     datamver, units, data = _read_table(lifu_filename)
@@ -206,7 +206,7 @@ def plot_lifu_table(lifu_filename, output_filename, id_name,
 
 
 def plot_mifu_table(mifu_filename, output_filename, id_name, num_mifu=20,
-                    fibre_size_mm=0.120, for_printing=False):
+                    fibre_size_mm=0.073, for_printing=False):
 
     datamver, units, data = _read_table(mifu_filename)
 
@@ -249,16 +249,16 @@ def plot_mifu_table(mifu_filename, output_filename, id_name, num_mifu=20,
         _plot_fibres(ax_vect[i], x, y, fibre_size_mm, id_array=id_array,
                      for_printing=for_printing)
         
-        assert np.min(mifu_i_data['x']) > -1.0
-        assert np.max(mifu_i_data['x']) < 1.0
-        assert np.min(mifu_i_data['y']) > -1.0
-        assert np.max(mifu_i_data['y']) < 1.0
+        assert np.min(mifu_i_data['x']) > -0.5
+        assert np.max(mifu_i_data['x']) < 0.5
+        assert np.min(mifu_i_data['y']) > -0.5
+        assert np.max(mifu_i_data['y']) < 0.5
 
-        ax_vect[i].set_xticks([-1, 0, 1])
-        ax_vect[i].set_yticks([-1, 0, 1])
+        ax_vect[i].set_xticks([-0.5, 0, 0.5])
+        ax_vect[i].set_yticks([-0.5, 0, 0.5])
 
-        ax_vect[i].set_xlim([-1.0, 1.0])
-        ax_vect[i].set_ylim([-1.0, 1.0])
+        ax_vect[i].set_xlim([-0.5, 0.5])
+        ax_vect[i].set_ylim([-0.5, 0.5])
 
         ax_vect[i].set_aspect('equal')
 
