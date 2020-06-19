@@ -80,7 +80,6 @@ class xml_data:
         print 'Writing to %s'%(filename)
         with open(filename, 'w') as f:
             f.write(finalxml)    
-
         
 
     def remove_xml_declaration(self,xml_text):
@@ -152,8 +151,19 @@ class ifu:
 
         return True
     
-    def generate_xmls(self):
-       
+    def generate_xmls(self,mifu_mode=1,mifu_ncalibs=2):
+        assert mifu_mode in [1,2,3]
+        #what happens if there are (eg) 100 bundles in a given key?
+        #user needs to decide 3 options
+        #1. Include all
+        #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
+        #3. Equipartition - divide up the bundles equally. In the case of 100:
+        #                   100/18. = 5.5 --> 6 fields
+        #                   100/6 = 17 bundles per field (with remainder added to a final XML), ie:
+        #                   5 x 17 bundles + 1 x 15 bundles
+
+
+        
         centrals = []
         #NORBI.X
         data_filter = []
@@ -169,12 +179,10 @@ class ifu:
         mifu = []
         for d in data_filter:
             # validation checks
-
+            self.row_validator(d)
             if d['PROGTEMP'][0] in ['4','5','6']:
-                self.row_validator(d)
                 lifu.append(d)
             else:
-                self.row_validator(d)
                 mifu.append(d)           
 
         #how do you group entries belonging to the same OB (for custom dithers)?
@@ -196,7 +204,7 @@ class ifu:
             #what happens if there are (eg) 10 pointings in a given key?
             #something like:
             # assert len(custom_dithers[key]) == custom_dithers[key]['PROGTEMP'][2]
-            
+            print ''
             print 'Processing %d custom dither pointing groupings for LIFU'%(len(custom_dithers.keys()))
             for key in custom_dithers.keys():
                 lifu_entry = custom_dithers[key]
@@ -216,20 +224,56 @@ class ifu:
                 fields[key] = [mifu_entry]
 
         if len(fields.keys()) > 0:
-            #what happens if there are (eg) 100 bundles in a given key?
-            #user needs to decide 3 options
-            #1. Include all
-            #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
-            #3. Equipartition - divide up the bundles equally. In the case of 100:
-            #                   100/18. = 5.5 --> 6 fields
-            #                   100/6 = 17 bundles per field (with remainder added to a final XML), ie:
-            #                   5 x 17 bundles + 1 x 15 bundles
-
+            print ''
             print 'Processing %d mIFU bundle groupings'%(len(fields.keys()))
             # for the moment, just go with (1), but implement (2) and (3)
             for key in fields.keys():
                 mifu_entry = fields[key]
-                self.process_rows(mifu_entry)
+                if mifu_mode == 1:
+                    if len(mifu_entry) > (20 - mifu_ncalibs):
+                        print 'WARNING: Bundles in field %s (%d) exceeds maximum when including calibration bundles (%d). Change mifu_mode or remove excess bundles downstream'%(key,len(mifu_entry),mifu_ncalibs)
+                        self.process_rows(mifu_entry)
+
+                elif len(mifu_entry) > (20 - mifu_ncalibs):
+                    print 'Group %s: filling XML files according to mifu_mode=%d'%(key,mifu_mode)
+                    if mifu_mode == 2:
+                        #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
+                        max_sci_bundles = 20 - mifu_ncalibs
+                        print 'Will create XML files with %d science bundles inside'%(max_sci_bundles)
+                        
+                    if mifu_mode == 3:
+                        max_sci_bundles = 20 - mifu_ncalibs
+                        if (len(mifu_entry)/float(max_sci_bundles)).is_integer():
+                            nxml = (len(mifu_entry) / (max_sci_bundles))
+                        else:
+                            nxml = ((len(mifu_entry) / (max_sci_bundles))) + 1
+
+                        max_sci_bundles = float(len(mifu_entry)) / float(nxml)
+                        if (max_sci_bundles).is_integer():
+                            max_sci_bundles = int(max_sci_bundles)
+                        else:
+                            max_sci_bundles = int(max_sci_bundles) - 1
+                        print 'Will create %d XML files each with %d science bundles inside'%(nxml,max_sci_bundles)
+
+                    added_rows = []
+                    rows = iter(mifu_entry)
+                    while len(added_rows) != len(mifu_entry):
+                        this_xml = []
+                        while len(this_xml) != max_sci_bundles:
+                            try:
+                                _row = rows.next()
+                                added_rows.append(_row)
+                                this_xml.append(_row)
+                            except StopIteration:
+                                break
+                        self.process_rows(this_xml)
+                        
+                        
+                else:
+                    self.process_rows(mifu_entry)
+                    
+                    
+                        
 
 
             
@@ -595,6 +639,6 @@ if __name__ == '__main__':
         os.makedirs(output_dir)
 
     stage2_ifu = ifu(input_fits,trimester,output=output_dir)   ## add specifiers for mIFU grouping / overloading fields /etc behaviour here
-    stage2_ifu.generate_xmls()
-    
+    stage2_ifu.generate_xmls(mifu_mode=1)
+    print 
     print('IFU XMLs written to: {0}'.format(output_dir))
