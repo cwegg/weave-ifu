@@ -27,6 +27,7 @@ import numpy as np
 from astropy.io import fits
 
 from workflow.utils import check_equal_headers
+from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
 
 
 def _check_versus_template(cat_filename, template):
@@ -389,9 +390,9 @@ def _check_ifu_pa_request(hdu):
 
         if (not np.isnan(ifu_pa_request)):
 
-            n_char = progtemp[0]
+            obsmode = get_obsmode_from_progtemp(progtemp)
 
-            if n_char not in '456':
+            if obsmode != 'LIFU':
 
                 logging.error(
                     'unexpected non-null IFU_PA_REQUEST for non-LIFU PROGTEMP' +
@@ -417,15 +418,16 @@ def _check_ifu_dither(hdu):
     for i, (ifu_dither, progtemp) in enumerate(
             zip(ifu_dither_array, progtemp_array)):
 
-        n_char = progtemp[0]
 
-        if (n_char in '456'):
+        obsmode = get_obsmode_from_progtemp(progtemp)
+
+        if (obsmode == 'LIFU'):
             if (ifu_dither not in [-1, 0, 3, 5]):
                 logging.error(
                     'unexpected IFU_DITHER for LIFU PROGTEMP in row {}'.format(
                         i + 1))
                 result = False
-        elif (n_char in '789'):
+        elif (obsmode == 'mIFU'):
             if (ifu_dither not in [0, 3, 5]):
                 logging.error(
                     'unexpected IFU_DITHER for mIFU PROGTEMP in row {}'.format(
@@ -612,7 +614,7 @@ def _check_progtemp_ifu_dither_compatibility(hdu):
                         i + 1))
                 result = False
 
-    # Chech the custom dithers
+    # Check the custom dithers
 
     targname_array = hdu.data['TARGNAME']
     targid_array = hdu.data['TARGID']
