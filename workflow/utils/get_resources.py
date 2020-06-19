@@ -22,7 +22,7 @@ from urllib.request import urlretrieve as _urlretrieve
 
 
 def get_master_cat(file_path='Master_CatalogueTemplate.fits',
-                   url=('http://casu.ast.cam.ac.uk/weave/data_model/cats/' +
+                   url=('http://casu.ast.cam.ac.uk/weave/data_model/cats/weave/' +
                         'Master_CatalogueTemplate.fits')):
     """
     Download the latest version of the master catalogue.
