@@ -41,7 +41,7 @@ class xml_data:
             dom = xml.dom.minidom.parse(self.xml_template)
         except xml.parsers.expat.ExpatError:
             logging.error('File {} would not parse'.format(self.xml_template))
-            raise SystemExit(0)
+            raise SystemExit(1)
         self.ingest_xml(dom)
         if root_data:
             for key in root_data.keys():
@@ -322,7 +322,8 @@ class ifu:
                     logging.info('No dithers... sorry')
 
         if ((len(groups)) == 0) and len(centrals) == 0:
-            raise SystemExit('No centrals of groups found')
+            logging.error('No centrals of groups found')
+            raise SystemExit(2)
 
         if len(groups) == 0:
             ##??
