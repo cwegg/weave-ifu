@@ -40,7 +40,7 @@ class xml_data:
         try:
             dom = xml.dom.minidom.parse(self.xml_template)
         except xml.parsers.expat.ExpatError:
-            print("File {0} would not parse".format(self.xml_template))
+            logging.error('File {} would not parse'.format(self.xml_template))
             raise SystemExit(0)
         self.ingest_xml(dom)
         if root_data:
@@ -54,10 +54,10 @@ class xml_data:
         ## Put this into a generic tools module
         ##
         
-        cmd = 'wget -q -t 1 -T 5 %s'%(url)
+        cmd = 'wget -q -t 1 -T 5 {}'.format(url)
         if outname != None:
-            print('Downloading URL %s to %s'%(url,outname))
-            cmd += ' -O %s'%(outname)
+            logging.info('Downloading URL {} to {}'.format(url, outname))
+            cmd += ' -O {}'.format(outname)
         os.system(cmd)
         return
 
@@ -78,7 +78,7 @@ class xml_data:
     def write_xml(self,filename):
         newxml = self.remove_empty_lines(self.dom.toprettyxml())
         finalxml = self.remove_xml_declaration(newxml)
-        print('Writing to %s'%(filename))
+        logging.info('Writing to {}'.format(filename))
         with open(filename, 'w') as f:
             f.write(finalxml)    
         
@@ -124,7 +124,7 @@ class ifu:
     def __init__(self,input_fits,res='LR',output='auto',version='OpR3b',binning='1'):
         self.version = 0.6
         self.plate_scale = 17.8   ##  "/mm
-        print('Reading in %s'%(input_fits))
+        logging.info('Reading in {}'.format(input_fits))
         self.input_fits = input_fits
         input_data = fits.open(input_fits)
         self.data = input_data[1].data
@@ -145,7 +145,7 @@ class ifu:
         return
 
     def row_validator(self,row):
-        print('WARNING: row validator not implemented!')
+        logging.warning('Row validator not implemented!')
         #assert row['IFU_DITHER'] in [-1,3,5]
         #check length of cc_report != max length (70? 69?) issue warning
 
@@ -174,7 +174,7 @@ class ifu:
                 data_filter.append(d)
 
         if len(data_filter) == 0:
-            print('The supplied catalogue does not provide IFU target data')
+            logging.warning('The supplied catalogue does not provide IFU target data')
 
         lifu = []
         mifu = []
@@ -205,8 +205,10 @@ class ifu:
             #what happens if there are (eg) 10 pointings in a given key?
             #something like:
             # assert len(custom_dithers[key]) == custom_dithers[key]['PROGTEMP'][2]
-            print('')
-            print('Processing %d custom dither pointing groupings for LIFU'%(len(custom_dithers.keys())))
+            logging.info('')
+            logging.info(
+                'Processing {} custom dither pointing groupings for LIFU'.format(
+                len(custom_dithers.keys())))
             for key in custom_dithers.keys():
                 lifu_entry = custom_dithers[key]
                 self.process_rows(lifu_entry)
@@ -225,22 +227,23 @@ class ifu:
                 fields[key] = [mifu_entry]
 
         if len(fields.keys()) > 0:
-            print('')
-            print('Processing %d mIFU bundle groupings'%(len(fields.keys())))
+            logging.info('')
+            logging.info('Processing {} mIFU bundle groupings'.format(len(fields.keys())))
             # for the moment, just go with (1), but implement (2) and (3)
             for key in fields.keys():
                 mifu_entry = fields[key]
                 if mifu_mode == 1:
                     if len(mifu_entry) > (20 - mifu_ncalibs):
-                        print('WARNING: Bundles in field %s (%d) exceeds maximum when including calibration bundles (%d). Change mifu_mode or remove excess bundles downstream'%(key,len(mifu_entry),mifu_ncalibs))
+                        logging.warning(
+                        'Bundles in field {} ({}) exceeds maximum when including calibration bundles ({}). Change mifu_mode or remove excess bundles downstream'.format(key, len(mifu_entry), mifu_ncalibs))
                         self.process_rows(mifu_entry)
 
                 elif len(mifu_entry) > (20 - mifu_ncalibs):
-                    print('Group %s: filling XML files according to mifu_mode=%d'%(key,mifu_mode))
+                    logging.info('Group {}: filling XML files according to mifu_mode={}'.format(key, mifu_mode)
                     if mifu_mode == 2:
                         #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
                         max_sci_bundles = 20 - mifu_ncalibs
-                        print('Will create XML files with %d science bundles inside'%(max_sci_bundles))
+                        logging.info('Will create XML files with {} science bundles inside'.format(max_sci_bundles))
                         
                     if mifu_mode == 3:
                         max_sci_bundles = 20 - mifu_ncalibs
@@ -254,7 +257,7 @@ class ifu:
                             max_sci_bundles = int(max_sci_bundles)
                         else:
                             max_sci_bundles = int(max_sci_bundles) - 1
-                        print('Will create %d XML files each with %d science bundles inside'%(nxml,max_sci_bundles))
+                        logging.info('Will create {} XML files each with {} science bundles inside'.format(nxml, max_sci_bundles))
 
                     added_rows = []
                     rows = iter(mifu_entry)
@@ -291,17 +294,17 @@ class ifu:
 
             centrals.append(d)
             if verbose:
-                print(d)
+                logging.info(d)
 
 
         if (len(centrals) > 0) and dither_group:
             if verbose:
-                print('')
-                print('Groupings:')
+                logging.info('')
+                logging.info('Groupings:')
 
             groups = {}
             for c in centrals:
-                radec = '%1.10f %1.10f'%(c['GAIA_RA'],c['GAIA_DEC'])
+                radec = '{:.10f} {:.10f}'.format(c['GAIA_RA'], c['GAIA_DEC'])
                 try:
                     groups[c['TARGID']].append(c)
                 except KeyError:
@@ -310,13 +313,13 @@ class ifu:
             if len(groups.keys()) > 0:
                 if verbose:
                     for key in groups.keys():
-                        print('Group %s'%(key))
+                        logging.info('Group {}'.format(key))
                         for d in groups[key]:
-                            print(d)
+                            logging.info(d)
                     print('\n')
             else:
                 if verbose:
-                    print('No dithers... sorry')
+                    logging.info('No dithers... sorry')
 
         if ((len(groups)) == 0) and len(centrals) == 0:
             raise SystemExit('No centrals of groups found')
@@ -373,7 +376,7 @@ class ifu:
         pre_sci = True
         order = 0
 
-        #remove the "ORDER undefined" comment nodes (as we will define them here)
+        #remove the 'ORDER undefined' comment nodes (as we will define them here)
         del_next = False
         ii = 0
         nodes = []
@@ -421,7 +424,7 @@ class ifu:
             if str(node.nodeName)[0] == '#':
                 if pre_exp == False:
                     #must be a comment node
-                    #previous must be a text node (<DOM Text node "u'\n      \n\n '...">)
+                    #previous must be a text node (<DOM Text node 'u'\n      \n\n '...'>)
                     if (str(previous_node.nodeName) == '#text') and (str(node.nodeName) == '#comment'):
                         comment_ref_node = node
                         #want to insert new exposures before this node
@@ -557,7 +560,7 @@ class ifu:
             for col in col_names:
                 _row[col] = row[col]
                 if (str(row[col]) == 'nan') and numpy.isnan(row[col]):
-                    _row[col] = ""
+                    _row[col] = ''
             row = _row
              
             target.setAttribute('targra',value=str(row['GAIA_RA']))
@@ -607,14 +610,15 @@ class ifu:
 
             
         index = 1
-        output_name = os.path.join(self.xml_out,
-                                   '%s%d.xml' % (mode.lower(), index))
-        while os.path.isfile(output_name):
+        output_basename = '{}{}.xml'.format(mode.lower(), index)
+        output_path = os.path.join(self.xml_out, output_basename)
+        
+        while os.path.isfile(output_path):
             index += 1
-            output_name = os.path.join(self.xml_out,
-                                       '%s%d.xml' % (mode.lower(), index))
+            output_basename = '{}{}.xml'.format(mode.lower(), index)
+            output_path = os.path.join(self.xml_out, output_basename)
 
-        this_xml.write_xml(output_name)
+        this_xml.write_xml(output_path)
 
 
 def create_xml_files(input_fits, output_dir, prefix=None, overwrite=False):
@@ -627,8 +631,9 @@ def create_xml_files(input_fits, output_dir, prefix=None, overwrite=False):
 
     stage2_ifu = ifu(input_fits, output=output_dir)   ## add specifiers for mIFU grouping / overloading fields /etc behaviour here
     stage2_ifu.generate_xmls(mifu_mode=1)
-    print()
-    print('IFU XMLs written to: {0}'.format(output_dir))
+    
+    logging.info('')
+    logging.info('IFU XMLs written to: {}'.format(output_dir))
 
 
 if __name__ == '__main__':
