@@ -101,53 +101,58 @@ class xml_data:
 
 class ifu:
     """
-    Convert the target-level data from a FITS input catalogue to a set of XMLs.
+    Convert the target-level data from an IFU driver catalogue to a set of XMLs.
     
-    This class provides code to take an input FITS catalogue containing IFU
-    spaxel data and convert it into XML targets that are written into either a
-    supplied XML or the BlankTemplate.xml file.
+    This class provides code to take an IFU driver catalogue containing
+    information of the central fibres and convert it into XML targets that are
+    written into a supplied XML.
     
     Parameters
     ----------
-    input_fits : str
-        Filename of the input FITS catalogue.
-    res : str, optional
-        The resolution you wish to select from this input catalogue.
-    output_dir : str, optional
-        Override the output filename, or leave as 'auto' to auto-generate names
-        based on the pointing ID.
-    version : str, optional
-        Special actions are performed if this is set to 'OpR3b', including
-        reading a 2nd extension containing <simulation> data.
-    binning : str, optional
-        The binning.
+    ifu_driver_cat : str
+        A FITS file containing an IFU driver cat.
+    output_dir : str
+        Name of the directory which will containe the output XML files.
+    prefix : str, optional
+        Prefix to be used in the output files (it will be derived from
+        ifu_driver_cat if None is provided).
+    suffix : str, optional
+        Suffix to be used in the output files.
     """
 
-    def __init__(self,input_fits,res='LR',output_dir='.',prefix='',suffix='',version='OpR3b',binning='1'):
-        self.version = 0.6
-        self.plate_scale = 17.8   ##  "/mm
-        logging.info('Reading in {}'.format(input_fits))
-        self.input_fits = input_fits
-        input_data = fits.open(input_fits)
-        self.data = input_data[1].data
-        self.trimester = input_data[0].header['TRIMESTE']
-        self.report_verbosity = input_data[0].header['VERBOSE']
-        self.author = input_data[0].header['AUTHOR']
-        self.cc_report = input_data[0].header['CCREPORT']
+    def __init__(self, ifu_driver_cat, output_dir='.', prefix='', suffix=''):
+
+        # Save the input parameters
+
+        self.ifu_driver_cat = ifu_driver_cat
+        self.output_dir = output_dir
+        self.prefix = prefix 
+        self.suffix = suffix
+
+        # Read and save the information into the IFU driver catalogue
+        
+        logging.info('Reading in {}'.format(self.ifu_driver_cat))
+
+        with fits.open(self.ifu_driver_cat) as hdu_list:
+
+            self.ifu_driver_cat_datamver = hdu_list[0].header['DATAMVER']
+            self.trimester = hdu_list[0].header['TRIMESTE']
+            self.report_verbosity = hdu_list[0].header['VERBOSE']
+            self.author = hdu_list[0].header['AUTHOR']
+            self.cc_report = hdu_list[0].header['CCREPORT']
+
+            self.data = hdu_list[1].data
+
+        # Save the data needed for the root element of the XML file
+        
         self.root_data = {}
         self.root_data['author'] = self.author
         self.root_data['cc_report'] = self.cc_report
         self.root_data['report_verbosity'] = str(self.report_verbosity)
         
-        self.binning = binning
-        self.res = res
-        self.output_dir = output_dir
-        self.prefix = prefix 
-        self.suffix = suffix
         self.xml_template = 'BlankXMLTemplate.xml'
 
-        return
-
+        
     def row_validator(self,row):
         logging.warning('Row validator not implemented!')
         #assert row['IFU_DITHER'] in [-1,3,5]
@@ -155,6 +160,7 @@ class ifu:
 
 
         return True
+
     
     def generate_xmls(self,mifu_mode=1,mifu_ncalibs=2):
         assert mifu_mode in [1,2,3]
@@ -293,8 +299,6 @@ class ifu:
 
                 
         if (d['IFU_SPAXEL'] == self.cspax_id):
-#            if (d['IFU_SPAXEL'] == self.cspax_id) and (res_lookup[d['PROGTEMP'][0]] == self.res) and (int(d['PROGTEMP']) > 3):
-#            if (d['TARGID'] not in self.spax_ids) and (d['TARGPROG'] == self.res):
 
             centrals.append(d)
             if verbose:
@@ -577,7 +581,7 @@ class ifu:
             target.setAttribute('targid',value=str(row['TARGID']))
             target.setAttribute('targname',value=str(row['TARGNAME']))
             target.setAttribute('targprog',value=str(row['TARGPROG']))
-            target.setAttribute('targcat',value=self.input_fits.split('/')[-1])
+            target.setAttribute('targcat',value=self.ifu_driver_cat.split('/')[-1])
             target.setAttribute('targprio',value=str(row['TARGPRIO']))
             target.setAttribute('targuse',value='T')
             target.setAttribute('targsrvy',value=str(row['TARGSRVY']))
@@ -626,7 +630,7 @@ class ifu:
         this_xml.write_xml(output_path)
 
 
-def _get_previous_files(input_fits, output_dir, prefix, suffix):
+def _get_previous_files(output_dir, prefix, suffix):
 
     glob_pattern = os.path.join(output_dir, '{}*{}.xml'.format(prefix, suffix))
     regex = '^{}[lm]ifu_[0-9]+{}.xml$'.format(prefix, suffix)
@@ -642,6 +646,23 @@ def _get_previous_files(input_fits, output_dir, prefix, suffix):
 
 def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
                      overwrite=False):
+    """
+    Create XML files with targets from an IFU driver cat.
+    
+    Parameters
+    ----------
+    ifu_driver_cat : str
+        A FITS file containing an IFU driver cat.
+    output_dir : str
+        Name of the directory which will containe the output XML files.
+    prefix : str, optional
+        Prefix to be used in the output files (it will be derived from
+        ifu_driver_cat if None is provided).
+    suffix : str, optional
+        Suffix to be used in the output files.
+    overwrite : bool, optional
+        Overwrite the output FITS file.
+    """
 
     # Check that the input IFU driver cat exists and is a file
 
@@ -661,8 +682,7 @@ def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
     
     if overwrite == True:
 
-        prev_filename_list = _get_previous_files(ifu_driver_cat, output_dir,
-                                                 prefix, suffix)
+        prev_filename_list = _get_previous_files(output_dir, prefix, suffix)
 
         if len(prev_filename_list) > 0:
 
@@ -671,7 +691,10 @@ def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
                 os.remove(filename)
 
     # Create the XML files
-    ## *** add specifiers for mIFU grouping / overloading fields /etc behaviour here
+
+    # *** add specifiers for mIFU grouping / overloading fields /etc behaviour
+    # here
+
     stage2_ifu = ifu(ifu_driver_cat, output_dir=output_dir,
                      prefix=prefix, suffix=suffix)
     stage2_ifu.generate_xmls(mifu_mode=1)
@@ -688,8 +711,8 @@ if __name__ == '__main__':
                         help="""a FITS file containing an IFU driver cat""")
 
     parser.add_argument('--outdir', dest='output_dir', default='output',
-                        help="""name for the output file which will contain the
-                        combo catalogue""")
+                        help="""name of the directory which will containe the
+                        output XML files""")
 
     parser.add_argument('--prefix', dest='prefix', default=None,
                         help="""prefix to be used in the output files (it will
