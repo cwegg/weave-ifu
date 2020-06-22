@@ -92,7 +92,8 @@ def test_compare_ifu_driver_template(ifu_driver_template,
                                      pkg_ifu_driver_template):
 
     returncode = subprocess.call(
-                     ['fitsdiff', ifu_driver_template, pkg_ifu_driver_template])
+                     ['fitsdiff', '-k', 'CHECKSUM,DATASUM',
+                      ifu_driver_template, pkg_ifu_driver_template])
     
     assert returncode == 0
 
@@ -138,7 +139,7 @@ def test_pkg_ifu_driver_cat(pkg_ifu_driver_cat):
 def test_compare_ifu_driver_cat(ifu_driver_cat, pkg_ifu_driver_cat):
 
     returncode = subprocess.call(
-                     ['fitsdiff', '-k', 'DATETIME',
+                     ['fitsdiff', '-k', 'CHECKSUM,DATASUM,DATETIME',
                       ifu_driver_cat, pkg_ifu_driver_cat])
     
     assert returncode == 0
@@ -175,7 +176,7 @@ def test_compare_ifu_driver_cat_cheating(ifu_driver_cat_cheating,
                                          pkg_ifu_driver_cat):
 
     returncode = subprocess.call(
-                     ['fitsdiff', '-k', 'DATETIME',
+                     ['fitsdiff', '-k', 'CHECKSUM,DATASUM,DATETIME',
                       ifu_driver_cat_cheating, pkg_ifu_driver_cat])
     
     assert returncode == 0
