@@ -18,10 +18,11 @@
 #
 
 
-import xml.dom.minidom
 import os
-from astropy.io import fits
+import xml.dom.minidom
+
 import numpy
+from astropy.io import fits
 
 
 class xml_data:
@@ -51,8 +52,6 @@ class xml_data:
         ## Put this into a generic tools module
         ##
         
-        import os
-        import time
         cmd = 'wget -q -t 1 -T 5 %s'%(url)
         if outname != None:
             print('Downloading URL %s to %s'%(url,outname))
@@ -616,9 +615,6 @@ class ifu:
 
 if __name__ == '__main__':
 
-    import os
-    import glob
-
     input_fits = './input/WC_2020A1-ifu_driver_cat.fits'
     
     try:
@@ -641,3 +637,4 @@ if __name__ == '__main__':
     stage2_ifu.generate_xmls(mifu_mode=1)
     print()
     print('IFU XMLs written to: {0}'.format(output_dir))
+
