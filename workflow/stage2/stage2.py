@@ -120,21 +120,21 @@ class ifu:
         The binning.
     """
 
-    def __init__(self,input_fits,trimester,res='LR',output='auto',version='OpR3b',binning='1'):
+    def __init__(self,input_fits,res='LR',output='auto',version='OpR3b',binning='1'):
         self.version = 0.6
         self.plate_scale = 17.8   ##  "/mm
         print 'Reading in %s'%(input_fits)
         self.input_fits = input_fits
         input_data = fits.open(input_fits)
         self.data = input_data[1].data
+        self.trimester = input_data[0].header['TRIMESTE']
+        self.report_verbosity = input_data[0].header['VERBOSE']
         self.author = input_data[0].header['AUTHOR']
         self.cc_report = input_data[0].header['CCREPORT']
-        self.report_verbosity = input_data[0].header['VERBOSE']
         self.root_data = {}
         self.root_data['author'] = self.author
         self.root_data['cc_report'] = self.cc_report
         self.root_data['report_verbosity'] = str(self.report_verbosity)
-        self.trimester = trimester
         
         self.binning = binning
         self.res = res
@@ -620,7 +620,6 @@ if __name__ == '__main__':
     import glob
 
     input_fits = './input/WC_2020A1-ifu_driver_cat.fits'
-    trimester = '2020A1'
     
     try:
         assert os.path.isfile(input_fits)
@@ -638,7 +637,7 @@ if __name__ == '__main__':
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    stage2_ifu = ifu(input_fits,trimester,output=output_dir)   ## add specifiers for mIFU grouping / overloading fields /etc behaviour here
+    stage2_ifu = ifu(input_fits,output=output_dir)   ## add specifiers for mIFU grouping / overloading fields /etc behaviour here
     stage2_ifu.generate_xmls(mifu_mode=1)
     print 
     print('IFU XMLs written to: {0}'.format(output_dir))
