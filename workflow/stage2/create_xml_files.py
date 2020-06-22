@@ -19,8 +19,10 @@
 
 
 import argparse
+import glob
 import logging
 import os
+import re
 import xml.dom.minidom
 
 import numpy
@@ -111,7 +113,7 @@ class ifu:
         Filename of the input FITS catalogue.
     res : str, optional
         The resolution you wish to select from this input catalogue.
-    output : str, optional
+    output_dir : str, optional
         Override the output filename, or leave as 'auto' to auto-generate names
         based on the pointing ID.
     version : str, optional
@@ -121,7 +123,7 @@ class ifu:
         The binning.
     """
 
-    def __init__(self,input_fits,res='LR',output='auto',version='OpR3b',binning='1'):
+    def __init__(self,input_fits,res='LR',output_dir='.',prefix='',suffix='',version='OpR3b',binning='1'):
         self.version = 0.6
         self.plate_scale = 17.8   ##  "/mm
         logging.info('Reading in {}'.format(input_fits))
@@ -139,7 +141,9 @@ class ifu:
         
         self.binning = binning
         self.res = res
-        self.xml_out = output
+        self.output_dir = output_dir
+        self.prefix = prefix 
+        self.suffix = suffix
         self.xml_template = 'BlankXMLTemplate.xml'
 
         return
@@ -239,7 +243,7 @@ class ifu:
                         self.process_rows(mifu_entry)
 
                 elif len(mifu_entry) > (20 - mifu_ncalibs):
-                    logging.info('Group {}: filling XML files according to mifu_mode={}'.format(key, mifu_mode)
+                    logging.info('Group {}: filling XML files according to mifu_mode={}'.format(key, mifu_mode))
                     if mifu_mode == 2:
                         #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
                         max_sci_bundles = 20 - mifu_ncalibs
@@ -610,30 +614,68 @@ class ifu:
 
 
             
-        index = 1
-        output_basename = '{}{}.xml'.format(mode.lower(), index)
-        output_path = os.path.join(self.xml_out, output_basename)
+        index = 0
+        output_path = ''
         
-        while os.path.isfile(output_path):
+        while (index < 1) or os.path.exists(output_path):
             index += 1
-            output_basename = '{}{}.xml'.format(mode.lower(), index)
-            output_path = os.path.join(self.xml_out, output_basename)
+            output_basename = '{}{}_{:02d}{}.xml'.format(
+                self.prefix, mode.lower(), index, self.suffix)
+            output_path = os.path.join(self.output_dir, output_basename)
 
         this_xml.write_xml(output_path)
 
 
-def create_xml_files(input_fits, output_dir, prefix=None, overwrite=False):
+def _get_previous_files(input_fits, output_dir, prefix, suffix):
+
+    glob_pattern = os.path.join(output_dir, '{}*{}.xml'.format(prefix, suffix))
+    regex = '^{}[lm]ifu_[0-9]+{}.xml$'.format(prefix, suffix)
+
+    candidate_list = glob.glob(glob_pattern)
+    candidate_list.sort()
+
+    filename_list = [filename for filename in candidate_list
+                     if re.match(regex, os.path.basename(filename))]
+
+    return filename_list
+
+
+def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
+                     overwrite=False):
+
+    # Check that the input IFU driver cat exists and is a file
+
+    assert os.path.isfile(ifu_driver_cat)
+
+    # Set the prefix of the output file if it has not been provided
     
-    assert os.path.isfile(input_fits)
+    if prefix is None:
+        basename_wo_ext = os.path.splitext(os.path.basename(ifu_driver_cat))[0]
 
+        prefix = basename_wo_ext.replace('-ifu_driver_cat', '')
+
+        if prefix[-1] != '-':
+            prefix = prefix + '-'
+
+    # Remove the previous files if overwriting has been requested
+    
     if overwrite == True:
-        cmd = 'rm -Rf {}/*.xml'.format(output_dir)
-        os.system(cmd)
 
-    stage2_ifu = ifu(input_fits, output=output_dir)   ## add specifiers for mIFU grouping / overloading fields /etc behaviour here
+        prev_filename_list = _get_previous_files(ifu_driver_cat, output_dir,
+                                                 prefix, suffix)
+
+        if len(prev_filename_list) > 0:
+
+            logging.info('Removing previous files: {}'.format(filename_list))
+            for filename in filename_list:
+                os.remove(filename)
+
+    # Create the XML files
+    ## *** add specifiers for mIFU grouping / overloading fields /etc behaviour here
+    stage2_ifu = ifu(ifu_driver_cat, output_dir=output_dir,
+                     prefix=prefix, suffix=suffix)
     stage2_ifu.generate_xmls(mifu_mode=1)
     
-    logging.info('')
     logging.info('IFU XMLs written to: {}'.format(output_dir))
 
 
