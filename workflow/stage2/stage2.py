@@ -18,6 +18,8 @@
 #
 
 
+import argparse
+import logging
 import os
 import xml.dom.minidom
 
@@ -605,36 +607,64 @@ class ifu:
 
             
         index = 1
-        output_name = '%s%s%d.xml'%(self.xml_out,mode.lower(),index)
+        output_name = os.path.join(self.xml_out,
+                                   '%s%d.xml' % (mode.lower(), index))
         while os.path.isfile(output_name):
             index += 1
-            output_name = '%s%s%d.xml'%(self.xml_out,mode.lower(),index)
+            output_name = os.path.join(self.xml_out,
+                                       '%s%d.xml' % (mode.lower(), index))
 
         this_xml.write_xml(output_name)
 
 
-if __name__ == '__main__':
-
-    input_fits = './input/WC_2020A1-ifu_driver_cat.fits'
+def create_xml_files(input_fits, output_dir, prefix=None, overwrite=False):
     
-    try:
-        assert os.path.isfile(input_fits)
-    except:
-        print('Please supply valid FITS IFU catalogue driver file')
-        print('Usage: ./stage2.py filename')
-        raise SystemExit(0)
+    assert os.path.isfile(input_fits)
 
-    output_dir = '../stage3/input_tmp/'
-
-    if 1:
-        cmd = 'rm -Rf ../stage3/input_tmp/*.xml'
+    if overwrite == True:
+        cmd = 'rm -Rf {}/*.xml'.format(output_dir)
         os.system(cmd)
 
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    stage2_ifu = ifu(input_fits,output=output_dir)   ## add specifiers for mIFU grouping / overloading fields /etc behaviour here
+    stage2_ifu = ifu(input_fits, output=output_dir)   ## add specifiers for mIFU grouping / overloading fields /etc behaviour here
     stage2_ifu.generate_xmls(mifu_mode=1)
     print()
     print('IFU XMLs written to: {0}'.format(output_dir))
+
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(
+             description='Create XML files with targets from an IFU driver cat')
+
+    parser.add_argument('ifu_driver_cat',
+                        help="""a FITS file containing an IFU driver cat""")
+
+    parser.add_argument('--outdir', dest='output_dir', default='output',
+                        help="""name for the output file which will contain the
+                        combo catalogue""")
+
+    parser.add_argument('--prefix', dest='prefix', default=None,
+                        help="""prefix to be used in the output files (it will
+                        be derived from ifu_driver_cat if non provided)""")
+
+    parser.add_argument('--overwrite', dest='overwrite', action='store_true',
+                        help='overwrite the output files')
+
+    parser.add_argument('--log_level', default='info',
+                        choices=['debug', 'info', 'warning', 'error'],
+                        help='the level for the logging messages')
+
+    args = parser.parse_args()
+
+    level_dict = {'debug': logging.DEBUG, 'info': logging.INFO,
+                  'warning': logging.WARNING, 'error': logging.ERROR}
+
+    logging.basicConfig(level=level_dict[args.log_level])
+
+    if not os.path.exists(args.output_dir):
+        logging.info('Creating the output directory')
+        os.mkdir(args.output_dir)
+
+    create_xml_files(args.ifu_driver_cat, args.output_dir, prefix=args.prefix,
+                     overwrite=args.overwrite)
 
