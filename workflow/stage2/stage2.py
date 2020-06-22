@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #
-# Copyright (C) 2018 Cambridge Astronomical Survey Unit
+# Copyright (C) 2020 Cambridge Astronomical Survey Unit
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -55,7 +55,7 @@ class xml_data:
         import time
         cmd = 'wget -q -t 1 -T 5 %s'%(url)
         if outname != None:
-            print 'Downloading URL %s to %s'%(url,outname)
+            print('Downloading URL %s to %s'%(url,outname))
             cmd += ' -O %s'%(outname)
         os.system(cmd)
         return
@@ -77,7 +77,7 @@ class xml_data:
     def write_xml(self,filename):
         newxml = self.remove_empty_lines(self.dom.toprettyxml())
         finalxml = self.remove_xml_declaration(newxml)
-        print 'Writing to %s'%(filename)
+        print('Writing to %s'%(filename))
         with open(filename, 'w') as f:
             f.write(finalxml)    
         
@@ -123,7 +123,7 @@ class ifu:
     def __init__(self,input_fits,res='LR',output='auto',version='OpR3b',binning='1'):
         self.version = 0.6
         self.plate_scale = 17.8   ##  "/mm
-        print 'Reading in %s'%(input_fits)
+        print('Reading in %s'%(input_fits))
         self.input_fits = input_fits
         input_data = fits.open(input_fits)
         self.data = input_data[1].data
@@ -144,7 +144,7 @@ class ifu:
         return
 
     def row_validator(self,row):
-        print 'WARNING: row validator not implemented!'
+        print('WARNING: row validator not implemented!')
         #assert row['IFU_DITHER'] in [-1,3,5]
         #check length of cc_report != max length (70? 69?) issue warning
 
@@ -173,7 +173,7 @@ class ifu:
                 data_filter.append(d)
 
         if len(data_filter) == 0:
-            print 'The supplied catalogue does not provide IFU target data'
+            print('The supplied catalogue does not provide IFU target data')
 
         lifu = []
         mifu = []
@@ -204,8 +204,8 @@ class ifu:
             #what happens if there are (eg) 10 pointings in a given key?
             #something like:
             # assert len(custom_dithers[key]) == custom_dithers[key]['PROGTEMP'][2]
-            print ''
-            print 'Processing %d custom dither pointing groupings for LIFU'%(len(custom_dithers.keys()))
+            print('')
+            print('Processing %d custom dither pointing groupings for LIFU'%(len(custom_dithers.keys())))
             for key in custom_dithers.keys():
                 lifu_entry = custom_dithers[key]
                 self.process_rows(lifu_entry)
@@ -224,22 +224,22 @@ class ifu:
                 fields[key] = [mifu_entry]
 
         if len(fields.keys()) > 0:
-            print ''
-            print 'Processing %d mIFU bundle groupings'%(len(fields.keys()))
+            print('')
+            print('Processing %d mIFU bundle groupings'%(len(fields.keys())))
             # for the moment, just go with (1), but implement (2) and (3)
             for key in fields.keys():
                 mifu_entry = fields[key]
                 if mifu_mode == 1:
                     if len(mifu_entry) > (20 - mifu_ncalibs):
-                        print 'WARNING: Bundles in field %s (%d) exceeds maximum when including calibration bundles (%d). Change mifu_mode or remove excess bundles downstream'%(key,len(mifu_entry),mifu_ncalibs)
+                        print('WARNING: Bundles in field %s (%d) exceeds maximum when including calibration bundles (%d). Change mifu_mode or remove excess bundles downstream'%(key,len(mifu_entry),mifu_ncalibs))
                         self.process_rows(mifu_entry)
 
                 elif len(mifu_entry) > (20 - mifu_ncalibs):
-                    print 'Group %s: filling XML files according to mifu_mode=%d'%(key,mifu_mode)
+                    print('Group %s: filling XML files according to mifu_mode=%d'%(key,mifu_mode))
                     if mifu_mode == 2:
                         #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
                         max_sci_bundles = 20 - mifu_ncalibs
-                        print 'Will create XML files with %d science bundles inside'%(max_sci_bundles)
+                        print('Will create XML files with %d science bundles inside'%(max_sci_bundles))
                         
                     if mifu_mode == 3:
                         max_sci_bundles = 20 - mifu_ncalibs
@@ -253,7 +253,7 @@ class ifu:
                             max_sci_bundles = int(max_sci_bundles)
                         else:
                             max_sci_bundles = int(max_sci_bundles) - 1
-                        print 'Will create %d XML files each with %d science bundles inside'%(nxml,max_sci_bundles)
+                        print('Will create %d XML files each with %d science bundles inside'%(nxml,max_sci_bundles))
 
                     added_rows = []
                     rows = iter(mifu_entry)
@@ -290,13 +290,13 @@ class ifu:
 
             centrals.append(d)
             if verbose:
-                print d
+                print(d)
 
 
         if (len(centrals) > 0) and dither_group:
             if verbose:
-                print ''
-                print 'Groupings:'
+                print('')
+                print('Groupings:')
 
             groups = {}
             for c in centrals:
@@ -309,13 +309,13 @@ class ifu:
             if len(groups.keys()) > 0:
                 if verbose:
                     for key in groups.keys():
-                        print 'Group %s'%(key)
+                        print('Group %s'%(key))
                         for d in groups[key]:
-                            print d
-                    print '\n'
+                            print(d)
+                    print('\n')
             else:
                 if verbose:
-                    print 'No dithers... sorry'
+                    print('No dithers... sorry')
 
         if ((len(groups)) == 0) and len(centrals) == 0:
             raise SystemExit('No centrals of groups found')
@@ -447,7 +447,7 @@ class ifu:
         sci_exps = []
         order += 1
         first_sci_order = order
-        for i in xrange(ndither):
+        for i in range(ndither):
             sci = sci_dummy.cloneNode(True)
             sci.setAttribute('order',value=str(order))
             sci.setAttribute('arm',value='both')
@@ -543,7 +543,7 @@ class ifu:
         order = first_sci_order
         field = None
         col_names = rows[0].array.columns.names
-        for i in xrange(len(rows)):
+        for i in range(len(rows)):
             row = rows[i]
             target = this_xml.base_target.cloneNode(True)
 
@@ -624,8 +624,8 @@ if __name__ == '__main__':
     try:
         assert os.path.isfile(input_fits)
     except:
-        print 'Please supply valid FITS IFU catalogue driver file'
-        print 'Usage: ./stage2.py filename'
+        print('Please supply valid FITS IFU catalogue driver file')
+        print('Usage: ./stage2.py filename')
         raise SystemExit(0)
 
     output_dir = '../stage3/input_tmp/'
@@ -639,5 +639,5 @@ if __name__ == '__main__':
 
     stage2_ifu = ifu(input_fits,output=output_dir)   ## add specifiers for mIFU grouping / overloading fields /etc behaviour here
     stage2_ifu.generate_xmls(mifu_mode=1)
-    print 
+    print()
     print('IFU XMLs written to: {0}'.format(output_dir))
