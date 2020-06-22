@@ -29,13 +29,15 @@ import numpy
 from astropy.io import fits
 
 
-class xml_data:
+class _XMLdata:
+    
     def __init__(self):
         self.xml_template_url = 'http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/BlankXMLTemplate.xml'
         self.xml_template = 'BlankXMLTemplate.xml'
         if not os.path.isfile(self.xml_template):
-            self.wget(self.xml_template_url)
+            self._wget(self.xml_template_url)
         return
+
 
     def new_xml(self,root_data=None):
         #init the new XML
@@ -44,13 +46,13 @@ class xml_data:
         except xml.parsers.expat.ExpatError:
             logging.error('File {} would not parse'.format(self.xml_template))
             raise SystemExit(1)
-        self.ingest_xml(dom)
+        self._ingest_xml(dom)
         if root_data:
             for key in root_data.keys():
                 self.root.setAttribute(key, value=str(root_data[key]))
 
 
-    def wget(self,url,outname=None):
+    def _wget(self,url,outname=None):
 
         ##
         ## Put this into a generic tools module
@@ -63,7 +65,8 @@ class xml_data:
         os.system(cmd)
         return
 
-    def ingest_xml(self,dom):
+    
+    def _ingest_xml(self,dom):
         self.dom = dom
         self.root = dom.childNodes[0]
         self.exposures = self.root.getElementsByTagName('exposures')[0]
@@ -77,29 +80,28 @@ class xml_data:
         self.offset = self.observation.getElementsByTagName('offsets')[0]
         self.targets_base = self.fields.getElementsByTagName('target')
 
+
     def write_xml(self,filename):
-        newxml = self.remove_empty_lines(self.dom.toprettyxml())
-        finalxml = self.remove_xml_declaration(newxml)
+        newxml = self._remove_empty_lines(self.dom.toprettyxml())
+        finalxml = self._remove_xml_declaration(newxml)
         logging.info('Writing to {}'.format(filename))
         with open(filename, 'w') as f:
             f.write(finalxml)    
         
 
-    def remove_xml_declaration(self,xml_text):
+    def _remove_xml_declaration(self,xml_text):
         doc = xml.dom.minidom.parseString(xml_text)
         root = doc.documentElement
         xml_text_without_declaration = root.toxml(doc.encoding)
         return xml_text_without_declaration
 
-    def remove_empty_lines(self,xml_text):
+    
+    def _remove_empty_lines(self,xml_text):
         reparsed = xml.dom.minidom.parseString(xml_text)
         return '\n'.join([line for line in reparsed.toprettyxml(indent=' ').split('\n') if line.strip()])
 
-        
 
-
-
-class ifu:
+class _IFU:
     """
     Convert the target-level data from an IFU driver catalogue to a set of XMLs.
     
@@ -120,6 +122,7 @@ class ifu:
         Suffix to be used in the output files.
     """
 
+    
     def __init__(self, ifu_driver_cat, output_dir='.', prefix='', suffix=''):
 
         # Save the input parameters
@@ -153,7 +156,7 @@ class ifu:
         self.xml_template = 'BlankXMLTemplate.xml'
 
         
-    def row_validator(self,row):
+    def _row_validator(self,row):
         logging.warning('Row validator not implemented!')
         #assert row['IFU_DITHER'] in [-1,3,5]
         #check length of cc_report != max length (70? 69?) issue warning
@@ -190,7 +193,7 @@ class ifu:
         mifu = []
         for d in data_filter:
             # validation checks
-            self.row_validator(d)
+            self._row_validator(d)
             if d['PROGTEMP'][0] in ['4','5','6']:
                 lifu.append(d)
             else:
@@ -203,7 +206,7 @@ class ifu:
         for lifu_entry in lifu:
             if lifu_entry['IFU_DITHER'] != -1:
                 #process this right away
-                self.process_rows([lifu_entry])
+                self._process_rows([lifu_entry])
             else:
                 key = ':'.join([lifu_entry[subkey] for subkey in group_id.split(':')])
                 try:
@@ -221,7 +224,7 @@ class ifu:
                 len(custom_dithers.keys())))
             for key in custom_dithers.keys():
                 lifu_entry = custom_dithers[key]
-                self.process_rows(lifu_entry)
+                self._process_rows(lifu_entry)
 
 
         #how do you group bundles belonging to the same field?
@@ -246,7 +249,7 @@ class ifu:
                     if len(mifu_entry) > (20 - mifu_ncalibs):
                         logging.warning(
                         'Bundles in field {} ({}) exceeds maximum when including calibration bundles ({}). Change mifu_mode or remove excess bundles downstream'.format(key, len(mifu_entry), mifu_ncalibs))
-                        self.process_rows(mifu_entry)
+                        self._process_rows(mifu_entry)
 
                 elif len(mifu_entry) > (20 - mifu_ncalibs):
                     logging.info('Group {}: filling XML files according to mifu_mode={}'.format(key, mifu_mode))
@@ -280,11 +283,11 @@ class ifu:
                                 this_xml.append(_row)
                             except StopIteration:
                                 break
-                        self.process_rows(this_xml)
+                        self._process_rows(this_xml)
                         
                         
                 else:
-                    self.process_rows(mifu_entry)
+                    self._process_rows(mifu_entry)
                     
                     
                         
@@ -343,7 +346,8 @@ class ifu:
             return centrals,groups
         return centrals
 
-    def process_rows(self,rows):
+    
+    def _process_rows(self,rows):
         res_lookup = {}
         res_lookup['1'] = 'LR'
         res_lookup['2'] = 'HR'
@@ -375,7 +379,7 @@ class ifu:
             ndither = rows[0]['IFU_DITHER']
 
 
-        this_xml = xml_data()
+        this_xml = _XMLdata()
         this_xml.new_xml(root_data=self.root_data)
 
         #get a clone of the exposures element and wipe it of everything bar the initial calibs
@@ -695,8 +699,8 @@ def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
     # *** add specifiers for mIFU grouping / overloading fields /etc behaviour
     # here
 
-    stage2_ifu = ifu(ifu_driver_cat, output_dir=output_dir,
-                     prefix=prefix, suffix=suffix)
+    stage2_ifu = _IFU(ifu_driver_cat, output_dir=output_dir,
+                      prefix=prefix, suffix=suffix)
     stage2_ifu.generate_xmls(mifu_mode=1)
     
     logging.info('IFU XMLs written to: {}'.format(output_dir))
