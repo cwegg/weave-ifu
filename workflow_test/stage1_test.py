@@ -58,6 +58,13 @@ def test_download_master_cat(master_cat):
     assert os.path.exists(master_cat)
 
 
+def test_check_master_cat(master_cat):
+
+    returncode = subprocess.call(['fitscheck', master_cat])
+    
+    assert returncode == 0
+
+
 @pytest.fixture(scope='session')
 def ifu_driver_template(master_cat, tmpdir_factory):
 
@@ -74,6 +81,13 @@ def test_create_ifu_driver_template(ifu_driver_template):
     assert os.path.exists(ifu_driver_template)
 
 
+def test_check_ifu_driver_template(ifu_driver_template):
+
+    returncode = subprocess.call(['fitscheck', ifu_driver_template])
+    
+    assert returncode == 0
+
+
 @pytest.fixture(scope='session')
 def pkg_ifu_driver_template():
 
@@ -86,6 +100,13 @@ def pkg_ifu_driver_template():
 def test_pkg_ifu_driver_template(pkg_ifu_driver_template):
 
     assert os.path.exists(pkg_ifu_driver_template)
+
+
+def test_check_pkg_ifu_driver_template(pkg_ifu_driver_template):
+
+    returncode = subprocess.call(['fitscheck', pkg_ifu_driver_template])
+    
+    assert returncode == 0
 
 
 def test_compare_ifu_driver_template(ifu_driver_template,
@@ -117,6 +138,13 @@ def ifu_driver_cat(ifu_driver_template, tmpdir_factory):
     return file_path
 
 
+def test_check_ifu_driver_cat(ifu_driver_cat):
+
+    returncode = subprocess.call(['fitscheck', ifu_driver_cat])
+    
+    assert returncode == 0
+
+
 def test_create_ifu_driver_cat(ifu_driver_cat):
 
     assert os.path.exists(ifu_driver_cat)
@@ -134,6 +162,13 @@ def pkg_ifu_driver_cat():
 def test_pkg_ifu_driver_cat(pkg_ifu_driver_cat):
 
     assert os.path.exists(pkg_ifu_driver_cat)
+
+
+def test_check_pkg_ifu_driver_cat(pkg_ifu_driver_cat):
+
+    returncode = subprocess.call(['fitscheck', pkg_ifu_driver_cat])
+    
+    assert returncode == 0
 
 
 def test_compare_ifu_driver_cat(ifu_driver_cat, pkg_ifu_driver_cat):
@@ -170,6 +205,13 @@ def ifu_driver_cat_cheating(ifu_driver_template, tmpdir_factory):
 def test_create_ifu_driver_cat_cheating(ifu_driver_cat_cheating):
 
     assert os.path.exists(ifu_driver_cat_cheating)
+
+
+def test_check_ifu_driver_cat_cheating(ifu_driver_cat_cheating):
+
+    returncode = subprocess.call(['fitscheck', ifu_driver_cat_cheating])
+    
+    assert returncode == 0
 
 
 def test_compare_ifu_driver_cat_cheating(ifu_driver_cat_cheating,
