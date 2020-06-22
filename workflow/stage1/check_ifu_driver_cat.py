@@ -173,9 +173,12 @@ def _get_td(hdu, colname, minmax):
 
         index = hdu.data.columns.names.index(colname)
 
-        kwd = 'TD{}{}'.format(minmax.upper(), index + 1)
+        kwd = 'TL{}{}'.format(minmax.upper(), index + 1)
 
-        value = hdu.header[kwd]
+        if kwd in hdu.header:
+            value = hdu.header[kwd]
+        else:
+            value = None
 
     else:
         value = None
@@ -189,6 +192,14 @@ def _check_in_td_range(hdu, colname):
 
     min_value = _get_td(hdu, colname, 'min')
     max_value = _get_td(hdu, colname, 'max')
+    
+    if min_value is None:
+        logging.warning(
+            'TDMIN value is not available for column {}'.format(colname))
+    
+    if max_value is None:
+        logging.warning(
+            'TDMAX value is not available for column {}'.format(colname))
 
     for value in hdu.data[colname]:
 
