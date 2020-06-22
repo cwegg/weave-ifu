@@ -178,7 +178,7 @@ class _IFU:
 
 
         
-        centrals = []
+        
         #NORBI.X
         data_filter = []
         for d in self.data:
@@ -288,76 +288,9 @@ class _IFU:
                         
                 else:
                     self._process_rows(mifu_entry)
-                    
-                    
-                        
-
-
-            
-        
-
-        if 1:
-            return
-
-
-                
-        if (d['IFU_SPAXEL'] == self.cspax_id):
-
-            centrals.append(d)
-            if verbose:
-                logging.info(d)
-
-
-        if (len(centrals) > 0) and dither_group:
-            if verbose:
-                logging.info('')
-                logging.info('Groupings:')
-
-            groups = {}
-            for c in centrals:
-                radec = '{:.10f} {:.10f}'.format(c['GAIA_RA'], c['GAIA_DEC'])
-                try:
-                    groups[c['TARGID']].append(c)
-                except KeyError:
-                    groups[c['TARGID']] = [c]
-
-            if len(groups.keys()) > 0:
-                if verbose:
-                    for key in groups.keys():
-                        logging.info('Group {}'.format(key))
-                        for d in groups[key]:
-                            logging.info(d)
-                    print('\n')
-            else:
-                if verbose:
-                    logging.info('No dithers... sorry')
-
-        if ((len(groups)) == 0) and len(centrals) == 0:
-            logging.error('No centrals of groups found')
-            raise SystemExit(2)
-
-        if len(groups) == 0:
-            ##??
-            groups = [centrals[0]]
-
-        self.groups = groups
-        self.centrals = centrals
-        if dither_group:
-            return centrals,groups
-        return centrals
 
     
     def _process_rows(self,rows):
-        res_lookup = {}
-        res_lookup['1'] = 'LR'
-        res_lookup['2'] = 'HR'
-        res_lookup['3'] = 'HR'
-        res_lookup['4'] = 'LR'
-        res_lookup['5'] = 'HR'
-        res_lookup['6'] = 'HR'
-        res_lookup['7'] = 'LR'
-        res_lookup['8'] = 'HR'
-        res_lookup['9'] = 'HR'
         
         mode_lookup = {}
         mode_lookup['4'] = 'LIFU'
