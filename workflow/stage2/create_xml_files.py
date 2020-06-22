@@ -155,15 +155,6 @@ class _IFU:
         
         self.xml_template = 'BlankXMLTemplate.xml'
 
-        
-    def _row_validator(self,row):
-        logging.warning('Row validator not implemented!')
-        #assert row['IFU_DITHER'] in [-1,3,5]
-        #check length of cc_report != max length (70? 69?) issue warning
-
-
-        return True
-
     
     def generate_xmls(self,mifu_mode=1,mifu_ncalibs=2):
         assert mifu_mode in [1,2,3]
@@ -176,10 +167,8 @@ class _IFU:
         #                   100/6 = 17 bundles per field (with remainder added to a final XML), ie:
         #                   5 x 17 bundles + 1 x 15 bundles
 
+        # Filter the rows which are IFU
 
-        
-        
-        #NORBI.X
         data_filter = []
         for d in self.data:
             #filter for IFU
@@ -189,18 +178,23 @@ class _IFU:
         if len(data_filter) == 0:
             logging.warning('The supplied catalogue does not provide IFU target data')
 
+        # Filter the rows which are LIFU or mIFU independently
+
         lifu = []
         mifu = []
         for d in data_filter:
             # validation checks
-            self._row_validator(d)
             if d['PROGTEMP'][0] in ['4','5','6']:
                 lifu.append(d)
             else:
-                mifu.append(d)           
+                mifu.append(d)
+
+        # Proccess the LIFU
 
         #how do you group entries belonging to the same OB (for custom dithers)?
         group_id = 'TARGID:TARGNAME:PROGTEMP:OBSTEMP'
+
+        # Generate the IFU XMLs of the non custom dithers, detect the custom dithers
         
         custom_dithers = {}
         for lifu_entry in lifu:
@@ -214,6 +208,8 @@ class _IFU:
                 except KeyError:
                     custom_dithers[key] = [lifu_entry]
 
+        # If we have custom dithers
+        
         if len(custom_dithers.keys()) > 0:
             #what happens if there are (eg) 10 pointings in a given key?
             #something like:
@@ -226,6 +222,8 @@ class _IFU:
                 lifu_entry = custom_dithers[key]
                 self._process_rows(lifu_entry)
 
+
+        # Process the mIFU
 
         #how do you group bundles belonging to the same field?
         group_id = 'TARGNAME:PROGTEMP:OBSTEMP:IFU_DITHER'
