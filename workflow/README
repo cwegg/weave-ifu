@@ -55,11 +55,18 @@ Stage 2: Creation of the XML files with the targets
 
 **Contributors:** David Murphy
 
+**Contributors: DM**
+
 The code at stage 2 analyses the input IFU driver catalogue and
 converts this list into a series of distinct pointings (grouping mIFU
 pointings into fields where required). This process outputs the
 pointings as XML files (using the base XML template), filling the
-details as interpreted from the PROGTEMP and OBSTEMP codes.
+details as interpreted from the PROGTEMP and OBSTEMP codes. For
+instances where users provide more candidate bundles than can be
+accommodated per WEAVE mIFU field (generally 18 or 19), then the
+bundles are distributed depending on one of three options set by
+the user.
+
 
 Stage 3: Adding guide and calibration stars to the XML files
 ------------------------------------------------------------
