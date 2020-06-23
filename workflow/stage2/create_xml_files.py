@@ -161,25 +161,17 @@ class _IFU:
 
     
     def _process_ob(self, entry_group):
-        
-        mode_lookup = {}
-        mode_lookup['4'] = 'LIFU'
-        mode_lookup['5'] = 'LIFU'
-        mode_lookup['6'] = 'LIFU'
-        mode_lookup['7'] = 'mIFU'
-        mode_lookup['8'] = 'mIFU'
-        mode_lookup['9'] = 'mIFU'
 
-        if str(mode_lookup[entry_group[0]['PROGTEMP'][0]]) == 'LIFU':
-            obsmode = 'LIFU'
-            ndither = len(entry_group)
-            if len(entry_group) == 1:
-                ndither = entry_group[0]['IFU_DITHER']
-            
+        first_entry = entry_group[0]
+
+        progtemp = first_entry['PROGTEMP']
+
+        obsmode = get_obsmode_from_progtemp(progtemp)
+
+        if (obsmode == 'LIFU') and (len(entry_group) > 1):
+            num_dither = len(entry_group)
         else:
-            #mIFU
-            obsmode = 'mIFU'
-            ndither = entry_group[0]['IFU_DITHER']
+            num_dither = first_entry['IFU_DITHER']
 
 
         this_xml = _XMLdata()
@@ -267,7 +259,7 @@ class _IFU:
         sci_exps = []
         order += 1
         first_sci_order = order
-        for i in range(ndither):
+        for i in range(num_dither):
             sci = sci_dummy.cloneNode(True)
             sci.setAttribute('order',value=str(order))
             sci.setAttribute('arm',value='both')
@@ -328,7 +320,7 @@ class _IFU:
         elif obsmode == 'mIFU':
             this_xml.observation.setAttribute('name',str(entry_group[0]['TARGNAME']))
         this_xml.observation.setAttribute('progtemp',str(entry_group[0]['PROGTEMP']))
-        this_xml.observation.setAttribute('obs_type',str(mode_lookup[entry_group[0]['PROGTEMP'][0]]))
+        this_xml.observation.setAttribute('obs_type', obsmode)
         this_xml.observation.setAttribute('trimester',str(self.trimester))
         this_xml.observation.setAttribute('pa',str(entry_group[0]['IFU_PA_REQUEST']))
 
