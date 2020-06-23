@@ -24,6 +24,7 @@ import logging
 import os
 import re
 import xml.dom.minidom
+from collections import OrderedDict
 
 import numpy
 from astropy.io import fits
@@ -137,7 +138,7 @@ class _IFU:
 
         # Read and save the information into the IFU driver catalogue
         
-        logging.info('Reading in {}'.format(self.ifu_driver_cat))
+        logging.info('Reading {}'.format(self.ifu_driver_cat))
 
         with fits.open(self.ifu_driver_cat) as hdu_list:
 
@@ -437,38 +438,57 @@ class _IFU:
 
         
     def _generate_lifu_xmls(self, lifu_entry_list):
-        # Proccess the LIFU
 
-        #how do you group entries belonging to the same OB (for custom dithers)?
-        group_id = 'TARGID:TARGNAME:PROGTEMP:OBSTEMP'
+        # How do you group entries belonging to the same OB?
+        # (for custom dithers)
 
-        # Generate the IFU XMLs of the non custom dithers, detect the custom dithers
+        group_id = ('TARGID', 'TARGNAME', 'PROGTEMP', 'OBSTEMP')
+
+        # Detect the non-custom dithers and save them into a list
+
+        non_custom_dithers_list = []
         
-        custom_dithers = {}
         for lifu_entry in lifu_entry_list:
-            if lifu_entry['IFU_DITHER'] != -1:
-                #process this right away
-                self._process_rows([lifu_entry])
-            else:
-                key = ':'.join([lifu_entry[subkey] for subkey in group_id.split(':')])
-                try:
-                    custom_dithers[key].append(lifu_entry)
-                except KeyError:
-                    custom_dithers[key] = [lifu_entry]
 
-        # If we have custom dithers
+            if lifu_entry['IFU_DITHER'] != -1:
+
+                non_custom_dithers_list.append(lifu_entry)
+
+        # Generate the IFU XMLs of the non-custom dithers
+
+        logging.info(
+            'Processing {} non-custom dither pointings for LIFU'.format(
+                len(non_custom_dithers_list)))
+
+        for entry in non_custom_dithers_list:
+
+            entry_group = [lifu_entry]
+
+            self._process_rows(entry_group)
+
+        # Detect the custom dithers and save them into a dict
+
+        custom_dithers_dict = OrderedDict()
+
+        for lifu_entry in lifu_entry_list:
+
+            if lifu_entry['IFU_DITHER'] == -1:
+
+                key = tuple(lifu_entry[col] for col in group_id)
+
+                if key not in custom_dithers_dict.keys():
+                    custom_dithers_dict[key] = []
+                
+                custom_dithers_dict[key].append(lifu_entry)
+
+        # Process the custom dither pointing groupins
         
-        if len(custom_dithers.keys()) > 0:
-            #what happens if there are (eg) 10 pointings in a given key?
-            #something like:
-            # assert len(custom_dithers[key]) == custom_dithers[key]['PROGTEMP'][2]
-            logging.info('')
-            logging.info(
-                'Processing {} custom dither pointing groupings for LIFU'.format(
-                len(custom_dithers.keys())))
-            for key in custom_dithers.keys():
-                lifu_entry = custom_dithers[key]
-                self._process_rows(lifu_entry)
+        logging.info(
+            'Processing {} custom dither pointing groupings for LIFU'.format(
+                len(custom_dithers_dict)))
+
+        for entry_group in custom_dithers_dict.values():
+            self._process_rows(entry_group)
 
                 
     def _generate_mifu_xmls(self, mifu_entry_list, mifu_mode='aufbau',
