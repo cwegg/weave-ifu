@@ -30,16 +30,14 @@ import numpy as np
 from astropy.io import fits
 
 from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
+from workflow.utils.get_resources import get_blank_xml_template
 
 
-class _XMLdata:
+class _OBXML:
 
     
-    def __init__(self):
-        self.xml_template_url = 'http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/BlankXMLTemplate.xml'
-        self.xml_template = 'BlankXMLTemplate.xml'
-        if not os.path.isfile(self.xml_template):
-            self._wget(self.xml_template_url)
+    def __init__(self, xml_template):
+        self.xml_template = xml_template
 
 
     def new_xml(self,root_data=None):
@@ -55,20 +53,8 @@ class _XMLdata:
                 self.root.setAttribute(key, value=str(root_data[key]))
 
 
-    def _wget(self,url,outname=None):
+    def _ingest_xml(self, dom):
 
-        ##
-        ## Put this into a generic tools module
-        ##
-        
-        cmd = 'wget -q -t 1 -T 5 {}'.format(url)
-        if outname != None:
-            logging.info('Downloading URL {} to {}'.format(url, outname))
-            cmd += ' -O {}'.format(outname)
-        os.system(cmd)
-
-    
-    def _ingest_xml(self,dom):
         self.dom = dom
         self.root = dom.childNodes[0]
         self.exposures = self.root.getElementsByTagName('exposures')[0]
@@ -81,26 +67,45 @@ class _XMLdata:
         self.base_target = self.fields.getElementsByTagName('target')[0]
         self.offset = self.observation.getElementsByTagName('offsets')[0]
         self.targets_base = self.fields.getElementsByTagName('target')
-
-
-    def write_xml(self, filename):
-        newxml = self._remove_empty_lines(self.dom.toprettyxml())
-        finalxml = self._remove_xml_declaration(newxml)
-        logging.info('Writing to {}'.format(filename))
-        with open(filename, 'w') as f:
-            f.write(finalxml)    
         
 
-    def _remove_xml_declaration(self,xml_text):
-        doc = xml.dom.minidom.parseString(xml_text)
-        root = doc.documentElement
-        xml_text_without_declaration = root.toxml(doc.encoding)
-        return xml_text_without_declaration
+    def _remove_xml_declaration(self, xml_text):
+
+        parsed_xml = xml.dom.minidom.parseString(xml_text)
+
+        root = parsed_xml.documentElement
+
+        clean_xml_text = root.toxml(parsed_xml.encoding)
+
+        return clean_xml_text
 
     
-    def _remove_empty_lines(self,xml_text):
-        reparsed = xml.dom.minidom.parseString(xml_text)
-        return '\n'.join([line for line in reparsed.toprettyxml(indent=' ').split('\n') if line.strip()])
+    def _remove_empty_lines(self, xml_text):
+
+        parsed_xml = xml.dom.minidom.parseString(xml_text)
+
+        pretty_xml = parsed_xml.toprettyxml(indent=' ')
+
+        clean_xml_text = '\n'.join([line for line in pretty_xml.split('\n')
+                                    if line.strip()])
+
+        return clean_xml_text
+
+
+    def write_xml(self, filename, remove_empty_lines=True, declaration=False):
+
+        pretty_xml = self.dom.toprettyxml()
+
+        if remove_empty_lines is True:
+            pretty_xml = self._remove_empty_lines(pretty_xml)
+
+        if declaration is False:
+            pretty_xml = self._remove_xml_declaration(pretty_xml)
+
+        logging.info('\tWriting to {}'.format(filename))
+
+        with open(filename, 'w') as f:
+            f.write(pretty_xml)    
 
 
 class _IFUDriverCat:
@@ -216,7 +221,8 @@ class _IFUDriverCat:
         return output_path
 
     
-    def _process_ob(self, entry_group, output_dir='', prefix=None, suffix='-t'):
+    def _process_ob(self, entry_group, xml_template, output_dir='',
+                    prefix=None, suffix='-t'):
 
         first_entry = entry_group[0]
 
@@ -230,7 +236,7 @@ class _IFUDriverCat:
             num_dither = first_entry['IFU_DITHER']
 
 
-        this_xml = _XMLdata()
+        this_xml = _OBXML(xml_template)
 
         root_data = {'report_verbosity': self.report_verbosity,
                      'author': self.author, 'cc_report': self.cc_report}
@@ -480,8 +486,8 @@ class _IFUDriverCat:
         this_xml.write_xml(output_path)
 
         
-    def _generate_lifu_xmls(self, lifu_entry_list, output_dir='', prefix='',
-                            suffix='-t'):
+    def _generate_lifu_xmls(self, lifu_entry_list, xml_template, output_dir='',
+                            prefix='', suffix='-t'):
 
         # How do you group entries belonging to the same OB?
         # (for custom dithers)
@@ -508,8 +514,8 @@ class _IFUDriverCat:
 
             entry_group = [lifu_entry]
 
-            self._process_ob(entry_group, output_dir=output_dir, prefix=prefix,
-                             suffix=suffix)
+            self._process_ob(entry_group, xml_template, output_dir=output_dir,
+                             prefix=prefix, suffix=suffix)
 
         # Detect the custom dithers and save them into a dict
 
@@ -533,13 +539,14 @@ class _IFUDriverCat:
                 len(custom_dithers_dict)))
 
         for entry_group in custom_dithers_dict.values():
-            self._process_ob(entry_group, output_dir=output_dir, prefix=prefix,
-                             suffix=suffix)
+            self._process_ob(entry_group, xml_template, output_dir=output_dir,
+                             prefix=prefix, suffix=suffix)
 
                 
-    def _generate_mifu_xmls(self, mifu_entry_list, mifu_mode='aufbau',
-                            mifu_num_calibs=2, mifu_num_extra=0, output_dir='',
-                            prefix='', suffix='-t'):
+    def _generate_mifu_xmls(self, mifu_entry_list, xml_template,
+                            mifu_mode='aufbau', mifu_num_calibs=2,
+                            mifu_num_extra=0, output_dir='', prefix='',
+                            suffix='-t'):
 
         # What happens if there are (e.g.) 100 bundles in a given key and
         # mifu_num_calibs is 2?
@@ -649,11 +656,11 @@ class _IFUDriverCat:
                 len(fields_dict), len(ob_nested_list), mifu_mode))
 
         for entry_group in ob_nested_list:
-            self._process_ob(entry_group, output_dir=output_dir, prefix=prefix,
-                             suffix=suffix)
+            self._process_ob(entry_group, xml_template, output_dir=output_dir,
+                             prefix=prefix, suffix=suffix)
 
                     
-    def generate_xmls(self, mifu_mode='aufbau', mifu_num_calibs=2,
+    def generate_xmls(self, xml_template, mifu_mode='aufbau', mifu_num_calibs=2,
                       mifu_num_extra=0, output_dir='', prefix='', suffix='-t'):
 
         # Classify the entries into LIFU and mIFU
@@ -680,19 +687,21 @@ class _IFUDriverCat:
 
         # Generate the LIFU XMLs
                 
-        self._generate_lifu_xmls(lifu_entry_list, output_dir=output_dir,
-                                 prefix=prefix, suffix=suffix)
+        self._generate_lifu_xmls(lifu_entry_list, xml_template,
+                                 output_dir=output_dir, prefix=prefix,
+                                 suffix=suffix)
 
         # Generate the mIFU XMLs
                 
-        self._generate_mifu_xmls(mifu_entry_list, mifu_mode=mifu_mode,
+        self._generate_mifu_xmls(mifu_entry_list, xml_template,
+                                 mifu_mode=mifu_mode,
                                  mifu_num_calibs=mifu_num_calibs,
                                  mifu_num_extra=mifu_num_extra,
                                  output_dir=output_dir, prefix=prefix,
                                  suffix=suffix)
 
 
-def create_xml_files(ifu_driver_cat_filename, output_dir,
+def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
                      mifu_mode='aufbau', mifu_num_calibs=2, mifu_num_extra=0,
                      prefix=None, suffix='-t', overwrite=False):
     """
@@ -704,6 +713,8 @@ def create_xml_files(ifu_driver_cat_filename, output_dir,
         A FITS file containing an IFU driver cat.
     output_dir : str
         Name of the directory which will containe the output XML files.
+    xml_template : str
+        A blank XML template to be populated with the information of the OBs.
     mifu_mode : {'aufbau', 'equipartition', 'all'}, optional
         Grouping mode for mIFU targets.
     mifu_num_calibs : int, optional
@@ -737,7 +748,7 @@ def create_xml_files(ifu_driver_cat_filename, output_dir,
 
     # Create the XML files
 
-    ifu_driver_cat.generate_xmls(mifu_mode=mifu_mode,
+    ifu_driver_cat.generate_xmls(xml_template, mifu_mode=mifu_mode,
                                  mifu_num_calibs=mifu_num_calibs,
                                  mifu_num_extra=mifu_num_extra,
                                  output_dir=output_dir,
@@ -751,6 +762,11 @@ if __name__ == '__main__':
 
     parser.add_argument('ifu_driver_cat',
                         help="""a FITS file containing an IFU driver cat""")
+
+    parser.add_argument('--xml_template', dest='xml_template',
+                        default='aux/BlankXMLTemplate.xml',
+                        help="""a blank XML template to be populated with the
+                        information of the OBs""")
 
     parser.add_argument('--mifu_mode', dest='mifu_mode', default='aufbau',
                         choices=['aufbau', 'equipartition', 'all'],
@@ -794,7 +810,16 @@ if __name__ == '__main__':
         logging.info('Creating the output directory')
         os.mkdir(args.output_dir)
 
-    create_xml_files(args.ifu_driver_cat, args.output_dir,
+    xml_template_dir = os.path.dirname(args.xml_template)
+    if not os.path.exists(xml_template_dir):
+        logging.info('Creating the directory of the blank XML template')
+        os.mkdir(xml_template_dir)
+
+    if not os.path.exists(args.xml_template):
+        logging.info('Downloading the blank XML template')
+        get_blank_xml_template(file_path=args.xml_template)
+
+    create_xml_files(args.ifu_driver_cat, args.output_dir, args.xml_template,
                      mifu_mode=args.mifu_mode,
                      mifu_num_calibs=args.mifu_num_calibs,
                      mifu_num_extra=args.mifu_num_extra,
