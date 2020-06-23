@@ -26,7 +26,7 @@ import re
 import xml.dom.minidom
 from collections import OrderedDict
 
-import numpy
+import numpy as np
 from astropy.io import fits
 
 from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
@@ -160,7 +160,7 @@ class _IFU:
         self.xml_template = 'BlankXMLTemplate.xml'
 
     
-    def _process_rows(self,rows):
+    def _process_ob(self, entry_group):
         
         mode_lookup = {}
         mode_lookup['4'] = 'LIFU'
@@ -170,16 +170,16 @@ class _IFU:
         mode_lookup['8'] = 'mIFU'
         mode_lookup['9'] = 'mIFU'
 
-        if str(mode_lookup[rows[0]['PROGTEMP'][0]]) == 'LIFU':
-            mode = 'LIFU'
-            ndither = len(rows)
-            if len(rows) == 1:
-                ndither = rows[0]['IFU_DITHER']
+        if str(mode_lookup[entry_group[0]['PROGTEMP'][0]]) == 'LIFU':
+            obsmode = 'LIFU'
+            ndither = len(entry_group)
+            if len(entry_group) == 1:
+                ndither = entry_group[0]['IFU_DITHER']
             
         else:
             #mIFU
-            mode = 'mIFU'
-            ndither = rows[0]['IFU_DITHER']
+            obsmode = 'mIFU'
+            ndither = entry_group[0]['IFU_DITHER']
 
 
         this_xml = _XMLdata()
@@ -307,30 +307,30 @@ class _IFU:
         sruveys_comment = this_xml.surveys.childNodes[0]
         a = 1
         
-        all_surveys = numpy.unique([r['TARGSRVY'] for r in rows])
+        all_surveys = np.unique([r['TARGSRVY'] for r in entry_group])
         for s in all_surveys:
             this_survey = survey_clone.cloneNode(True)
             this_survey.setAttribute('name',value=str(s))
             this_survey.setAttribute('priority',value='1.0')
-            if mode == 'LIFU':
+            if obsmode == 'LIFU':
                 this_xml.configure.setAttribute('plate','LIFU')
                 this_survey.setAttribute('max_fibres',value='603')
-            elif mode == 'mIFU':
+            elif obsmode == 'mIFU':
                 this_xml.configure.setAttribute('plate','PLATE_B')
                 this_survey.setAttribute('max_fibres',value='740')
             this_xml.surveys.insertBefore(this_survey,sruveys_comment)
             
-        this_xml.obsconstraints.setAttribute('obstemp',str(rows[0]['OBSTEMP']))
+        this_xml.obsconstraints.setAttribute('obstemp',str(entry_group[0]['OBSTEMP']))
 
         #now the <observation> element:
-        if mode == 'LIFU':
-            this_xml.observation.setAttribute('name',str(rows[0]['TARGID']))
-        elif mode == 'mIFU':
-            this_xml.observation.setAttribute('name',str(rows[0]['TARGNAME']))
-        this_xml.observation.setAttribute('progtemp',str(rows[0]['PROGTEMP']))
-        this_xml.observation.setAttribute('obs_type',str(mode_lookup[rows[0]['PROGTEMP'][0]]))
+        if obsmode == 'LIFU':
+            this_xml.observation.setAttribute('name',str(entry_group[0]['TARGID']))
+        elif obsmode == 'mIFU':
+            this_xml.observation.setAttribute('name',str(entry_group[0]['TARGNAME']))
+        this_xml.observation.setAttribute('progtemp',str(entry_group[0]['PROGTEMP']))
+        this_xml.observation.setAttribute('obs_type',str(mode_lookup[entry_group[0]['PROGTEMP'][0]]))
         this_xml.observation.setAttribute('trimester',str(self.trimester))
-        this_xml.observation.setAttribute('pa',str(rows[0]['IFU_PA_REQUEST']))
+        this_xml.observation.setAttribute('pa',str(entry_group[0]['IFU_PA_REQUEST']))
 
 
         
@@ -353,7 +353,7 @@ class _IFU:
         #now remove the existing <fields> element
         this_xml.observation.removeChild(this_xml.fields)
 
-        this_xml.dithering.setAttribute('apply_dither',str(rows[0]['IFU_DITHER']))
+        this_xml.dithering.setAttribute('apply_dither',str(entry_group[0]['IFU_DITHER']))
 
         #assembly order:
         #1.target
@@ -362,9 +362,9 @@ class _IFU:
 
         order = first_sci_order
         field = None
-        col_names = rows[0].array.columns.names
-        for i in range(len(rows)):
-            row = rows[i]
+        col_names = entry_group[0].array.columns.names
+        for i in range(len(entry_group)):
+            row = entry_group[i]
             target = this_xml.base_target.cloneNode(True)
 
             # remove things we shouldn't have as the xml gets passed into Configure
@@ -375,7 +375,7 @@ class _IFU:
             _row = {}
             for col in col_names:
                 _row[col] = row[col]
-                if (str(row[col]) == 'nan') and numpy.isnan(row[col]):
+                if (str(row[col]) == 'nan') and np.isnan(row[col]):
                     _row[col] = ''
             row = _row
              
@@ -393,7 +393,7 @@ class _IFU:
             target.setAttribute('targuse',value='T')
             target.setAttribute('targsrvy',value=str(row['TARGSRVY']))
 
-            if (mode == 'LIFU'):
+            if (obsmode == 'LIFU'):
                 #generate a <field> element to add this target to
                 field = field_clone.cloneNode(True)
                 field.setAttribute('order',value=str(order))
@@ -405,7 +405,7 @@ class _IFU:
 
                 order += 1
 
-            elif (mode == 'mIFU'):
+            elif (obsmode == 'mIFU'):
                 #if this is the first of the targets, then generate the field, otherwise use the existing <field>
                 #remember - we require fixed IFU_DITHER patterns for mIFU, so multiple <field> entries not needed
                 if i == 0:
@@ -415,7 +415,7 @@ class _IFU:
                     field.setAttribute('Dec_d',value=str(row['GAIA_DEC']))
                 field.appendChild(target)
 
-        if (mode == 'mIFU'):
+        if (obsmode == 'mIFU'):
             #now add this field to the fields element
             fields_clone.appendChild(field)
             
@@ -431,7 +431,7 @@ class _IFU:
         while (index < 1) or os.path.exists(output_path):
             index += 1
             output_basename = '{}{}_{:02d}{}.xml'.format(
-                self.prefix, mode.lower(), index, self.suffix)
+                self.prefix, obsmode.lower(), index, self.suffix)
             output_path = os.path.join(self.output_dir, output_basename)
 
         this_xml.write_xml(output_path)
@@ -457,14 +457,14 @@ class _IFU:
         # Generate the IFU XMLs of the non-custom dithers
 
         logging.info(
-            'Processing {} non-custom dither pointings for LIFU'.format(
+            'Processing {} non-custom dither OBs for LIFU'.format(
                 len(non_custom_dithers_list)))
 
         for entry in non_custom_dithers_list:
 
             entry_group = [lifu_entry]
 
-            self._process_rows(entry_group)
+            self._process_ob(entry_group)
 
         # Detect the custom dithers and save them into a dict
 
@@ -481,18 +481,18 @@ class _IFU:
                 
                 custom_dithers_dict[key].append(lifu_entry)
 
-        # Process the custom dither pointing groupins
+        # Process the custom dither pointing groupings
         
         logging.info(
-            'Processing {} custom dither pointing groupings for LIFU'.format(
+            'Processing {} custom dither OBs for LIFU'.format(
                 len(custom_dithers_dict)))
 
         for entry_group in custom_dithers_dict.values():
-            self._process_rows(entry_group)
+            self._process_ob(entry_group)
 
                 
     def _generate_mifu_xmls(self, mifu_entry_list, mifu_mode='aufbau',
-                            mifu_num_calibs=2):
+                            mifu_num_calibs=2, mifu_num_extra=0):
 
         # What happens if there are (e.g.) 100 bundles in a given key and
         # mifu_num_calibs is 2?
@@ -502,80 +502,111 @@ class _IFU:
         # - aufbau: Aufbau principle, i.e. fill up to 18, leaving 2 for
         #           calibration bundles) then make a new XML
         # - equipartition: divide up the bundles equally:
-        #                  100 / 18 = 5.5 --> 6 fields
-        #                  100 / 6 = 17 bundles per field
-        #                            (with remainder added to a final XML)
-        #                  Which leads to: 5 x 17 bundles + 1 x 15 bundles
+        #                  100 / 18 = 5.5 --> 6 OBs
+        #                  100 / 6 = 17 bundles per OB
+        #                            (with remainder added to a final OB)
+        #                  i.e. 5 OBs x 17 bundles + 1 OB x 15 bundles
 
         assert mifu_mode in ['aufbau', 'equipartition', 'all']
         assert (mifu_num_calibs >= 0) and (mifu_num_calibs < 20)
 
-        # Process the mIFU
+        # How do you group bundles belonging to the same field?
 
-        #how do you group bundles belonging to the same field?
-        group_id = 'TARGNAME:PROGTEMP:OBSTEMP:IFU_DITHER'
-        
+        group_id = ('TARGNAME', 'PROGTEMP', 'OBSTEMP', 'IFU_DITHER')
 
-        fields = {}
+        # Group the mIFU entries per field
+
+        fields_dict = OrderedDict()
+
         for mifu_entry in mifu_entry_list:
-            key = ':'.join([str(mifu_entry[subkey]) for subkey in group_id.split(':')])
-            try:
-                fields[key].append(mifu_entry)
-            except KeyError:
-                fields[key] = [mifu_entry]
 
-        if len(fields.keys()) > 0:
-            logging.info('')
-            logging.info('Processing {} mIFU bundle groupings'.format(len(fields.keys())))
-            # for the moment, just go with (1), but implement (2) and (3)
-            for key in fields.keys():
-                mifu_entry = fields[key]
-                if mifu_mode == 'all':
-                    if len(mifu_entry) > (20 - mifu_num_calibs):
-                        logging.warning(
-                        'Bundles in field {} ({}) exceeds maximum when including calibration bundles ({}). Change mifu_mode or remove excess bundles downstream'.format(key, len(mifu_entry), mifu_num_calibs))
-                        self._process_rows(mifu_entry)
+            key = tuple(mifu_entry[col] for col in group_id)
 
-                elif len(mifu_entry) > (20 - mifu_num_calibs):
-                    logging.info('Group {}: filling XML files according to mifu_mode={}'.format(key, mifu_mode))
-                    if mifu_mode == 'aufbau':
-                        #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
-                        max_sci_bundles = 20 - mifu_num_calibs
-                        logging.info('Will create XML files with {} science bundles inside'.format(max_sci_bundles))
-                        
-                    if mifu_mode == 'equipartition':
-                        max_sci_bundles = 20 - mifu_num_calibs
-                        if (len(mifu_entry)/float(max_sci_bundles)).is_integer():
-                            nxml = (len(mifu_entry) / (max_sci_bundles))
-                        else:
-                            nxml = ((len(mifu_entry) / (max_sci_bundles))) + 1
+            if key not in fields_dict.keys():
+                fields_dict[key] = []
 
-                        max_sci_bundles = float(len(mifu_entry)) / float(nxml)
-                        if (max_sci_bundles).is_integer():
-                            max_sci_bundles = int(max_sci_bundles)
-                        else:
-                            max_sci_bundles = int(max_sci_bundles) - 1
-                        logging.info('Will create {} XML files each with {} science bundles inside'.format(nxml, max_sci_bundles))
+            fields_dict[key].append(mifu_entry)
 
-                    added_rows = []
-                    rows = iter(mifu_entry)
-                    while len(added_rows) != len(mifu_entry):
-                        this_xml = []
-                        while len(this_xml) != max_sci_bundles:
-                            try:
-                                _row = rows.next()
-                                added_rows.append(_row)
-                                this_xml.append(_row)
-                            except StopIteration:
-                                break
-                        self._process_rows(this_xml)
-                        
-                        
+        # Group the targets in each field per OB
+
+        ob_nested_list = []
+
+        for key in fields_dict.keys():
+
+            # Get the entries in the field
+
+            field_entry_list = fields_dict[key]
+
+            # Guess the number of entries in the field
+
+            num_entries_in_field = len(field_entry_list)
+
+            # Create the group of mIFU entries per OB depending on the mode
+
+            if (mifu_mode == 'aufbau') or (mifu_mode == 'equipartition'):
+
+                # Maximum number of target entries per OB
+
+                max_entries_per_ob = 20 - mifu_num_calibs
+
+                if mifu_mode == 'aufbau':
+
+                    # All the OBs (except the last one) will contain the maximum
+                    # number of target entries plus the amount of extra targets
+                    
+                    num_entries_per_ob = max_entries_per_ob + mifu_num_extra
+
+                elif mifu_mode == 'equipartition':
+
+                    # Compute the number of OBs
+
+                    num_obs = int(np.ceil(num_entries_in_field /
+                                          max_entries_per_ob))
+
+                    # Divide the targets to be the same (except the last one,
+                    # due to rounding effects)
+
+                    num_entries_per_ob = int(np.ceil(num_entries_in_field /
+                                                     num_obs))
+
                 else:
-                    self._process_rows(mifu_entry)
+
+                    raise ValueError
+
+                # Save the targets of each OB using Python slices
+                # (do not worry, if stop is higher than the lenght of the list,
+                #  this is allowed and the trick)
+                
+                start = 0
+
+                while start < num_entries_in_field:
+
+                    stop = start + num_entries_per_ob
+
+                    ob_nested_list.append(field_entry_list[start:stop])
+
+                    start = stop
+                    
+            elif mifu_mode == 'all':
+
+                ob_nested_list.append(field_entry_list)
+
+            else:
+
+                raise ValueError
+
+        # Proccess OB grouping
+
+        logging.info(
+            'Processing {} mIFU fields into {} OBs according to {} mode'.format(
+                len(fields_dict), len(ob_nested_list), mifu_mode))
+
+        for entry_group in ob_nested_list:
+            self._process_ob(entry_group)
 
                     
-    def generate_xmls(self, mifu_mode='aufbau', mifu_num_calibs=2):
+    def generate_xmls(self, mifu_mode='aufbau', mifu_num_calibs=2,
+                      mifu_num_extra=0):
 
         # Classify the entries into LIFU and mIFU
         
@@ -606,7 +637,8 @@ class _IFU:
         # Generate the mIFU XMLs
                 
         self._generate_mifu_xmls(mifu_entry_list, mifu_mode=mifu_mode,
-                                 mifu_num_calibs=mifu_num_calibs)
+                                 mifu_num_calibs=mifu_num_calibs,
+                                 mifu_num_extra=mifu_num_extra)
 
 
 def _get_previous_files(output_dir, prefix, suffix):
@@ -624,7 +656,8 @@ def _get_previous_files(output_dir, prefix, suffix):
 
 
 def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
-                     mifu_mode='aufbau', mifu_num_calibs=2, overwrite=False):
+                     mifu_mode='aufbau', mifu_num_calibs=2, mifu_num_extra=0,
+                     overwrite=False):
     """
     Create XML files with targets from an IFU driver cat.
     
@@ -641,8 +674,12 @@ def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
         Suffix to be used in the output files.
     mifu_mode : {'aufbau', 'equipartition', 'all'}, optional
         Grouping mode for mIFU targets.
-    mifu_num_calibs: int, optional
-        Number of mIFU calibration stars to be considered in the mIFU grouping.
+    mifu_num_calibs : int, optional
+        Number of mIFU calibration stars and sky bundles to be considered in
+        the mIFU grouping.
+    mifu_num_extra : int, optional
+        Number of extra mIFU targets to be included in the OBs when 'aufbau'
+        grouping mode is used.
     overwrite : bool, optional
         Overwrite the output FITS file.
     """
@@ -681,7 +718,8 @@ def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
                       prefix=prefix, suffix=suffix)
 
     stage2_ifu.generate_xmls(mifu_mode=mifu_mode,
-                             mifu_num_calibs=mifu_num_calibs)
+                             mifu_num_calibs=mifu_num_calibs,
+                             mifu_num_extra=mifu_num_extra)
     
     logging.info('IFU XMLs written to: {}'.format(output_dir))
 
@@ -706,8 +744,13 @@ if __name__ == '__main__':
 
     parser.add_argument('--mifu_num_calibs', dest='mifu_num_calibs', default=2,
                         choices=range(20), type=int,
-                        help="""number of mIFU calibration stars to be
-                        considered in the mIFU grouping""")
+                        help="""number of mIFU calibration stars and sky bundles
+                        to be considered in the mIFU grouping""")
+
+    parser.add_argument('--mifu_num_extra', dest='mifu_num_extra', default=0,
+                        type=int,
+                        help="""number of extra mIFU targets to be included in
+                        the OBs when 'aufbau' grouping mode is used""")
 
     parser.add_argument('--prefix', dest='prefix', default=None,
                         help="""prefix to be used in the output files (it will
@@ -734,5 +777,6 @@ if __name__ == '__main__':
     create_xml_files(args.ifu_driver_cat, args.output_dir, prefix=args.prefix,
                      mifu_mode=args.mifu_mode,
                      mifu_num_calibs=args.mifu_num_calibs,
+                     mifu_num_extra=args.mifu_num_extra,
                      overwrite=args.overwrite)
 
