@@ -85,7 +85,7 @@ class _XMLdata:
         self.targets_base = self.fields.getElementsByTagName('target')
 
 
-    def write_xml(self,filename):
+    def write_xml(self, filename):
         newxml = self._remove_empty_lines(self.dom.toprettyxml())
         finalxml = self._remove_xml_declaration(newxml)
         logging.info('Writing to {}'.format(filename))
@@ -115,34 +115,35 @@ class _IFU:
     
     Parameters
     ----------
-    ifu_driver_cat : str
+    filename : str
         A FITS file containing an IFU driver cat.
-    output_dir : str
-        Name of the directory which will containe the output XML files.
-    prefix : str, optional
-        Prefix to be used in the output files (it will be derived from
-        ifu_driver_cat if None is provided).
-    suffix : str, optional
-        Suffix to be used in the output files.
+    targcat : str, optional
+        Filename of the FITS catalogue which will be submitted to WASP (if None,
+        it will be derived from the input filename).
     """
 
     
-    def __init__(self, ifu_driver_cat, output_dir='.', prefix='', suffix=''):
+    def __init__(self, filename, targcat=None):
 
-        # Save the input parameters
+        # Save the filename
 
-        self.ifu_driver_cat = ifu_driver_cat
-        self.output_dir = output_dir
-        self.prefix = prefix 
-        self.suffix = suffix
+        self.filename = filename
+
+        # Set the targcat value
+
+        if targcat is None:
+            self.targcat = os.path.basename(self.filename).replace(
+                '-ifu_driver_cat', '')
+        else:
+            self.targcat = targcat
 
         # Read and save the information into the IFU driver catalogue
         
-        logging.info('Reading {}'.format(self.ifu_driver_cat))
+        logging.info('Reading {}'.format(self.filename))
 
-        with fits.open(self.ifu_driver_cat) as hdu_list:
+        with fits.open(self.filename) as hdu_list:
 
-            self.ifu_driver_cat_datamver = hdu_list[0].header['DATAMVER']
+            self.datamver = hdu_list[0].header['DATAMVER']
             self.trimester = hdu_list[0].header['TRIMESTE']
             self.report_verbosity = hdu_list[0].header['VERBOSE']
             self.author = hdu_list[0].header['AUTHOR']
@@ -159,8 +160,39 @@ class _IFU:
         
         self.xml_template = 'BlankXMLTemplate.xml'
 
+
+    def _get_output_path(self, obsmode, output_dir='', prefix=None,
+                         suffix='-t'):
+
+        # Set the prefix of the output file if it has not been provided
+
+        if prefix is None:
+            basename_wo_ext = os.path.splitext(
+                os.path.basename(self.filename))[0]
+
+            prefix = basename_wo_ext.replace('-ifu_driver_cat', '')
+
+            if prefix[-1] != '-':
+                prefix = prefix + '-'
+
+        # Choose the first filename which does not exist
+
+        index = 0
+        output_path = ''
+        
+        while (index < 1) or os.path.exists(output_path):
+
+            index += 1
+
+            output_basename = '{}{}_{:02d}{}.xml'.format(
+                prefix, obsmode.lower(), index, suffix)
+
+            output_path = os.path.join(output_dir, output_basename)
+
+        return output_path
+
     
-    def _process_ob(self, entry_group):
+    def _process_ob(self, entry_group, output_dir='', prefix=None, suffix='-t'):
 
         first_entry = entry_group[0]
 
@@ -380,7 +412,7 @@ class _IFU:
             target.setAttribute('targid',value=str(row['TARGID']))
             target.setAttribute('targname',value=str(row['TARGNAME']))
             target.setAttribute('targprog',value=str(row['TARGPROG']))
-            target.setAttribute('targcat',value=self.ifu_driver_cat.split('/')[-1])
+            target.setAttribute('targcat',value=self.targcat)
             target.setAttribute('targprio',value=str(row['TARGPRIO']))
             target.setAttribute('targuse',value='T')
             target.setAttribute('targsrvy',value=str(row['TARGSRVY']))
@@ -415,21 +447,14 @@ class _IFU:
         #...and finally to observation
         this_xml.observation.appendChild(fields_clone)
 
-
-            
-        index = 0
-        output_path = ''
-        
-        while (index < 1) or os.path.exists(output_path):
-            index += 1
-            output_basename = '{}{}_{:02d}{}.xml'.format(
-                self.prefix, obsmode.lower(), index, self.suffix)
-            output_path = os.path.join(self.output_dir, output_basename)
+        output_path = self._get_output_path(obsmode, output_dir=output_dir,
+                                            prefix=prefix, suffix=suffix)
 
         this_xml.write_xml(output_path)
 
         
-    def _generate_lifu_xmls(self, lifu_entry_list):
+    def _generate_lifu_xmls(self, lifu_entry_list, output_dir='', prefix='',
+                            suffix='-t'):
 
         # How do you group entries belonging to the same OB?
         # (for custom dithers)
@@ -456,7 +481,8 @@ class _IFU:
 
             entry_group = [lifu_entry]
 
-            self._process_ob(entry_group)
+            self._process_ob(entry_group, output_dir=output_dir, prefix=prefix,
+                             suffix=suffix)
 
         # Detect the custom dithers and save them into a dict
 
@@ -480,11 +506,13 @@ class _IFU:
                 len(custom_dithers_dict)))
 
         for entry_group in custom_dithers_dict.values():
-            self._process_ob(entry_group)
+            self._process_ob(entry_group, output_dir=output_dir, prefix=prefix,
+                             suffix=suffix)
 
                 
     def _generate_mifu_xmls(self, mifu_entry_list, mifu_mode='aufbau',
-                            mifu_num_calibs=2, mifu_num_extra=0):
+                            mifu_num_calibs=2, mifu_num_extra=0, output_dir='',
+                            prefix='', suffix='-t'):
 
         # What happens if there are (e.g.) 100 bundles in a given key and
         # mifu_num_calibs is 2?
@@ -594,11 +622,12 @@ class _IFU:
                 len(fields_dict), len(ob_nested_list), mifu_mode))
 
         for entry_group in ob_nested_list:
-            self._process_ob(entry_group)
+            self._process_ob(entry_group, output_dir=output_dir, prefix=prefix,
+                             suffix=suffix)
 
                     
     def generate_xmls(self, mifu_mode='aufbau', mifu_num_calibs=2,
-                      mifu_num_extra=0):
+                      mifu_num_extra=0, output_dir='', prefix='', suffix='-t'):
 
         # Classify the entries into LIFU and mIFU
         
@@ -624,13 +653,16 @@ class _IFU:
 
         # Generate the LIFU XMLs
                 
-        self._generate_lifu_xmls(lifu_entry_list)
+        self._generate_lifu_xmls(lifu_entry_list, output_dir=output_dir,
+                                 prefix=prefix, suffix=suffix)
 
         # Generate the mIFU XMLs
                 
         self._generate_mifu_xmls(mifu_entry_list, mifu_mode=mifu_mode,
                                  mifu_num_calibs=mifu_num_calibs,
-                                 mifu_num_extra=mifu_num_extra)
+                                 mifu_num_extra=mifu_num_extra,
+                                 output_dir=output_dir, prefix=prefix,
+                                 suffix=suffix)
 
 
 def _get_previous_files(output_dir, prefix, suffix):
@@ -647,23 +679,18 @@ def _get_previous_files(output_dir, prefix, suffix):
     return filename_list
 
 
-def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
+def create_xml_files(ifu_driver_cat_filename, output_dir,
                      mifu_mode='aufbau', mifu_num_calibs=2, mifu_num_extra=0,
-                     overwrite=False):
+                     prefix=None, suffix='-t', overwrite=False):
     """
     Create XML files with targets from an IFU driver cat.
     
     Parameters
     ----------
-    ifu_driver_cat : str
+    ifu_driver_cat_filename : str
         A FITS file containing an IFU driver cat.
     output_dir : str
         Name of the directory which will containe the output XML files.
-    prefix : str, optional
-        Prefix to be used in the output files (it will be derived from
-        ifu_driver_cat if None is provided).
-    suffix : str, optional
-        Suffix to be used in the output files.
     mifu_mode : {'aufbau', 'equipartition', 'all'}, optional
         Grouping mode for mIFU targets.
     mifu_num_calibs : int, optional
@@ -672,23 +699,18 @@ def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
     mifu_num_extra : int, optional
         Number of extra mIFU targets to be included in the OBs when 'aufbau'
         grouping mode is used.
+    prefix : str, optional
+        Prefix to be used in the output files (it will be derived from
+        ifu_driver_cat_filename if None is provided).
+    suffix : str, optional
+        Suffix to be used in the output files.
     overwrite : bool, optional
         Overwrite the output FITS file.
     """
 
     # Check that the input IFU driver cat exists and is a file
 
-    assert os.path.isfile(ifu_driver_cat)
-
-    # Set the prefix of the output file if it has not been provided
-    
-    if prefix is None:
-        basename_wo_ext = os.path.splitext(os.path.basename(ifu_driver_cat))[0]
-
-        prefix = basename_wo_ext.replace('-ifu_driver_cat', '')
-
-        if prefix[-1] != '-':
-            prefix = prefix + '-'
+    assert os.path.isfile(ifu_driver_cat_filename)
 
     # Remove the previous files if overwriting has been requested
     
@@ -706,12 +728,13 @@ def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
 
     # Create the XML files
 
-    stage2_ifu = _IFU(ifu_driver_cat, output_dir=output_dir,
-                      prefix=prefix, suffix=suffix)
+    stage2_ifu = _IFU(ifu_driver_cat_filename)
 
     stage2_ifu.generate_xmls(mifu_mode=mifu_mode,
                              mifu_num_calibs=mifu_num_calibs,
-                             mifu_num_extra=mifu_num_extra)
+                             mifu_num_extra=mifu_num_extra,
+                             output_dir=output_dir,
+                             prefix=prefix, suffix=suffix)
     
     logging.info('IFU XMLs written to: {}'.format(output_dir))
 
@@ -723,10 +746,6 @@ if __name__ == '__main__':
 
     parser.add_argument('ifu_driver_cat',
                         help="""a FITS file containing an IFU driver cat""")
-
-    parser.add_argument('--outdir', dest='output_dir', default='output',
-                        help="""name of the directory which will containe the
-                        output XML files""")
 
     parser.add_argument('--mifu_mode', dest='mifu_mode', default='aufbau',
                         choices=['aufbau', 'equipartition', 'all'],
@@ -743,6 +762,10 @@ if __name__ == '__main__':
                         type=int,
                         help="""number of extra mIFU targets to be included in
                         the OBs when 'aufbau' grouping mode is used""")
+
+    parser.add_argument('--outdir', dest='output_dir', default='output',
+                        help="""name of the directory which will containe the
+                        output XML files""")
 
     parser.add_argument('--prefix', dest='prefix', default=None,
                         help="""prefix to be used in the output files (it will
@@ -766,9 +789,9 @@ if __name__ == '__main__':
         logging.info('Creating the output directory')
         os.mkdir(args.output_dir)
 
-    create_xml_files(args.ifu_driver_cat, args.output_dir, prefix=args.prefix,
+    create_xml_files(args.ifu_driver_cat, args.output_dir,
                      mifu_mode=args.mifu_mode,
                      mifu_num_calibs=args.mifu_num_calibs,
                      mifu_num_extra=args.mifu_num_extra,
-                     overwrite=args.overwrite)
+                     prefix=args.prefix, overwrite=args.overwrite)
 
