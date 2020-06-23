@@ -156,16 +156,24 @@ class _IFU:
         self.xml_template = 'BlankXMLTemplate.xml'
 
     
-    def generate_xmls(self,mifu_mode=1,mifu_ncalibs=2):
-        assert mifu_mode in [1,2,3]
-        #what happens if there are (eg) 100 bundles in a given key?
-        #user needs to decide 3 options
-        #1. Include all
-        #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
-        #3. Equipartition - divide up the bundles equally. In the case of 100:
-        #                   100/18. = 5.5 --> 6 fields
-        #                   100/6 = 17 bundles per field (with remainder added to a final XML), ie:
-        #                   5 x 17 bundles + 1 x 15 bundles
+    def generate_xmls(self, mifu_mode='aufbau', mifu_num_calibs=2):
+
+        assert mifu_mode in ['aufbau', 'equipartition', 'all']
+
+        # What happens if there are (e.g.) 100 bundles in a given key and
+        # mifu_num_calibs is 2?
+        #
+        # User needs to decide 3 options:
+        # - all: Include all
+        # - aufbau: Aufbau principle, i.e. fill up to 18, leaving 2 for
+        #           calibration bundles) then make a new XML
+        # - equipartition: divide up the bundles equally:
+        #                  100 / 18 = 5.5 --> 6 fields
+        #                  100 / 6 = 17 bundles per field
+        #                            (with remainder added to a final XML)
+        #                  Which leads to: 5 x 17 bundles + 1 x 15 bundles
+
+        assert (mifu_num_calibs >= 0) and (mifu_num_calibs < 20)
 
         # Filter the rows which are IFU
 
@@ -243,21 +251,21 @@ class _IFU:
             # for the moment, just go with (1), but implement (2) and (3)
             for key in fields.keys():
                 mifu_entry = fields[key]
-                if mifu_mode == 1:
-                    if len(mifu_entry) > (20 - mifu_ncalibs):
+                if mifu_mode == 'all':
+                    if len(mifu_entry) > (20 - mifu_num_calibs):
                         logging.warning(
-                        'Bundles in field {} ({}) exceeds maximum when including calibration bundles ({}). Change mifu_mode or remove excess bundles downstream'.format(key, len(mifu_entry), mifu_ncalibs))
+                        'Bundles in field {} ({}) exceeds maximum when including calibration bundles ({}). Change mifu_mode or remove excess bundles downstream'.format(key, len(mifu_entry), mifu_num_calibs))
                         self._process_rows(mifu_entry)
 
-                elif len(mifu_entry) > (20 - mifu_ncalibs):
+                elif len(mifu_entry) > (20 - mifu_num_calibs):
                     logging.info('Group {}: filling XML files according to mifu_mode={}'.format(key, mifu_mode))
-                    if mifu_mode == 2:
+                    if mifu_mode == 'aufbau':
                         #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
-                        max_sci_bundles = 20 - mifu_ncalibs
+                        max_sci_bundles = 20 - mifu_num_calibs
                         logging.info('Will create XML files with {} science bundles inside'.format(max_sci_bundles))
                         
-                    if mifu_mode == 3:
-                        max_sci_bundles = 20 - mifu_ncalibs
+                    if mifu_mode == 'equipartition':
+                        max_sci_bundles = 20 - mifu_num_calibs
                         if (len(mifu_entry)/float(max_sci_bundles)).is_integer():
                             nxml = (len(mifu_entry) / (max_sci_bundles))
                         else:
@@ -580,7 +588,7 @@ def _get_previous_files(output_dir, prefix, suffix):
 
 
 def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
-                     overwrite=False):
+                     mifu_mode='aufbau', mifu_num_calibs=2, overwrite=False):
     """
     Create XML files with targets from an IFU driver cat.
     
@@ -595,6 +603,10 @@ def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
         ifu_driver_cat if None is provided).
     suffix : str, optional
         Suffix to be used in the output files.
+    mifu_mode : {'aufbau', 'equipartition', 'all'}, optional
+        Grouping mode for mIFU targets.
+    mifu_num_calibs: int, optional
+        Number of mIFU calibration stars to be considered in the mIFU grouping.
     overwrite : bool, optional
         Overwrite the output FITS file.
     """
@@ -621,18 +633,19 @@ def create_xml_files(ifu_driver_cat, output_dir, prefix=None, suffix='-t',
 
         if len(prev_filename_list) > 0:
 
-            logging.info('Removing previous files: {}'.format(filename_list))
-            for filename in filename_list:
+            logging.info('Removing previous files: {}'.format(
+                prev_filename_list))
+
+            for filename in prev_filename_list:
                 os.remove(filename)
 
     # Create the XML files
 
-    # *** add specifiers for mIFU grouping / overloading fields /etc behaviour
-    # here
-
     stage2_ifu = _IFU(ifu_driver_cat, output_dir=output_dir,
                       prefix=prefix, suffix=suffix)
-    stage2_ifu.generate_xmls(mifu_mode=1)
+
+    stage2_ifu.generate_xmls(mifu_mode=mifu_mode,
+                             mifu_num_calibs=mifu_num_calibs)
     
     logging.info('IFU XMLs written to: {}'.format(output_dir))
 
@@ -648,6 +661,17 @@ if __name__ == '__main__':
     parser.add_argument('--outdir', dest='output_dir', default='output',
                         help="""name of the directory which will containe the
                         output XML files""")
+
+    parser.add_argument('--mifu_mode', dest='mifu_mode', default='aufbau',
+                        choices=['aufbau', 'equipartition', 'all'],
+                        help="""grouping mode for mIFU targets: 'aufbau'
+                        follows the aufbau principle, 'equipartition' divides up
+                        the bundles equally, 'all' includes all""")
+
+    parser.add_argument('--mifu_num_calibs', dest='mifu_num_calibs', default=2,
+                        choices=range(20), type=int,
+                        help="""number of mIFU calibration stars to be
+                        considered in the mIFU grouping""")
 
     parser.add_argument('--prefix', dest='prefix', default=None,
                         help="""prefix to be used in the output files (it will
@@ -672,5 +696,7 @@ if __name__ == '__main__':
         os.mkdir(args.output_dir)
 
     create_xml_files(args.ifu_driver_cat, args.output_dir, prefix=args.prefix,
+                     mifu_mode=args.mifu_mode,
+                     mifu_num_calibs=args.mifu_num_calibs,
                      overwrite=args.overwrite)
 
