@@ -361,6 +361,14 @@ class ifu:
             mode = 'mIFU'
             ndither = rows[0]['IFU_DITHER']
 
+        arm_locked = True
+        if rows[0]['PROGTEMP'][2] != rows[0]['PROGTEMP'][3]:
+            arm_locked = False
+            print 'WARNING - spectrograph arms *not* locked by common exposure type - ensure you are permitted to do this!'
+        arm_seq = {}
+        arm_seq[True] = ['both']
+        arm_seq[False] = ['blue','red'] #this will be backwards, due to exposures.insertBefore(sci...)
+
 
         this_xml = xml_data()
         this_xml.new_xml(root_data=self.root_data)
@@ -448,16 +456,15 @@ class ifu:
         order += 1
         first_sci_order = order
         for i in xrange(ndither):
-            sci = sci_dummy.cloneNode(True)
-            sci.setAttribute('order',value=str(order))
-            sci.setAttribute('arm',value='both')
-            sci_exps.append(sci)
+            for arm in arm_seq[arm_locked]:
+                sci = sci_dummy.cloneNode(True)
+                sci.setAttribute('order',value=str(order))
+                sci.setAttribute('arm',value=arm)
+                sci_exps.append(sci)
+                exposures.insertBefore(sci,comment_ref_node)
             order += 1
-            #exposures.appendChild(sci)
-            exposures.insertBefore(sci,comment_ref_node)
-            cr_node_clone = cr_node.cloneNode(True)
-#            exposures.insertBefore(cr_node_clone,comment_ref_node)
 
+            
         #now add the trailing calibration exposure elements
         for calib in calibs_after_science:
             calib.setAttribute('order',value=str(order))
@@ -500,7 +507,7 @@ class ifu:
                 this_survey.setAttribute('max_fibres',value='740')
             this_xml.surveys.insertBefore(this_survey,sruveys_comment)
             
-        this_xml.obsconstraints.setAttribute('obstemp',str(rows[0]['OBSTEMP']))
+        # this_xml.obsconstraints.setAttribute('obstemp',str(rows[0]['OBSTEMP']))
 
         #now the <observation> element:
         if mode == 'LIFU':
@@ -508,6 +515,7 @@ class ifu:
         elif mode == 'mIFU':
             this_xml.observation.setAttribute('name',str(rows[0]['TARGNAME']))
         this_xml.observation.setAttribute('progtemp',str(rows[0]['PROGTEMP']))
+        this_xml.observation.setAttribute('obstemp',str(rows[0]['OBSTEMP']))
         this_xml.observation.setAttribute('obs_type',str(mode_lookup[rows[0]['PROGTEMP'][0]]))
         this_xml.observation.setAttribute('trimester',str(self.trimester))
         this_xml.observation.setAttribute('pa',str(rows[0]['IFU_PA_REQUEST']))
@@ -621,6 +629,9 @@ if __name__ == '__main__':
 
     input_fits = './input/WC_2020A1-ifu_driver_cat.fits'
     trimester = '2020A1'
+
+    # input_fits = './input/WC_IFU.fits'
+    # trimester = '2016B2'
     
     try:
         assert os.path.isfile(input_fits)
