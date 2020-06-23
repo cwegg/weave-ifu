@@ -28,8 +28,11 @@ import xml.dom.minidom
 import numpy
 from astropy.io import fits
 
+from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
+
 
 class _XMLdata:
+
     
     def __init__(self):
         self.xml_template_url = 'http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/BlankXMLTemplate.xml'
@@ -154,146 +157,6 @@ class _IFU:
         self.root_data['report_verbosity'] = str(self.report_verbosity)
         
         self.xml_template = 'BlankXMLTemplate.xml'
-
-    
-    def generate_xmls(self, mifu_mode='aufbau', mifu_num_calibs=2):
-
-        assert mifu_mode in ['aufbau', 'equipartition', 'all']
-
-        # What happens if there are (e.g.) 100 bundles in a given key and
-        # mifu_num_calibs is 2?
-        #
-        # User needs to decide 3 options:
-        # - all: Include all
-        # - aufbau: Aufbau principle, i.e. fill up to 18, leaving 2 for
-        #           calibration bundles) then make a new XML
-        # - equipartition: divide up the bundles equally:
-        #                  100 / 18 = 5.5 --> 6 fields
-        #                  100 / 6 = 17 bundles per field
-        #                            (with remainder added to a final XML)
-        #                  Which leads to: 5 x 17 bundles + 1 x 15 bundles
-
-        assert (mifu_num_calibs >= 0) and (mifu_num_calibs < 20)
-
-        # Filter the rows which are IFU
-
-        data_filter = []
-        for d in self.data:
-            #filter for IFU
-            if int(d['PROGTEMP'][0]) > 3:
-                data_filter.append(d)
-
-        if len(data_filter) == 0:
-            logging.warning('The supplied catalogue does not provide IFU target data')
-
-        # Filter the rows which are LIFU or mIFU independently
-
-        lifu = []
-        mifu = []
-        for d in data_filter:
-            # validation checks
-            if d['PROGTEMP'][0] in ['4','5','6']:
-                lifu.append(d)
-            else:
-                mifu.append(d)
-
-        # Proccess the LIFU
-
-        #how do you group entries belonging to the same OB (for custom dithers)?
-        group_id = 'TARGID:TARGNAME:PROGTEMP:OBSTEMP'
-
-        # Generate the IFU XMLs of the non custom dithers, detect the custom dithers
-        
-        custom_dithers = {}
-        for lifu_entry in lifu:
-            if lifu_entry['IFU_DITHER'] != -1:
-                #process this right away
-                self._process_rows([lifu_entry])
-            else:
-                key = ':'.join([lifu_entry[subkey] for subkey in group_id.split(':')])
-                try:
-                    custom_dithers[key].append(lifu_entry)
-                except KeyError:
-                    custom_dithers[key] = [lifu_entry]
-
-        # If we have custom dithers
-        
-        if len(custom_dithers.keys()) > 0:
-            #what happens if there are (eg) 10 pointings in a given key?
-            #something like:
-            # assert len(custom_dithers[key]) == custom_dithers[key]['PROGTEMP'][2]
-            logging.info('')
-            logging.info(
-                'Processing {} custom dither pointing groupings for LIFU'.format(
-                len(custom_dithers.keys())))
-            for key in custom_dithers.keys():
-                lifu_entry = custom_dithers[key]
-                self._process_rows(lifu_entry)
-
-
-        # Process the mIFU
-
-        #how do you group bundles belonging to the same field?
-        group_id = 'TARGNAME:PROGTEMP:OBSTEMP:IFU_DITHER'
-        
-
-        fields = {}
-        for mifu_entry in mifu:
-            key = ':'.join([str(mifu_entry[subkey]) for subkey in group_id.split(':')])
-            try:
-                fields[key].append(mifu_entry)
-            except KeyError:
-                fields[key] = [mifu_entry]
-
-        if len(fields.keys()) > 0:
-            logging.info('')
-            logging.info('Processing {} mIFU bundle groupings'.format(len(fields.keys())))
-            # for the moment, just go with (1), but implement (2) and (3)
-            for key in fields.keys():
-                mifu_entry = fields[key]
-                if mifu_mode == 'all':
-                    if len(mifu_entry) > (20 - mifu_num_calibs):
-                        logging.warning(
-                        'Bundles in field {} ({}) exceeds maximum when including calibration bundles ({}). Change mifu_mode or remove excess bundles downstream'.format(key, len(mifu_entry), mifu_num_calibs))
-                        self._process_rows(mifu_entry)
-
-                elif len(mifu_entry) > (20 - mifu_num_calibs):
-                    logging.info('Group {}: filling XML files according to mifu_mode={}'.format(key, mifu_mode))
-                    if mifu_mode == 'aufbau':
-                        #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
-                        max_sci_bundles = 20 - mifu_num_calibs
-                        logging.info('Will create XML files with {} science bundles inside'.format(max_sci_bundles))
-                        
-                    if mifu_mode == 'equipartition':
-                        max_sci_bundles = 20 - mifu_num_calibs
-                        if (len(mifu_entry)/float(max_sci_bundles)).is_integer():
-                            nxml = (len(mifu_entry) / (max_sci_bundles))
-                        else:
-                            nxml = ((len(mifu_entry) / (max_sci_bundles))) + 1
-
-                        max_sci_bundles = float(len(mifu_entry)) / float(nxml)
-                        if (max_sci_bundles).is_integer():
-                            max_sci_bundles = int(max_sci_bundles)
-                        else:
-                            max_sci_bundles = int(max_sci_bundles) - 1
-                        logging.info('Will create {} XML files each with {} science bundles inside'.format(nxml, max_sci_bundles))
-
-                    added_rows = []
-                    rows = iter(mifu_entry)
-                    while len(added_rows) != len(mifu_entry):
-                        this_xml = []
-                        while len(this_xml) != max_sci_bundles:
-                            try:
-                                _row = rows.next()
-                                added_rows.append(_row)
-                                this_xml.append(_row)
-                            except StopIteration:
-                                break
-                        self._process_rows(this_xml)
-                        
-                        
-                else:
-                    self._process_rows(mifu_entry)
 
     
     def _process_rows(self,rows):
@@ -571,6 +434,159 @@ class _IFU:
             output_path = os.path.join(self.output_dir, output_basename)
 
         this_xml.write_xml(output_path)
+
+        
+    def _generate_lifu_xmls(self, lifu_entry_list):
+        # Proccess the LIFU
+
+        #how do you group entries belonging to the same OB (for custom dithers)?
+        group_id = 'TARGID:TARGNAME:PROGTEMP:OBSTEMP'
+
+        # Generate the IFU XMLs of the non custom dithers, detect the custom dithers
+        
+        custom_dithers = {}
+        for lifu_entry in lifu_entry_list:
+            if lifu_entry['IFU_DITHER'] != -1:
+                #process this right away
+                self._process_rows([lifu_entry])
+            else:
+                key = ':'.join([lifu_entry[subkey] for subkey in group_id.split(':')])
+                try:
+                    custom_dithers[key].append(lifu_entry)
+                except KeyError:
+                    custom_dithers[key] = [lifu_entry]
+
+        # If we have custom dithers
+        
+        if len(custom_dithers.keys()) > 0:
+            #what happens if there are (eg) 10 pointings in a given key?
+            #something like:
+            # assert len(custom_dithers[key]) == custom_dithers[key]['PROGTEMP'][2]
+            logging.info('')
+            logging.info(
+                'Processing {} custom dither pointing groupings for LIFU'.format(
+                len(custom_dithers.keys())))
+            for key in custom_dithers.keys():
+                lifu_entry = custom_dithers[key]
+                self._process_rows(lifu_entry)
+
+                
+    def _generate_mifu_xmls(self, mifu_entry_list, mifu_mode='aufbau',
+                            mifu_num_calibs=2):
+
+        # What happens if there are (e.g.) 100 bundles in a given key and
+        # mifu_num_calibs is 2?
+        #
+        # User needs to decide 3 options:
+        # - all: Include all
+        # - aufbau: Aufbau principle, i.e. fill up to 18, leaving 2 for
+        #           calibration bundles) then make a new XML
+        # - equipartition: divide up the bundles equally:
+        #                  100 / 18 = 5.5 --> 6 fields
+        #                  100 / 6 = 17 bundles per field
+        #                            (with remainder added to a final XML)
+        #                  Which leads to: 5 x 17 bundles + 1 x 15 bundles
+
+        assert mifu_mode in ['aufbau', 'equipartition', 'all']
+        assert (mifu_num_calibs >= 0) and (mifu_num_calibs < 20)
+
+        # Process the mIFU
+
+        #how do you group bundles belonging to the same field?
+        group_id = 'TARGNAME:PROGTEMP:OBSTEMP:IFU_DITHER'
+        
+
+        fields = {}
+        for mifu_entry in mifu_entry_list:
+            key = ':'.join([str(mifu_entry[subkey]) for subkey in group_id.split(':')])
+            try:
+                fields[key].append(mifu_entry)
+            except KeyError:
+                fields[key] = [mifu_entry]
+
+        if len(fields.keys()) > 0:
+            logging.info('')
+            logging.info('Processing {} mIFU bundle groupings'.format(len(fields.keys())))
+            # for the moment, just go with (1), but implement (2) and (3)
+            for key in fields.keys():
+                mifu_entry = fields[key]
+                if mifu_mode == 'all':
+                    if len(mifu_entry) > (20 - mifu_num_calibs):
+                        logging.warning(
+                        'Bundles in field {} ({}) exceeds maximum when including calibration bundles ({}). Change mifu_mode or remove excess bundles downstream'.format(key, len(mifu_entry), mifu_num_calibs))
+                        self._process_rows(mifu_entry)
+
+                elif len(mifu_entry) > (20 - mifu_num_calibs):
+                    logging.info('Group {}: filling XML files according to mifu_mode={}'.format(key, mifu_mode))
+                    if mifu_mode == 'aufbau':
+                        #2. Aufbau principle - fill up to N (18? ..leaving 2 for calibration bundles) then make a new XML
+                        max_sci_bundles = 20 - mifu_num_calibs
+                        logging.info('Will create XML files with {} science bundles inside'.format(max_sci_bundles))
+                        
+                    if mifu_mode == 'equipartition':
+                        max_sci_bundles = 20 - mifu_num_calibs
+                        if (len(mifu_entry)/float(max_sci_bundles)).is_integer():
+                            nxml = (len(mifu_entry) / (max_sci_bundles))
+                        else:
+                            nxml = ((len(mifu_entry) / (max_sci_bundles))) + 1
+
+                        max_sci_bundles = float(len(mifu_entry)) / float(nxml)
+                        if (max_sci_bundles).is_integer():
+                            max_sci_bundles = int(max_sci_bundles)
+                        else:
+                            max_sci_bundles = int(max_sci_bundles) - 1
+                        logging.info('Will create {} XML files each with {} science bundles inside'.format(nxml, max_sci_bundles))
+
+                    added_rows = []
+                    rows = iter(mifu_entry)
+                    while len(added_rows) != len(mifu_entry):
+                        this_xml = []
+                        while len(this_xml) != max_sci_bundles:
+                            try:
+                                _row = rows.next()
+                                added_rows.append(_row)
+                                this_xml.append(_row)
+                            except StopIteration:
+                                break
+                        self._process_rows(this_xml)
+                        
+                        
+                else:
+                    self._process_rows(mifu_entry)
+
+                    
+    def generate_xmls(self, mifu_mode='aufbau', mifu_num_calibs=2):
+
+        # Classify the entries into LIFU and mIFU
+        
+        lifu_entry_list = []
+        mifu_entry_list = []
+
+        for i, entry in enumerate(self.data):
+
+            progtemp = entry['PROGTEMP']
+
+            try:
+                obsmode = get_obsmode_from_progtemp(progtemp)
+            except:
+                obsmode = None
+
+            if obsmode == 'LIFU':
+                lifu_entry_list.append(entry)
+            elif obsmode == 'mIFU':
+                mifu_entry_list.append(entry)
+            else:
+                logging.warning('unexpected PROGTEMP in row {}: {}'.format(
+                    i + 1, progtemp))
+
+        # Generate the LIFU XMLs
+                
+        self._generate_lifu_xmls(lifu_entry_list)
+
+        # Generate the mIFU XMLs
+                
+        self._generate_mifu_xmls(mifu_entry_list, mifu_mode=mifu_mode,
+                                 mifu_num_calibs=mifu_num_calibs)
 
 
 def _get_previous_files(output_dir, prefix, suffix):
