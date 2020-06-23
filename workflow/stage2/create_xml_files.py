@@ -40,7 +40,6 @@ class _XMLdata:
         self.xml_template = 'BlankXMLTemplate.xml'
         if not os.path.isfile(self.xml_template):
             self._wget(self.xml_template_url)
-        return
 
 
     def new_xml(self,root_data=None):
@@ -67,7 +66,6 @@ class _XMLdata:
             logging.info('Downloading URL {} to {}'.format(url, outname))
             cmd += ' -O {}'.format(outname)
         os.system(cmd)
-        return
 
     
     def _ingest_xml(self,dom):
@@ -105,7 +103,7 @@ class _XMLdata:
         return '\n'.join([line for line in reparsed.toprettyxml(indent=' ').split('\n') if line.strip()])
 
 
-class _IFU:
+class _IFUDriverCat:
     """
     Convert the target-level data from an IFU driver catalogue to a set of XMLs.
     
@@ -129,6 +127,14 @@ class _IFU:
 
         self.filename = filename
 
+        # Set the default prefix to be used for output XMLs
+
+        self.default_prefix =os.path.splitext(
+            os.path.basename(self.filename))[0].replace('-ifu_driver_cat', '')
+
+        if self.default_prefix[-1] != '-':
+            self.default_prefix = self.default_prefix + '-'
+
         # Set the targcat value
 
         if targcat is None:
@@ -151,14 +157,38 @@ class _IFU:
 
             self.data = hdu_list[1].data
 
-        # Save the data needed for the root element of the XML file
         
-        self.root_data = {}
-        self.root_data['author'] = self.author
-        self.root_data['cc_report'] = self.cc_report
-        self.root_data['report_verbosity'] = str(self.report_verbosity)
-        
-        self.xml_template = 'BlankXMLTemplate.xml'
+    def _get_previous_files(self, output_dir='', prefix=None, suffix='-t'):
+
+        if prefix is None:
+            prefix = self.default_prefix
+
+        glob_pattern = os.path.join(output_dir, '{}*{}.xml'.format(prefix,
+                                                                   suffix))
+        regex = '^{}[lm]ifu_[0-9]+{}.xml$'.format(prefix, suffix)
+
+        candidate_list = glob.glob(glob_pattern)
+        candidate_list.sort()
+
+        filename_list = [filename for filename in candidate_list
+                        if re.match(regex, os.path.basename(filename))]
+
+        return filename_list
+
+    
+    def remove_xmls(self, output_dir='', prefix=None, suffix='-t'):
+
+        prev_filename_list = self._get_previous_files(output_dir=output_dir,
+                                                      prefix=prefix,
+                                                      suffix=suffix)
+
+        if len(prev_filename_list) > 0:
+
+            logging.info('Removing previous files: {}'.format(
+                prev_filename_list))
+
+            for filename in prev_filename_list:
+                os.remove(filename)
 
 
     def _get_output_path(self, obsmode, output_dir='', prefix=None,
@@ -167,13 +197,7 @@ class _IFU:
         # Set the prefix of the output file if it has not been provided
 
         if prefix is None:
-            basename_wo_ext = os.path.splitext(
-                os.path.basename(self.filename))[0]
-
-            prefix = basename_wo_ext.replace('-ifu_driver_cat', '')
-
-            if prefix[-1] != '-':
-                prefix = prefix + '-'
+            prefix = self.default_prefix
 
         # Choose the first filename which does not exist
 
@@ -207,7 +231,10 @@ class _IFU:
 
 
         this_xml = _XMLdata()
-        this_xml.new_xml(root_data=self.root_data)
+
+        root_data = {'report_verbosity': self.report_verbosity,
+                     'author': self.author, 'cc_report': self.cc_report}
+        this_xml.new_xml(root_data=root_data)
 
         #get a clone of the exposures element and wipe it of everything bar the initial calibs
         #make no assumptions about the OB calibration strategy, just take from the template
@@ -665,20 +692,6 @@ class _IFU:
                                  suffix=suffix)
 
 
-def _get_previous_files(output_dir, prefix, suffix):
-
-    glob_pattern = os.path.join(output_dir, '{}*{}.xml'.format(prefix, suffix))
-    regex = '^{}[lm]ifu_[0-9]+{}.xml$'.format(prefix, suffix)
-
-    candidate_list = glob.glob(glob_pattern)
-    candidate_list.sort()
-
-    filename_list = [filename for filename in candidate_list
-                     if re.match(regex, os.path.basename(filename))]
-
-    return filename_list
-
-
 def create_xml_files(ifu_driver_cat_filename, output_dir,
                      mifu_mode='aufbau', mifu_num_calibs=2, mifu_num_extra=0,
                      prefix=None, suffix='-t', overwrite=False):
@@ -712,31 +725,23 @@ def create_xml_files(ifu_driver_cat_filename, output_dir,
 
     assert os.path.isfile(ifu_driver_cat_filename)
 
+    # Create an object with the IFU driver cat
+
+    ifu_driver_cat = _IFUDriverCat(ifu_driver_cat_filename)
+
     # Remove the previous files if overwriting has been requested
     
     if overwrite == True:
-
-        prev_filename_list = _get_previous_files(output_dir, prefix, suffix)
-
-        if len(prev_filename_list) > 0:
-
-            logging.info('Removing previous files: {}'.format(
-                prev_filename_list))
-
-            for filename in prev_filename_list:
-                os.remove(filename)
+        ifu_driver_cat.remove_xmls(output_dir=output_dir, prefix=prefix,
+                                   suffix=suffix)
 
     # Create the XML files
 
-    stage2_ifu = _IFU(ifu_driver_cat_filename)
-
-    stage2_ifu.generate_xmls(mifu_mode=mifu_mode,
-                             mifu_num_calibs=mifu_num_calibs,
-                             mifu_num_extra=mifu_num_extra,
-                             output_dir=output_dir,
-                             prefix=prefix, suffix=suffix)
-    
-    logging.info('IFU XMLs written to: {}'.format(output_dir))
+    ifu_driver_cat.generate_xmls(mifu_mode=mifu_mode,
+                                 mifu_num_calibs=mifu_num_calibs,
+                                 mifu_num_extra=mifu_num_extra,
+                                 output_dir=output_dir,
+                                 prefix=prefix, suffix=suffix)
 
 
 if __name__ == '__main__':
