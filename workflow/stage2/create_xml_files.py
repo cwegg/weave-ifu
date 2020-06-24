@@ -245,23 +245,41 @@ class _OBXML:
 
         
     def set_surveys(self, targsrvy_list, max_fibres, priority='1.0'):
-        logging.warning('TBR 2')
 
-        #the <configure> amd <survey> elements:
+        # Get the survey element from the template, clone it (to use it as
+        # example) and remove it
+
         survey = self.surveys.getElementsByTagName('survey')[0]
-        #make a clone and remove the placeholder <survey>
-        survey_clone = survey.cloneNode(True)
-        self.surveys.removeChild(survey)
-        #get initial comment in <surveys>, to allow an insertBefore
-        sruveys_comment = self.surveys.childNodes[0]
-        
-        for s in targsrvy_list:
-            this_survey = survey_clone.cloneNode(True)
-            this_survey.setAttribute('name',value=str(s))
-            this_survey.setAttribute('priority',value=str(priority))
-            this_survey.setAttribute('max_fibres',value=str(max_fibres))
 
-            self.surveys.insertBefore(this_survey,sruveys_comment)
+        survey_template = survey.cloneNode(True)
+
+        self.surveys.removeChild(survey)
+
+        # Get the comment in surveys element, to allow an insertBefore
+
+        surveys_comment = self.surveys.childNodes[0]
+
+        # Add a survey element per each targsrvy
+        
+        for targsrvy in targsrvy_list:
+
+            # Create a survey element cloning its template
+            
+            survey = survey_template.cloneNode(True)
+
+            # Set its attributes properly
+
+            attrib_dict = {
+                'name': targsrvy,
+                'priority': str(priority),
+                'max_fibres': str(max_fibres)
+            }
+
+            self._set_attribs(survey, attrib_dict)
+
+            # Insert the element before the comment
+            
+            self.surveys.insertBefore(survey, surveys_comment)
 
             
     def set_fields(self, obsmode, entry_group, targcat):
