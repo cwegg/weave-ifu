@@ -85,17 +85,23 @@ class _OBXML:
         return datamver
 
 
-    def set_root_attrib(self, attrib_dict):
+    def _set_attribs(self, elem, attrib_dict):
 
         for key in attrib_dict.keys():
 
-            if key in self.root.attributes.keys():
+            if key in elem.attributes.keys():
 
                 value = str(attrib_dict[key])
-                self.root.setAttribute(key, value=value)
+                elem.setAttribute(key, value=value)
 
             else:
-                logging.warning('Attribute {} not present in root'.format(key))
+
+                raise KeyError
+
+
+    def set_root_attrib(self, attrib_dict):
+
+        self._set_attribs(self.root, attrib_dict)
 
                 
     def _clean_exposures(self, exposures):
@@ -107,7 +113,6 @@ class _OBXML:
             try:
                 if 'ORDER undefined' in str(node.data):
                     exposures.removeChild(node)
-                    print('bingo!')
             except:
                 pass
 
@@ -115,7 +120,6 @@ class _OBXML:
 
                 
     def set_exposures(self, num_dither):
-
 
         #get a clone of the exposures element and wipe it of everything bar the initial calibs
         #make no assumptions about the OB calibration strategy, just take from the template
@@ -212,6 +216,11 @@ class _OBXML:
         return first_sci_order
 
     
+    def set_observation(self, attrib_dict):
+
+        self._set_attribs(self.observation, attrib_dict)
+
+                
     def _remove_empty_lines(self, xml_text):
 
         parsed_xml = xml.dom.minidom.parseString(xml_text)
@@ -222,7 +231,7 @@ class _OBXML:
                                     if line.strip()])
 
         return clean_xml_text
-        
+
 
     def _remove_xml_declaration(self, xml_text):
 
@@ -367,17 +376,48 @@ class _IFUDriverCat:
     def _process_ob(self, entry_group, xml_template, output_dir='',
                     prefix=None, suffix='-t', pass_datamver=False):
 
+        # Get some information from the first entry of the group
+
         first_entry = entry_group[0]
 
         progtemp = first_entry['PROGTEMP']
+        obstemp = first_entry['OBSTEMP']
+
+        # Guess the OBSMODE from PROGTEMP
 
         obsmode = get_obsmode_from_progtemp(progtemp)
+
+        # Guess the number of dither positions
 
         if (obsmode == 'LIFU') and (len(entry_group) > 1):
             num_dither = len(entry_group)
         else:
             num_dither = first_entry['IFU_DITHER']
 
+        # Set the name of the observation
+
+        if obsmode == 'LIFU':
+            observation_name = '{}-{}'.format(first_entry['TARGNAME'],
+                                              first_entry['TARGID'])
+        elif obsmode == 'mIFU':
+            observation_name = first_entry['TARGNAME']
+
+        # Set the position angle (if possible)
+
+        if obsmode == 'LIFU':
+
+            ifu_pa_request = first_entry['IFU_PA_REQUEST']
+
+            if not np.isnan(ifu_pa_request):
+                pa = ifu_pa_request
+            else:
+                pa = None
+
+        elif obsmode == 'mIFU':
+
+            pa = 0.0
+
+        # Create an OB from the XML template
 
         ob_xml = _OBXML(xml_template)
 
@@ -395,13 +435,33 @@ class _IFUDriverCat:
 
         # Set the attributes of the root element
         
-        root_attrib_dict = {'report_verbosity': self.report_verbosity,
-                            'author': self.author, 'cc_report': self.cc_report}
+        root_attrib_dict = {
+            'author': self.author,
+            'cc_report': self.cc_report,
+            'report_verbosity': self.report_verbosity
+        }
 
         ob_xml.set_root_attrib(root_attrib_dict)
 
+        # Set the contents of the exposures element
+
         first_sci_order = ob_xml.set_exposures(num_dither)
 
+        # Set the attributes of the observation element
+
+        observation_attrib_dict = {
+            'name': observation_name,
+            'obstemp': obstemp,
+            'obs_type': obsmode,
+            'progtemp': progtemp,
+            'trimester': self.trimester
+        }
+
+        if pa is not None:
+            observation_attrib_dict['pa'] = pa
+
+        ob_xml.set_observation(observation_attrib_dict)
+            
         ########
 
         # survey
@@ -427,27 +487,6 @@ class _IFUDriverCat:
                 ob_xml.configure.setAttribute('plate','PLATE_B')
                 this_survey.setAttribute('max_fibres',value='740')
             ob_xml.surveys.insertBefore(this_survey,sruveys_comment)
-
-        
-        ########
-
-        # obsconstraints
-            
-        ob_xml.obsconstraints.setAttribute('obstemp',str(entry_group[0]['OBSTEMP']))
-
-        ########
-
-        # observation
-            
-        #now the <observation> element:
-        if obsmode == 'LIFU':
-            ob_xml.observation.setAttribute('name',str(entry_group[0]['TARGID']))
-        elif obsmode == 'mIFU':
-            ob_xml.observation.setAttribute('name',str(entry_group[0]['TARGNAME']))
-        ob_xml.observation.setAttribute('progtemp',str(entry_group[0]['PROGTEMP']))
-        ob_xml.observation.setAttribute('obs_type', obsmode)
-        ob_xml.observation.setAttribute('trimester',str(self.trimester))
-        ob_xml.observation.setAttribute('pa',str(entry_group[0]['IFU_PA_REQUEST']))
 
 
         ########
