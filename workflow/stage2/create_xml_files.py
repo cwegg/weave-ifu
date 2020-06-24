@@ -37,47 +37,63 @@ class _OBXML:
 
     
     def __init__(self, xml_template):
+
+        # Save the input filename
+        
         self.xml_template = xml_template
 
+        # Parse the XML template
 
-    def new_xml(self,root_data=None):
-        #init the new XML
         try:
-            dom = xml.dom.minidom.parse(self.xml_template)
-        except xml.parsers.expat.ExpatError:
+
+            self.dom = xml.dom.minidom.parse(self.xml_template)
+
+        except:
+
             logging.error('File {} would not parse'.format(self.xml_template))
+
             raise SystemExit(1)
-        self._ingest_xml(dom)
-        if root_data:
-            for key in root_data.keys():
-                self.root.setAttribute(key, value=str(root_data[key]))
+
+        # Ingest the XML template
+
+        self._ingest_xml()
 
 
-    def _ingest_xml(self, dom):
+    def _ingest_xml(self):
 
-        self.dom = dom
-        self.root = dom.childNodes[0]
+        # *** Why is it used self.root and dom? Which is the difference?
+
+        self.root = self.dom.childNodes[0]
         self.exposures = self.root.getElementsByTagName('exposures')[0]
         self.observation = self.root.getElementsByTagName('observation')[0]
-        self.configure = dom.getElementsByTagName('configure')[0]
-        self.surveys = dom.getElementsByTagName('surveys')[0]
-        self.obsconstraints = dom.getElementsByTagName('obsconstraints')[0]
-        self.dithering = dom.getElementsByTagName('dithering')[0]
-        self.fields = dom.getElementsByTagName('fields')[0]
+        self.configure = self.dom.getElementsByTagName('configure')[0]
+        self.obsconstraints = self.dom.getElementsByTagName('obsconstraints')[0]
+        self.dithering = self.dom.getElementsByTagName('dithering')[0]
+        # self.offsets = self.observation.getElementsByTagName('offsets')[0]
+        self.surveys = self.dom.getElementsByTagName('surveys')[0]
+        self.fields = self.dom.getElementsByTagName('fields')[0]
+        # self.targets_base = self.fields.getElementsByTagName('target')
         self.base_target = self.fields.getElementsByTagName('target')[0]
-        self.offset = self.observation.getElementsByTagName('offsets')[0]
-        self.targets_base = self.fields.getElementsByTagName('target')
+
         
+    def get_datamver(self):
 
-    def _remove_xml_declaration(self, xml_text):
+        datamver = self.root.getAttribute('datamver')
 
-        parsed_xml = xml.dom.minidom.parseString(xml_text)
+        return datamver
 
-        root = parsed_xml.documentElement
 
-        clean_xml_text = root.toxml(parsed_xml.encoding)
+    def set_root_attrib(self, attrib_dict):
 
-        return clean_xml_text
+        for key in attrib_dict.keys():
+
+            if key in self.root.attributes.keys():
+
+                value = str(attrib_dict[key])
+                self.root.setAttribute(key, value=value)
+
+            else:
+                logging.warning('Attribute {} not present in root'.format(key))
 
     
     def _remove_empty_lines(self, xml_text):
@@ -88,6 +104,17 @@ class _OBXML:
 
         clean_xml_text = '\n'.join([line for line in pretty_xml.split('\n')
                                     if line.strip()])
+
+        return clean_xml_text
+        
+
+    def _remove_xml_declaration(self, xml_text):
+
+        parsed_xml = xml.dom.minidom.parseString(xml_text)
+
+        root = parsed_xml.documentElement
+
+        clean_xml_text = root.toxml(parsed_xml.encoding)
 
         return clean_xml_text
 
@@ -222,7 +249,7 @@ class _IFUDriverCat:
 
     
     def _process_ob(self, entry_group, xml_template, output_dir='',
-                    prefix=None, suffix='-t'):
+                    prefix=None, suffix='-t', pass_datamver=False):
 
         first_entry = entry_group[0]
 
@@ -236,15 +263,30 @@ class _IFUDriverCat:
             num_dither = first_entry['IFU_DITHER']
 
 
-        this_xml = _OBXML(xml_template)
+        ob_xml = _OBXML(xml_template)
 
-        root_data = {'report_verbosity': self.report_verbosity,
-                     'author': self.author, 'cc_report': self.cc_report}
-        this_xml.new_xml(root_data=root_data)
+        # Check DATAMVER of the IFU driver cat and the XML template
+
+        xml_template_datamver = ob_xml.get_datamver()
+
+        if self.datamver != xml_template_datamver:
+            logging.critical(
+               'DATAMVER mismatch ({} != {}): Stop unless you are sure!'.format(
+                    self.datamver, xml_template_datamver))
+
+            if pass_datamver == False:
+                raise SystemExit(2)
+
+        # Set the attributes of the root element
+        
+        root_attrib_dict = {'report_verbosity': self.report_verbosity,
+                            'author': self.author, 'cc_report': self.cc_report}
+
+        ob_xml.set_root_attrib(root_attrib_dict)
 
         #get a clone of the exposures element and wipe it of everything bar the initial calibs
         #make no assumptions about the OB calibration strategy, just take from the template
-        exposures = this_xml.exposures.cloneNode(True)
+        exposures = ob_xml.exposures.cloneNode(True)
         calibs_after_science = []
         pre_sci = True
         order = 0
@@ -320,7 +362,7 @@ class _IFUDriverCat:
                 else:
                     order = int(exposure.getAttribute('order'))
         
-        sci_dummy = this_xml.exposures.getElementsByTagName('exposure')[4]
+        sci_dummy = ob_xml.exposures.getElementsByTagName('exposure')[4]
         sci_exps = []
         order += 1
         first_sci_order = order
@@ -349,19 +391,19 @@ class _IFUDriverCat:
         exposures.insertBefore(cr_node_clone,comment_ref_node)
 
         #now remove the old exposures element and replace with this one
-        this_xml.exposures.parentNode.replaceChild(exposures,this_xml.exposures)
-        this_xml.exposures = exposures
+        ob_xml.exposures.parentNode.replaceChild(exposures,ob_xml.exposures)
+        ob_xml.exposures = exposures
         #this_dom.insertBefore()
         
 
         
         #the <configure> amd <survey> elements:
-        survey = this_xml.surveys.getElementsByTagName('survey')[0]
+        survey = ob_xml.surveys.getElementsByTagName('survey')[0]
         #make a clone and remove the placeholder <survey>
         survey_clone = survey.cloneNode(True)
-        this_xml.surveys.removeChild(survey)
+        ob_xml.surveys.removeChild(survey)
         #get initial comment in <surveys>, to allow an insertBefore
-        sruveys_comment = this_xml.surveys.childNodes[0]
+        sruveys_comment = ob_xml.surveys.childNodes[0]
         a = 1
         
         all_surveys = np.unique([r['TARGSRVY'] for r in entry_group])
@@ -370,29 +412,29 @@ class _IFUDriverCat:
             this_survey.setAttribute('name',value=str(s))
             this_survey.setAttribute('priority',value='1.0')
             if obsmode == 'LIFU':
-                this_xml.configure.setAttribute('plate','LIFU')
+                ob_xml.configure.setAttribute('plate','LIFU')
                 this_survey.setAttribute('max_fibres',value='603')
             elif obsmode == 'mIFU':
-                this_xml.configure.setAttribute('plate','PLATE_B')
+                ob_xml.configure.setAttribute('plate','PLATE_B')
                 this_survey.setAttribute('max_fibres',value='740')
-            this_xml.surveys.insertBefore(this_survey,sruveys_comment)
+            ob_xml.surveys.insertBefore(this_survey,sruveys_comment)
             
-        this_xml.obsconstraints.setAttribute('obstemp',str(entry_group[0]['OBSTEMP']))
+        ob_xml.obsconstraints.setAttribute('obstemp',str(entry_group[0]['OBSTEMP']))
 
         #now the <observation> element:
         if obsmode == 'LIFU':
-            this_xml.observation.setAttribute('name',str(entry_group[0]['TARGID']))
+            ob_xml.observation.setAttribute('name',str(entry_group[0]['TARGID']))
         elif obsmode == 'mIFU':
-            this_xml.observation.setAttribute('name',str(entry_group[0]['TARGNAME']))
-        this_xml.observation.setAttribute('progtemp',str(entry_group[0]['PROGTEMP']))
-        this_xml.observation.setAttribute('obs_type', obsmode)
-        this_xml.observation.setAttribute('trimester',str(self.trimester))
-        this_xml.observation.setAttribute('pa',str(entry_group[0]['IFU_PA_REQUEST']))
+            ob_xml.observation.setAttribute('name',str(entry_group[0]['TARGNAME']))
+        ob_xml.observation.setAttribute('progtemp',str(entry_group[0]['PROGTEMP']))
+        ob_xml.observation.setAttribute('obs_type', obsmode)
+        ob_xml.observation.setAttribute('trimester',str(self.trimester))
+        ob_xml.observation.setAttribute('pa',str(entry_group[0]['IFU_PA_REQUEST']))
 
 
         
         #now generate field template
-        fields_clone = this_xml.fields.cloneNode(True)
+        fields_clone = ob_xml.fields.cloneNode(True)
 
         #clear it
         field_list = fields_clone.getElementsByTagName('field')
@@ -408,9 +450,9 @@ class _IFUDriverCat:
                 field_clone.removeChild(target)
 
         #now remove the existing <fields> element
-        this_xml.observation.removeChild(this_xml.fields)
+        ob_xml.observation.removeChild(ob_xml.fields)
 
-        this_xml.dithering.setAttribute('apply_dither',str(entry_group[0]['IFU_DITHER']))
+        ob_xml.dithering.setAttribute('apply_dither',str(entry_group[0]['IFU_DITHER']))
 
         #assembly order:
         #1.target
@@ -422,7 +464,7 @@ class _IFUDriverCat:
         col_names = entry_group[0].array.columns.names
         for i in range(len(entry_group)):
             row = entry_group[i]
-            target = this_xml.base_target.cloneNode(True)
+            target = ob_xml.base_target.cloneNode(True)
 
             # remove things we shouldn't have as the xml gets passed into Configure
             to_remove = ['configid','fibreid']
@@ -478,16 +520,16 @@ class _IFUDriverCat:
             
 
         #...and finally to observation
-        this_xml.observation.appendChild(fields_clone)
+        ob_xml.observation.appendChild(fields_clone)
 
         output_path = self._get_output_path(obsmode, output_dir=output_dir,
                                             prefix=prefix, suffix=suffix)
 
-        this_xml.write_xml(output_path)
+        ob_xml.write_xml(output_path)
 
         
     def _generate_lifu_xmls(self, lifu_entry_list, xml_template, output_dir='',
-                            prefix='', suffix='-t'):
+                            prefix='', suffix='-t', pass_datamver=False):
 
         # How do you group entries belonging to the same OB?
         # (for custom dithers)
@@ -515,7 +557,8 @@ class _IFUDriverCat:
             entry_group = [lifu_entry]
 
             self._process_ob(entry_group, xml_template, output_dir=output_dir,
-                             prefix=prefix, suffix=suffix)
+                             prefix=prefix, suffix=suffix,
+                             pass_datamver=pass_datamver)
 
         # Detect the custom dithers and save them into a dict
 
@@ -540,13 +583,14 @@ class _IFUDriverCat:
 
         for entry_group in custom_dithers_dict.values():
             self._process_ob(entry_group, xml_template, output_dir=output_dir,
-                             prefix=prefix, suffix=suffix)
+                             prefix=prefix, suffix=suffix,
+                             pass_datamver=pass_datamver)
 
                 
     def _generate_mifu_xmls(self, mifu_entry_list, xml_template,
                             mifu_mode='aufbau', mifu_num_calibs=2,
                             mifu_num_extra=0, output_dir='', prefix='',
-                            suffix='-t'):
+                            suffix='-t', pass_datamver=False):
 
         # What happens if there are (e.g.) 100 bundles in a given key and
         # mifu_num_calibs is 2?
@@ -657,11 +701,13 @@ class _IFUDriverCat:
 
         for entry_group in ob_nested_list:
             self._process_ob(entry_group, xml_template, output_dir=output_dir,
-                             prefix=prefix, suffix=suffix)
+                             prefix=prefix, suffix=suffix,
+                             pass_datamver=pass_datamver)
 
                     
     def generate_xmls(self, xml_template, mifu_mode='aufbau', mifu_num_calibs=2,
-                      mifu_num_extra=0, output_dir='', prefix='', suffix='-t'):
+                      mifu_num_extra=0, output_dir='', prefix='', suffix='-t',
+                      pass_datamver=False):
 
         # Classify the entries into LIFU and mIFU
         
@@ -689,7 +735,7 @@ class _IFUDriverCat:
                 
         self._generate_lifu_xmls(lifu_entry_list, xml_template,
                                  output_dir=output_dir, prefix=prefix,
-                                 suffix=suffix)
+                                 suffix=suffix, pass_datamver=pass_datamver)
 
         # Generate the mIFU XMLs
                 
@@ -698,12 +744,13 @@ class _IFUDriverCat:
                                  mifu_num_calibs=mifu_num_calibs,
                                  mifu_num_extra=mifu_num_extra,
                                  output_dir=output_dir, prefix=prefix,
-                                 suffix=suffix)
+                                 suffix=suffix, pass_datamver=pass_datamver)
 
 
 def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
                      mifu_mode='aufbau', mifu_num_calibs=2, mifu_num_extra=0,
-                     prefix=None, suffix='-t', overwrite=False):
+                     prefix=None, suffix='-t', pass_datamver=False,
+                     overwrite=False):
     """
     Create XML files with targets from an IFU driver cat.
     
@@ -728,6 +775,8 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
         ifu_driver_cat_filename if None is provided).
     suffix : str, optional
         Suffix to be used in the output files.
+    pass_datamver : bool, optional
+        Continue even if DATAMVER mismatch is detected.
     overwrite : bool, optional
         Overwrite the output FITS file.
     """
@@ -752,7 +801,8 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
                                  mifu_num_calibs=mifu_num_calibs,
                                  mifu_num_extra=mifu_num_extra,
                                  output_dir=output_dir,
-                                 prefix=prefix, suffix=suffix)
+                                 prefix=prefix, suffix=suffix,
+                                 pass_datamver=pass_datamver)
 
 
 if __name__ == '__main__':
@@ -792,6 +842,10 @@ if __name__ == '__main__':
                         help="""prefix to be used in the output files (it will
                         be derived from ifu_driver_cat if non provided)""")
 
+    parser.add_argument('--pass_datamver', dest='pass_datamver',
+                        action='store_true',
+                        help='continue even if DATAMVER mismatch is detected')
+
     parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                         help='overwrite the output files')
 
@@ -823,5 +877,6 @@ if __name__ == '__main__':
                      mifu_mode=args.mifu_mode,
                      mifu_num_calibs=args.mifu_num_calibs,
                      mifu_num_extra=args.mifu_num_extra,
-                     prefix=args.prefix, overwrite=args.overwrite)
+                     prefix=args.prefix, pass_datamver=args.pass_datamver,
+                     overwrite=args.overwrite)
 
