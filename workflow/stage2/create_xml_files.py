@@ -97,6 +97,120 @@ class _OBXML:
             else:
                 logging.warning('Attribute {} not present in root'.format(key))
 
+                
+    def _clean_exposures(self, exposures):
+
+        # Remove the 'ORDER undefined' comment nodes
+        # (as we will define them here)
+
+        for node in exposures.childNodes:
+            try:
+                if 'ORDER undefined' in str(node.data):
+                    exposures.removeChild(node)
+                    print('bingo!')
+            except:
+                pass
+
+        return exposures
+
+                
+    def set_exposures(self, num_dither):
+
+
+        #get a clone of the exposures element and wipe it of everything bar the initial calibs
+        #make no assumptions about the OB calibration strategy, just take from the template
+
+        # Clone the exposures element
+
+        exposures = self.exposures.cloneNode(True)
+
+        calibs_after_science = []
+        pre_sci = True
+        order = 0
+
+        cleaned_exposures = self._clean_exposures(exposures)
+
+        exposures = cleaned_exposures
+
+        # import ipdb
+        # print(exposures.toxml())
+        # print('#'*80)
+        # ipdb.set_trace()
+
+        ###################################################################
+
+        #identify the first comment node after the set of <exposure> elements
+        #this allows us to insert the new elements there, rather than at the end
+        
+        comment_ref_node = None
+        cr_node = exposures.childNodes[-1]
+        pre_exp = True
+        previous_node = exposures.childNodes[0]
+
+        for node in exposures.childNodes:
+            if str(node.nodeName)[0] != '#':
+                pre_exp = False
+
+            if str(node.nodeName)[0] == '#':
+                if pre_exp == False:
+                    #must be a comment node
+                    #previous must be a text node (<DOM Text node 'u'\n      \n\n '...'>)
+                    if (str(previous_node.nodeName) == '#text') and (str(node.nodeName) == '#comment'):
+                        comment_ref_node = node
+                        #want to insert new exposures before this node
+                        break
+            previous_node = node
+                
+        for exposure in exposures.getElementsByTagName('exposure'):
+            if exposure.getAttribute('type') == 'science':
+                pre_sci = False
+                sibling = exposure.nextSibling
+                exposures.removeChild(exposure)
+                exposures.removeChild(sibling)
+            else:
+                sibling = exposure.nextSibling
+                exposures.removeChild(sibling)                
+                if pre_sci == False:
+                    calibs_after_science.append(exposure)
+                    exposures.removeChild(exposure)
+                else:
+                    order = int(exposure.getAttribute('order'))
+        
+        sci_dummy = self.exposures.getElementsByTagName('exposure')[4]
+        sci_exps = []
+        order += 1
+        first_sci_order = order
+        for i in range(num_dither):
+            sci = sci_dummy.cloneNode(True)
+            sci.setAttribute('order',value=str(order))
+            sci.setAttribute('arm',value='both')
+            sci_exps.append(sci)
+            order += 1
+            #exposures.appendChild(sci)
+            exposures.insertBefore(sci,comment_ref_node)
+            cr_node_clone = cr_node.cloneNode(True)
+#            exposures.insertBefore(cr_node_clone,comment_ref_node)
+
+        #now add the trailing calibration exposure elements
+        for calib in calibs_after_science:
+            calib.setAttribute('order',value=str(order))
+            #exposures.appendChild(calib)
+            exposures.insertBefore(calib,comment_ref_node)
+            cr_node_clone = cr_node.cloneNode(True)
+            if (calib.getAttribute('arm') in ['both','blue']):
+                #assumes sequence is always red,blue for arm-independent <exposure> entries!
+                order += 1
+
+        cr_node_clone = cr_node.cloneNode(True)
+        exposures.insertBefore(cr_node_clone,comment_ref_node)
+
+        # Remove the old exposures element and replace with this one
+
+        self.exposures.parentNode.replaceChild(exposures, self.exposures)
+        self.exposures = exposures
+
+        return first_sci_order
+
     
     def _remove_empty_lines(self, xml_text):
 
@@ -286,118 +400,11 @@ class _IFUDriverCat:
 
         ob_xml.set_root_attrib(root_attrib_dict)
 
-        #get a clone of the exposures element and wipe it of everything bar the initial calibs
-        #make no assumptions about the OB calibration strategy, just take from the template
-        exposures = ob_xml.exposures.cloneNode(True)
-        calibs_after_science = []
-        pre_sci = True
-        order = 0
+        first_sci_order = ob_xml.set_exposures(num_dither)
 
-        #remove the 'ORDER undefined' comment nodes (as we will define them here)
-        del_next = False
-        ii = 0
-        nodes = []
-        exposures_filter = exposures.cloneNode(True)
-        while len(exposures_filter.childNodes) != 0:
-            for node in exposures_filter.childNodes:
-                exposures_filter.removeChild(node)
-        
-        include_node = []
-        for node in exposures.childNodes:
-            if del_next:
-                del_next = False
-                continue
-            try:
-                if 'ORDER undefined' in str(node.data):
-                    #remove carraige return text node as well!
-                    del_next = True
-                    continue
-                else:
-                    include_node.append(node)
-            except AttributeError:
-                ii += 1
-                #add the node to the exposures_filter
-                include_node.append(node)
-                continue
-            ii += 1
+        ########
 
-        for node in include_node:
-            exposures_filter.appendChild(node)
-
-        exposures = exposures_filter
-
-        #identify the first comment node after the set of <exposure> elements
-        #this allows us to insert the new elements there, rather than at the end
-        
-        comment_ref_node = None
-        cr_node = exposures.childNodes[-1]
-        pre_exp = True
-        previous_node = exposures.childNodes[0]
-        ii = 0
-        for node in exposures.childNodes:
-            if str(node.nodeName)[0] != '#':
-                pre_exp = False
-
-            if str(node.nodeName)[0] == '#':
-                if pre_exp == False:
-                    #must be a comment node
-                    #previous must be a text node (<DOM Text node 'u'\n      \n\n '...'>)
-                    if (str(previous_node.nodeName) == '#text') and (str(node.nodeName) == '#comment'):
-                        comment_ref_node = node
-                        #want to insert new exposures before this node
-                        break
-            previous_node = node
-            ii += 1
-                
-        for exposure in exposures.getElementsByTagName('exposure'):
-            if exposure.getAttribute('type') == 'science':
-                pre_sci = False
-                sibling = exposure.nextSibling
-                exposures.removeChild(exposure)
-                exposures.removeChild(sibling)
-            else:
-                sibling = exposure.nextSibling
-                exposures.removeChild(sibling)                
-                if pre_sci == False:
-                    calibs_after_science.append(exposure)
-                    exposures.removeChild(exposure)
-                else:
-                    order = int(exposure.getAttribute('order'))
-        
-        sci_dummy = ob_xml.exposures.getElementsByTagName('exposure')[4]
-        sci_exps = []
-        order += 1
-        first_sci_order = order
-        for i in range(num_dither):
-            sci = sci_dummy.cloneNode(True)
-            sci.setAttribute('order',value=str(order))
-            sci.setAttribute('arm',value='both')
-            sci_exps.append(sci)
-            order += 1
-            #exposures.appendChild(sci)
-            exposures.insertBefore(sci,comment_ref_node)
-            cr_node_clone = cr_node.cloneNode(True)
-#            exposures.insertBefore(cr_node_clone,comment_ref_node)
-
-        #now add the trailing calibration exposure elements
-        for calib in calibs_after_science:
-            calib.setAttribute('order',value=str(order))
-            #exposures.appendChild(calib)
-            exposures.insertBefore(calib,comment_ref_node)
-            cr_node_clone = cr_node.cloneNode(True)
-            if (calib.getAttribute('arm') in ['both','blue']):
-                #assumes sequence is always red,blue for arm-independent <exposure> entries!
-                order += 1
-
-        cr_node_clone = cr_node.cloneNode(True)
-        exposures.insertBefore(cr_node_clone,comment_ref_node)
-
-        #now remove the old exposures element and replace with this one
-        ob_xml.exposures.parentNode.replaceChild(exposures,ob_xml.exposures)
-        ob_xml.exposures = exposures
-        #this_dom.insertBefore()
-        
-
+        # survey
         
         #the <configure> amd <survey> elements:
         survey = ob_xml.surveys.getElementsByTagName('survey')[0]
@@ -420,9 +427,18 @@ class _IFUDriverCat:
                 ob_xml.configure.setAttribute('plate','PLATE_B')
                 this_survey.setAttribute('max_fibres',value='740')
             ob_xml.surveys.insertBefore(this_survey,sruveys_comment)
+
+        
+        ########
+
+        # obsconstraints
             
         ob_xml.obsconstraints.setAttribute('obstemp',str(entry_group[0]['OBSTEMP']))
 
+        ########
+
+        # observation
+            
         #now the <observation> element:
         if obsmode == 'LIFU':
             ob_xml.observation.setAttribute('name',str(entry_group[0]['TARGID']))
@@ -434,6 +450,9 @@ class _IFUDriverCat:
         ob_xml.observation.setAttribute('pa',str(entry_group[0]['IFU_PA_REQUEST']))
 
 
+        ########
+
+        # fields
         
         #now generate field template
         fields_clone = ob_xml.fields.cloneNode(True)
@@ -453,6 +472,10 @@ class _IFUDriverCat:
 
         #now remove the existing <fields> element
         ob_xml.observation.removeChild(ob_xml.fields)
+
+        ##########
+
+        # dithering
 
         ob_xml.dithering.setAttribute('apply_dither',str(entry_group[0]['IFU_DITHER']))
 
