@@ -42,6 +42,10 @@ class _OBXML:
         
         self.xml_template = xml_template
 
+        # Set the order of the first science exposure as unknown
+
+        self.first_science_order = None 
+
         # Parse the XML template
 
         try:
@@ -188,7 +192,7 @@ class _OBXML:
         sci_dummy = self.exposures.getElementsByTagName('exposure')[4]
         sci_exps = []
         order += 1
-        first_sci_order = order
+        self.first_science_order = order
         for i in range(num_dither_positions):
             sci = sci_dummy.cloneNode(True)
             sci.setAttribute('order',value=str(order))
@@ -217,8 +221,6 @@ class _OBXML:
 
         self.exposures.parentNode.replaceChild(exposures, self.exposures)
         self.exposures = exposures
-
-        return first_sci_order
 
     
     def set_observation(self, attrib_dict):
@@ -255,7 +257,11 @@ class _OBXML:
             self.surveys.insertBefore(this_survey,sruveys_comment)
 
             
-    def set_fields(self, obsmode, entry_group, targcat, first_sci_order):
+    def set_fields(self, obsmode, entry_group, targcat):
+
+        if self.first_science_order is None:
+            logging.error('Setting of exposures element has to be done before')
+            raise SystemExit(3)
         
         #now generate field template
         fields_clone = self.fields.cloneNode(True)
@@ -283,8 +289,7 @@ class _OBXML:
         #1.target
         #2.field
         #3.fields
-
-        order = first_sci_order
+        order = self.first_science_order
         field = None
         col_names = entry_group[0].array.columns.names
         for i in range(len(entry_group)):
@@ -590,7 +595,7 @@ class _IFUDriverCat:
 
         # Set the contents of the exposures element
 
-        first_sci_order = ob_xml.set_exposures(num_dither_positions)
+        ob_xml.set_exposures(num_dither_positions)
 
         # Set the attributes of the observation element
 
@@ -629,7 +634,7 @@ class _IFUDriverCat:
 
         # Set the contents of the fields element
 
-        ob_xml.set_fields(obsmode, entry_group, self.targcat, first_sci_order)
+        ob_xml.set_fields(obsmode, entry_group, self.targcat)
 
         # Write the OB XML to a file
 
