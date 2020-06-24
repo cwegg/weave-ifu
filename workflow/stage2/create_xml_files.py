@@ -92,7 +92,7 @@ class _OBXML:
             if key in elem.attributes.keys():
 
                 value = str(attrib_dict[key])
-                elem.setAttribute(key, value=value)
+                elem.setAttribute(key, value=str(value))
 
             else:
 
@@ -102,6 +102,11 @@ class _OBXML:
     def set_root_attrib(self, attrib_dict):
 
         self._set_attribs(self.root, attrib_dict)
+
+        
+    def set_spectrograph(self, progtemp):
+
+        logging.warning('TBDeveloped')
 
                 
     def _clean_exposures(self, exposures):
@@ -220,10 +225,127 @@ class _OBXML:
 
         self._set_attribs(self.observation, attrib_dict)
 
+
+    def set_configure(self, attrib_dict):
+
+        self._set_attribs(self.configure, attrib_dict)
+
     
     def set_dithering(self, attrib_dict):
 
         self._set_attribs(self.dithering, attrib_dict)
+
+        
+    def set_surveys(self, targsrvy_list, max_fibres, priority='1.0'):
+
+        #the <configure> amd <survey> elements:
+        survey = self.surveys.getElementsByTagName('survey')[0]
+        #make a clone and remove the placeholder <survey>
+        survey_clone = survey.cloneNode(True)
+        self.surveys.removeChild(survey)
+        #get initial comment in <surveys>, to allow an insertBefore
+        sruveys_comment = self.surveys.childNodes[0]
+        
+        for s in targsrvy_list:
+            this_survey = survey_clone.cloneNode(True)
+            this_survey.setAttribute('name',value=str(s))
+            this_survey.setAttribute('priority',value=str(priority))
+            this_survey.setAttribute('max_fibres',value=str(max_fibres))
+
+            self.surveys.insertBefore(this_survey,sruveys_comment)
+
+            
+    def set_fields(self, obsmode, entry_group, targcat, first_sci_order):
+        
+        #now generate field template
+        fields_clone = self.fields.cloneNode(True)
+
+        #clear it
+        field_list = fields_clone.getElementsByTagName('field')
+        field_clone = field_list[0].cloneNode(True)
+        for field in field_list:
+            fields_clone.removeChild(field)
+
+        target_list = field_clone.getElementsByTagName('target')
+        node_list = field_clone.childNodes
+
+        while len(field_clone.childNodes) != 0:
+            for target in field_clone.childNodes:
+                field_clone.removeChild(target)
+
+        #now remove the existing <fields> element
+        self.observation.removeChild(self.fields)
+
+        ##########
+
+
+        #assembly order:
+        #1.target
+        #2.field
+        #3.fields
+
+        order = first_sci_order
+        field = None
+        col_names = entry_group[0].array.columns.names
+        for i in range(len(entry_group)):
+            row = entry_group[i]
+            target = self.base_target.cloneNode(True)
+
+            # remove things we shouldn't have as the xml gets passed into Configure
+            to_remove = ['configid', 'fibreid']
+            for rem in to_remove:
+                target.removeAttribute(rem)
+
+            _row = {}
+            for col in col_names:
+                _row[col] = row[col]
+                if (str(row[col]) == 'nan') and np.isnan(row[col]):
+                    _row[col] = ''
+            row = _row
+             
+            target.setAttribute('targra',value=str(row['GAIA_RA']))
+            target.setAttribute('targdec',value=str(row['GAIA_DEC']))
+            target.setAttribute('targpmra',value=str(row['GAIA_PMRA']))
+            target.setAttribute('targpmdec',value=str(row['GAIA_PMDEC']))
+            target.setAttribute('targepoch',value=str(row['GAIA_EPOCH']))
+            target.setAttribute('targparal',value=str(row['GAIA_PARAL']))
+            target.setAttribute('targid',value=str(row['TARGID']))
+            target.setAttribute('targname',value=str(row['TARGNAME']))
+            target.setAttribute('targprog',value=str(row['TARGPROG']))
+            target.setAttribute('targcat',value=targcat)
+            target.setAttribute('targprio',value=str(row['TARGPRIO']))
+            target.setAttribute('targuse',value='T')
+            target.setAttribute('targsrvy',value=str(row['TARGSRVY']))
+
+            if (obsmode == 'LIFU'):
+                #generate a <field> element to add this target to
+                field = field_clone.cloneNode(True)
+                field.setAttribute('order',value=str(order))
+                field.setAttribute('RA_d',value=str(row['GAIA_RA']))
+                field.setAttribute('Dec_d',value=str(row['GAIA_DEC']))
+                field.appendChild(target)
+                #now add this field to the fields element
+                fields_clone.appendChild(field)
+
+                order += 1
+
+            elif (obsmode == 'mIFU'):
+                #if this is the first of the targets, then generate the field, otherwise use the existing <field>
+                #remember - we require fixed IFU_DITHER patterns for mIFU, so multiple <field> entries not needed
+                if i == 0:
+                    field = field_clone.cloneNode(True)
+                    field.setAttribute('order',value=str(order))
+                    field.setAttribute('RA_d',value=str(row['GAIA_RA']))
+                    field.setAttribute('Dec_d',value=str(row['GAIA_DEC']))
+                field.appendChild(target)
+
+        if (obsmode == 'mIFU'):
+            #now add this field to the fields element
+            fields_clone.appendChild(field)
+            
+
+        #...and finally to observation
+        self.observation.appendChild(fields_clone)
 
                 
     def _remove_empty_lines(self, xml_text):
@@ -388,10 +510,33 @@ class _IFUDriverCat:
         progtemp = first_entry['PROGTEMP']
         obstemp = first_entry['OBSTEMP']
         ifu_dither = first_entry['IFU_DITHER']
+        ifu_pa_request = first_entry['IFU_PA_REQUEST']
+
+        # Get some information from all the entries in the group
+
+        targsrvy_list = list(set([entry['TARGSRVY'] for entry in entry_group]))
+        targsrvy_list.sort()
 
         # Guess the OBSMODE from PROGTEMP
 
         obsmode = get_obsmode_from_progtemp(progtemp)
+
+        assert obsmode in ['LIFU', 'mIFU']
+
+        # Set the some paremeters which depends on OBSMODE:
+        #  - Name of the observation
+        #  - Plate
+        #  - max_fibres
+
+        if obsmode == 'LIFU':
+            observation_name = '{}-{}'.format(first_entry['TARGNAME'],
+                                              first_entry['TARGID'])
+            plate = 'LIFU'
+            max_fibres = 603
+        elif obsmode == 'mIFU':
+            observation_name = first_entry['TARGNAME']
+            plate = 'PLATE_B'
+            max_fibres = 740
 
         # Guess the number of dither positions
 
@@ -400,19 +545,9 @@ class _IFUDriverCat:
         else:
             num_dither_positions = ifu_dither
 
-        # Set the name of the observation
-
-        if obsmode == 'LIFU':
-            observation_name = '{}-{}'.format(first_entry['TARGNAME'],
-                                              first_entry['TARGID'])
-        elif obsmode == 'mIFU':
-            observation_name = first_entry['TARGNAME']
-
         # Set the position angle (if possible)
 
         if obsmode == 'LIFU':
-
-            ifu_pa_request = first_entry['IFU_PA_REQUEST']
 
             if not np.isnan(ifu_pa_request):
                 pa = ifu_pa_request
@@ -449,6 +584,10 @@ class _IFUDriverCat:
 
         ob_xml.set_root_attrib(root_attrib_dict)
 
+        # Set the contents of the spectrograph element
+
+        ob_xml.set_spectrograph(progtemp)
+
         # Set the contents of the exposures element
 
         first_sci_order = ob_xml.set_exposures(num_dither_positions)
@@ -470,132 +609,29 @@ class _IFUDriverCat:
             
         # Set the attributes of the dithering element
 
+        configure_attrib_dict = {
+            'plate': plate
+        }
+
+        ob_xml.set_configure(configure_attrib_dict)
+
+        # Set the attributes of the dithering element
+
         dithering_attrib_dict = {
             'apply_dither': ifu_dither
         }
 
         ob_xml.set_dithering(dithering_attrib_dict)
 
-        ########
+        # Set the contents of the survey element
 
-        # survey
-        
-        #the <configure> amd <survey> elements:
-        survey = ob_xml.surveys.getElementsByTagName('survey')[0]
-        #make a clone and remove the placeholder <survey>
-        survey_clone = survey.cloneNode(True)
-        ob_xml.surveys.removeChild(survey)
-        #get initial comment in <surveys>, to allow an insertBefore
-        sruveys_comment = ob_xml.surveys.childNodes[0]
-        a = 1
-        
-        all_surveys = np.unique([r['TARGSRVY'] for r in entry_group])
-        for s in all_surveys:
-            this_survey = survey_clone.cloneNode(True)
-            this_survey.setAttribute('name',value=str(s))
-            this_survey.setAttribute('priority',value='1.0')
-            if obsmode == 'LIFU':
-                ob_xml.configure.setAttribute('plate','LIFU')
-                this_survey.setAttribute('max_fibres',value='603')
-            elif obsmode == 'mIFU':
-                ob_xml.configure.setAttribute('plate','PLATE_B')
-                this_survey.setAttribute('max_fibres',value='740')
-            ob_xml.surveys.insertBefore(this_survey,sruveys_comment)
+        ob_xml.set_surveys(targsrvy_list, max_fibres)
 
+        # Set the contents of the fields element
 
-        ########
+        ob_xml.set_fields(obsmode, entry_group, self.targcat, first_sci_order)
 
-        # fields
-        
-        #now generate field template
-        fields_clone = ob_xml.fields.cloneNode(True)
-
-        #clear it
-        field_list = fields_clone.getElementsByTagName('field')
-        field_clone = field_list[0].cloneNode(True)
-        for field in field_list:
-            fields_clone.removeChild(field)
-
-        target_list = field_clone.getElementsByTagName('target')
-        node_list = field_clone.childNodes
-
-        while len(field_clone.childNodes) != 0:
-            for target in field_clone.childNodes:
-                field_clone.removeChild(target)
-
-        #now remove the existing <fields> element
-        ob_xml.observation.removeChild(ob_xml.fields)
-
-        ##########
-
-
-        #assembly order:
-        #1.target
-        #2.field
-        #3.fields
-
-        order = first_sci_order
-        field = None
-        col_names = entry_group[0].array.columns.names
-        for i in range(len(entry_group)):
-            row = entry_group[i]
-            target = ob_xml.base_target.cloneNode(True)
-
-            # remove things we shouldn't have as the xml gets passed into Configure
-            to_remove = ['configid','fibreid']
-            for rem in to_remove:
-                target.removeAttribute(rem)
-
-            _row = {}
-            for col in col_names:
-                _row[col] = row[col]
-                if (str(row[col]) == 'nan') and np.isnan(row[col]):
-                    _row[col] = ''
-            row = _row
-             
-            target.setAttribute('targra',value=str(row['GAIA_RA']))
-            target.setAttribute('targdec',value=str(row['GAIA_DEC']))
-            target.setAttribute('targpmra',value=str(row['GAIA_PMRA']))
-            target.setAttribute('targpmdec',value=str(row['GAIA_PMDEC']))
-            target.setAttribute('targepoch',value=str(row['GAIA_EPOCH']))
-            target.setAttribute('targparal',value=str(row['GAIA_PARAL']))
-            target.setAttribute('targid',value=str(row['TARGID']))
-            target.setAttribute('targname',value=str(row['TARGNAME']))
-            target.setAttribute('targprog',value=str(row['TARGPROG']))
-            target.setAttribute('targcat',value=self.targcat)
-            target.setAttribute('targprio',value=str(row['TARGPRIO']))
-            target.setAttribute('targuse',value='T')
-            target.setAttribute('targsrvy',value=str(row['TARGSRVY']))
-
-            if (obsmode == 'LIFU'):
-                #generate a <field> element to add this target to
-                field = field_clone.cloneNode(True)
-                field.setAttribute('order',value=str(order))
-                field.setAttribute('RA_d',value=str(row['GAIA_RA']))
-                field.setAttribute('Dec_d',value=str(row['GAIA_DEC']))
-                field.appendChild(target)
-                #now add this field to the fields element
-                fields_clone.appendChild(field)
-
-                order += 1
-
-            elif (obsmode == 'mIFU'):
-                #if this is the first of the targets, then generate the field, otherwise use the existing <field>
-                #remember - we require fixed IFU_DITHER patterns for mIFU, so multiple <field> entries not needed
-                if i == 0:
-                    field = field_clone.cloneNode(True)
-                    field.setAttribute('order',value=str(order))
-                    field.setAttribute('RA_d',value=str(row['GAIA_RA']))
-                    field.setAttribute('Dec_d',value=str(row['GAIA_DEC']))
-                field.appendChild(target)
-
-        if (obsmode == 'mIFU'):
-            #now add this field to the fields element
-            fields_clone.appendChild(field)
-            
-
-        #...and finally to observation
-        ob_xml.observation.appendChild(fields_clone)
+        # Write the OB XML to a file
 
         output_path = self._get_output_path(obsmode, output_dir=output_dir,
                                             prefix=prefix, suffix=suffix)
