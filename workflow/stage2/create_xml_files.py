@@ -119,7 +119,7 @@ class _OBXML:
         return exposures
 
                 
-    def set_exposures(self, num_dither):
+    def set_exposures(self, num_dither_positions):
 
         #get a clone of the exposures element and wipe it of everything bar the initial calibs
         #make no assumptions about the OB calibration strategy, just take from the template
@@ -184,7 +184,7 @@ class _OBXML:
         sci_exps = []
         order += 1
         first_sci_order = order
-        for i in range(num_dither):
+        for i in range(num_dither_positions):
             sci = sci_dummy.cloneNode(True)
             sci.setAttribute('order',value=str(order))
             sci.setAttribute('arm',value='both')
@@ -219,6 +219,11 @@ class _OBXML:
     def set_observation(self, attrib_dict):
 
         self._set_attribs(self.observation, attrib_dict)
+
+    
+    def set_dithering(self, attrib_dict):
+
+        self._set_attribs(self.dithering, attrib_dict)
 
                 
     def _remove_empty_lines(self, xml_text):
@@ -382,6 +387,7 @@ class _IFUDriverCat:
 
         progtemp = first_entry['PROGTEMP']
         obstemp = first_entry['OBSTEMP']
+        ifu_dither = first_entry['IFU_DITHER']
 
         # Guess the OBSMODE from PROGTEMP
 
@@ -390,9 +396,9 @@ class _IFUDriverCat:
         # Guess the number of dither positions
 
         if (obsmode == 'LIFU') and (len(entry_group) > 1):
-            num_dither = len(entry_group)
+            num_dither_positions = len(entry_group)
         else:
-            num_dither = first_entry['IFU_DITHER']
+            num_dither_positions = ifu_dither
 
         # Set the name of the observation
 
@@ -445,7 +451,7 @@ class _IFUDriverCat:
 
         # Set the contents of the exposures element
 
-        first_sci_order = ob_xml.set_exposures(num_dither)
+        first_sci_order = ob_xml.set_exposures(num_dither_positions)
 
         # Set the attributes of the observation element
 
@@ -462,6 +468,14 @@ class _IFUDriverCat:
 
         ob_xml.set_observation(observation_attrib_dict)
             
+        # Set the attributes of the dithering element
+
+        dithering_attrib_dict = {
+            'apply_dither': ifu_dither
+        }
+
+        ob_xml.set_dithering(dithering_attrib_dict)
+
         ########
 
         # survey
@@ -514,9 +528,6 @@ class _IFUDriverCat:
 
         ##########
 
-        # dithering
-
-        ob_xml.dithering.setAttribute('apply_dither',str(entry_group[0]['IFU_DITHER']))
 
         #assembly order:
         #1.target
