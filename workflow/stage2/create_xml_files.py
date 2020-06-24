@@ -64,14 +64,16 @@ class _OBXML:
         # *** Why is it used self.root and dom? Which is the difference?
 
         self.root = self.dom.childNodes[0]
-        self.exposures = self.root.getElementsByTagName('exposures')[0]
-        self.observation = self.root.getElementsByTagName('observation')[0]
+
+        self.exposures = self.dom.getElementsByTagName('exposures')[0]
+        self.observation = self.dom.getElementsByTagName('observation')[0]
         self.configure = self.dom.getElementsByTagName('configure')[0]
         self.obsconstraints = self.dom.getElementsByTagName('obsconstraints')[0]
         self.dithering = self.dom.getElementsByTagName('dithering')[0]
         # self.offsets = self.observation.getElementsByTagName('offsets')[0]
         self.surveys = self.dom.getElementsByTagName('surveys')[0]
         self.fields = self.dom.getElementsByTagName('fields')[0]
+
         # self.targets_base = self.fields.getElementsByTagName('target')
         self.base_target = self.fields.getElementsByTagName('target')[0]
 
