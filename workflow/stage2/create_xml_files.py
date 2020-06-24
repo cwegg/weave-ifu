@@ -65,21 +65,16 @@ class _OBXML:
 
     def _ingest_xml(self):
 
-        # *** Why is it used self.root and dom? Which is the difference?
-
         self.root = self.dom.childNodes[0]
 
+        self.spectrograph = self.dom.getElementsByTagName('spectrograph')[0]
         self.exposures = self.dom.getElementsByTagName('exposures')[0]
         self.observation = self.dom.getElementsByTagName('observation')[0]
         self.configure = self.dom.getElementsByTagName('configure')[0]
         self.obsconstraints = self.dom.getElementsByTagName('obsconstraints')[0]
         self.dithering = self.dom.getElementsByTagName('dithering')[0]
-        # self.offsets = self.observation.getElementsByTagName('offsets')[0]
         self.surveys = self.dom.getElementsByTagName('surveys')[0]
         self.fields = self.dom.getElementsByTagName('fields')[0]
-
-        # self.targets_base = self.fields.getElementsByTagName('target')
-        self.base_target = self.fields.getElementsByTagName('target')[0]
 
         
     def get_datamver(self):
@@ -87,6 +82,11 @@ class _OBXML:
         datamver = self.root.getAttribute('datamver')
 
         return datamver
+
+
+    def remove_configure_outputs(self):
+
+        logging.warning('RCO TBDeveloped')
 
 
     def _set_attribs(self, elem, attrib_dict):
@@ -110,10 +110,11 @@ class _OBXML:
         
     def set_spectrograph(self, progtemp):
 
-        logging.warning('TBDeveloped')
+        logging.warning('Spectrograph TBDeveloped')
 
                 
     def _clean_exposures(self, exposures):
+        logging.warning('TBR 1-1')
 
         # Remove the 'ORDER undefined' comment nodes
         # (as we will define them here)
@@ -129,9 +130,12 @@ class _OBXML:
 
                 
     def set_exposures(self, num_dither_positions):
+        logging.warning('TBR 1')
 
-        #get a clone of the exposures element and wipe it of everything bar the initial calibs
-        #make no assumptions about the OB calibration strategy, just take from the template
+        #get a clone of the exposures element and wipe it of everything bar the
+        #initial calibs
+        #make no assumptions about the OB calibration strategy, just take from
+        #the template
 
         # Clone the exposures element
 
@@ -144,13 +148,6 @@ class _OBXML:
         cleaned_exposures = self._clean_exposures(exposures)
 
         exposures = cleaned_exposures
-
-        # import ipdb
-        # print(exposures.toxml())
-        # print('#'*80)
-        # ipdb.set_trace()
-
-        ###################################################################
 
         #identify the first comment node after the set of <exposure> elements
         #this allows us to insert the new elements there, rather than at the end
@@ -167,8 +164,11 @@ class _OBXML:
             if str(node.nodeName)[0] == '#':
                 if pre_exp == False:
                     #must be a comment node
-                    #previous must be a text node (<DOM Text node 'u'\n      \n\n '...'>)
-                    if (str(previous_node.nodeName) == '#text') and (str(node.nodeName) == '#comment'):
+                    #previous must be a text node
+                    #(<DOM Text node 'u'\n      \n\n '...'>)
+                    if ((str(previous_node.nodeName) == '#text') and
+                        (str(node.nodeName) == '#comment')):
+
                         comment_ref_node = node
                         #want to insert new exposures before this node
                         break
@@ -211,7 +211,8 @@ class _OBXML:
             exposures.insertBefore(calib,comment_ref_node)
             cr_node_clone = cr_node.cloneNode(True)
             if (calib.getAttribute('arm') in ['both','blue']):
-                #assumes sequence is always red,blue for arm-independent <exposure> entries!
+                #assumes sequence is always red,blue for arm-independent
+                #<exposure> entries!
                 order += 1
 
         cr_node_clone = cr_node.cloneNode(True)
@@ -232,6 +233,11 @@ class _OBXML:
 
         self._set_attribs(self.configure, attrib_dict)
 
+        
+    def set_obsconstraints(self, obstemp):
+
+        logging.warning('Obsconstraints TBDeveloped')
+
     
     def set_dithering(self, attrib_dict):
 
@@ -239,6 +245,7 @@ class _OBXML:
 
         
     def set_surveys(self, targsrvy_list, max_fibres, priority='1.0'):
+        logging.warning('TBR 2')
 
         #the <configure> amd <survey> elements:
         survey = self.surveys.getElementsByTagName('survey')[0]
@@ -258,6 +265,7 @@ class _OBXML:
 
             
     def set_fields(self, obsmode, entry_group, targcat):
+        logging.warning('TBR 3')
 
         if self.first_science_order is None:
             logging.error('Setting of exposures element has to be done before')
@@ -284,6 +292,7 @@ class _OBXML:
 
         ##########
 
+        base_target = self.fields.getElementsByTagName('target')[0]
 
         #assembly order:
         #1.target
@@ -294,9 +303,10 @@ class _OBXML:
         col_names = entry_group[0].array.columns.names
         for i in range(len(entry_group)):
             row = entry_group[i]
-            target = self.base_target.cloneNode(True)
+            target = base_target.cloneNode(True)
 
-            # remove things we shouldn't have as the xml gets passed into Configure
+            # remove things we shouldn't have as the xml gets passed into
+            # Configure
             to_remove = ['configid', 'fibreid']
             for rem in to_remove:
                 target.removeAttribute(rem)
@@ -335,8 +345,11 @@ class _OBXML:
                 order += 1
 
             elif (obsmode == 'mIFU'):
-                #if this is the first of the targets, then generate the field, otherwise use the existing <field>
-                #remember - we require fixed IFU_DITHER patterns for mIFU, so multiple <field> entries not needed
+                #if this is the first of the targets, then generate the field,
+                #otherwise use the existing <field>
+
+                #remember - we require fixed IFU_DITHER patterns for mIFU, so
+                #multiple <field> entries not needed
                 if i == 0:
                     field = field_clone.cloneNode(True)
                     field.setAttribute('order',value=str(order))
@@ -567,14 +580,18 @@ class _IFUDriverCat:
 
         ob_xml = _OBXML(xml_template)
 
+        # Remove the elements and attributes which are configure outputs
+                        
+        ob_xml.remove_configure_outputs()
+
         # Check DATAMVER of the IFU driver cat and the XML template
 
-        xml_template_datamver = ob_xml.get_datamver()
+        xml_datamver = ob_xml.get_datamver()
 
-        if self.datamver != xml_template_datamver:
+        if self.datamver != xml_datamver:
             logging.critical(
                'DATAMVER mismatch ({} != {}): Stop unless you are sure!'.format(
-                    self.datamver, xml_template_datamver))
+                    self.datamver, xml_datamver))
 
             if pass_datamver == False:
                 raise SystemExit(2)
@@ -619,6 +636,10 @@ class _IFUDriverCat:
         }
 
         ob_xml.set_configure(configure_attrib_dict)
+
+        # Set the attributes of the obsconstraints element
+
+        ob_xml.set_obsconstraints(obstemp)
 
         # Set the attributes of the dithering element
 
