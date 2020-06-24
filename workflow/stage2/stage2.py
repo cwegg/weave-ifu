@@ -22,7 +22,7 @@ import xml.dom.minidom
 import os
 from astropy.io import fits
 import numpy
-
+from numpy import mean
 
 class xml_data:
     def __init__(self):
@@ -70,7 +70,10 @@ class xml_data:
         self.obsconstraints = dom.getElementsByTagName('obsconstraints')[0]
         self.dithering = dom.getElementsByTagName('dithering')[0]
         self.fields = dom.getElementsByTagName('fields')[0]
-        self.base_target = self.fields.getElementsByTagName('target')[0]
+        self.base_target = self.fields.getElementsByTagName('target')
+        for bt in self.base_target:
+            if bt.getAttribute('targuse') == 'T':
+                self.base_target = bt
         self.offset = self.observation.getElementsByTagName('offsets')[0]
         self.targets_base = self.fields.getElementsByTagName('target')
 
@@ -551,6 +554,13 @@ class ifu:
         order = first_sci_order
         field = None
         col_names = rows[0].array.columns.names
+        ra_targs = [row['GAIA_RA'] for row in rows]
+        dec_targs = [row['GAIA_DEC'] for row in rows]
+        ra_mean = mean(ra_targs)
+        dec_mean = mean(dec_targs)
+
+
+        
         for i in xrange(len(rows)):
             row = rows[i]
             target = this_xml.base_target.cloneNode(True)
@@ -599,8 +609,13 @@ class ifu:
                 if i == 0:
                     field = field_clone.cloneNode(True)
                     field.setAttribute('order',value=str(order))
-                    field.setAttribute('RA_d',value=str(row['GAIA_RA']))
-                    field.setAttribute('Dec_d',value=str(row['GAIA_DEC']))
+                    # field.setAttribute('RA_d',value=str(row['GAIA_RA']))
+                    # field.setAttribute('Dec_d',value=str(row['GAIA_DEC']))
+
+                    field.setAttribute('RA_d',value=str(ra_mean))
+                    field.setAttribute('Dec_d',value=str(dec_mean))
+
+                    
                 field.appendChild(target)
 
         if (mode == 'mIFU'):
