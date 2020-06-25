@@ -515,13 +515,20 @@ class ifu:
         #now the <observation> element:
         if mode == 'LIFU':
             this_xml.observation.setAttribute('name',str(rows[0]['TARGID']))
+            import pdb
+            pdb.set_trace()
+            if not numpy.isnan(rows[0]['IFU_PA_REQUEST']):
+                this_xml.observation.setAttribute('pa',str(rows[0]['IFU_PA_REQUEST']))
+            
         elif mode == 'mIFU':
             this_xml.observation.setAttribute('name',str(rows[0]['TARGNAME']))
+            this_xml.observation.setAttribute('pa','0.0')
+
         this_xml.observation.setAttribute('progtemp',str(rows[0]['PROGTEMP']))
         this_xml.observation.setAttribute('obstemp',str(rows[0]['OBSTEMP']))
         this_xml.observation.setAttribute('obs_type',str(mode_lookup[rows[0]['PROGTEMP'][0]]))
         this_xml.observation.setAttribute('trimester',str(self.trimester))
-        this_xml.observation.setAttribute('pa',str(rows[0]['IFU_PA_REQUEST']))
+
 
 
         
