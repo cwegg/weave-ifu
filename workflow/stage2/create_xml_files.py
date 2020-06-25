@@ -238,40 +238,29 @@ class _OBXML:
         
     def set_surveys(self, targsrvy_list, max_fibres, priority='1.0'):
 
-        # Get the survey element from the template, clone it (to use it as
-        # example) and remove it
+        # Get the survey element from the template (there should be only one)
 
-        survey = self.surveys.getElementsByTagName('survey')[0]
+        survey_template = self.surveys.getElementsByTagName('survey')[0]
 
-        survey_template = survey.cloneNode(True)
+        # Add the requested amount of survey elements before the template
 
-        self.surveys.removeChild(survey)
-
-        # Get the comment in surveys element, to allow an insertBefore
-
-        surveys_comment = self.surveys.childNodes[0]
-
-        # Add a survey element per each targsrvy
-        
         for targsrvy in targsrvy_list:
 
-            # Create a survey element cloning its template
-            
             survey = survey_template.cloneNode(True)
-
-            # Set its attributes properly
 
             attrib_dict = {
                 'name': targsrvy,
-                'priority': str(priority),
-                'max_fibres': str(max_fibres)
+                'priority': priority,
+                'max_fibres': max_fibres
             }
 
             self._set_attribs(survey, attrib_dict)
-
-            # Insert the element before the comment
             
-            self.surveys.insertBefore(survey, surveys_comment)
+            self.surveys.insertBefore(survey, survey_template)
+
+        # Remove the survey element from the template
+
+        self.surveys.removeChild(survey_template)
 
             
     def set_fields(self, obsmode, entry_group, targcat):
