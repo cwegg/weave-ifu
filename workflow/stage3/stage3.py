@@ -407,18 +407,38 @@ class stage3:
     
     def guidestars(self):
         obs_mode = self.observation.getAttribute('obs_type')
-        pa = 0.0
         max_guides = {}
         max_guides['LIFU'] = None
         max_guides['mIFU'] = int(self.configure.getAttribute('max_guide'))
-        print 'WARNING: PA set to 0.0 for the moment'
+
+        if obs_mode == 'mIFU':
+            pa = 0.0
+            assert float(self.observation.getAttribute('pa')) == pa
+        else:
+            pa = 0.0
+            if self.observation.getAttribute('pa') != '%%%':
+                pa = float(self.observation.getAttribute('pa'))
+
+        if 1:
+            # testing override
+            pa = 0.0
+            print 'WARNING: PA set to 0.0 for the moment'
+
+
         field =  self.fields.getElementsByTagName('field')[0]
         # there can be only one field element at this stage...
         ra = float(field.getAttribute('RA_d'))
         dec = float(field.getAttribute('Dec_d'))
         gs = GuideStar(ra,dec,pa,obs_mode,max_guides=max_guides[obs_mode])
-        guides = gs.get_guide(as_xml=True)
 
+        pa_actual = pa
+        print 'WARNING: guidestar search will not adopt new PA - implement this!'
+        # guides,pa_actual = gs.get_guide(as_xml=True)
+        guides = gs.get_guide(as_xml=True)
+        if obs_mode == 'LIFU':   
+            self.observation.setAttribute('pa',value=str(pa_actual))
+
+        
         if guides == None:
             raise SystemExit('Cannot proceed without valid guidestar')
         if type(guides) != type([]):
