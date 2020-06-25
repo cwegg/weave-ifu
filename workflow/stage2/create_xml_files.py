@@ -42,10 +42,6 @@ class _OBXML:
         
         self.xml_template = xml_template
 
-        # Set the order of the first science exposure as unknown
-
-        self.first_science_order = None 
-
         # Parse the XML template
 
         try:
@@ -62,6 +58,10 @@ class _OBXML:
 
         self._ingest_xml()
 
+        # Set the order of the first science exposure as unknown
+
+        self._set_first_science_order()
+
 
     def _ingest_xml(self):
 
@@ -75,6 +75,28 @@ class _OBXML:
         self.dithering = self.dom.getElementsByTagName('dithering')[0]
         self.surveys = self.dom.getElementsByTagName('surveys')[0]
         self.fields = self.dom.getElementsByTagName('fields')[0]
+
+
+    def _set_first_science_order(self):
+
+        last_pre_science_order = 0
+
+        for exposure in self.exposures.getElementsByTagName('exposure'):
+
+            if exposure.getAttribute('type') != 'science':
+
+                order = exposure.getAttribute('order')
+
+                if (order != '%%%'):
+                    last_pre_science_order = int(order)
+                else:
+                    break
+
+            else:
+
+                break
+
+        self.first_science_order = last_pre_science_order + 1
 
         
     def get_datamver(self):
@@ -113,115 +135,85 @@ class _OBXML:
         logging.warning('Spectrograph TBDeveloped')
 
                 
-    def _clean_exposures(self, exposures):
-        logging.warning('TBR 1-1')
+    def set_exposures(self, num_science_exposures, science_exptime,
+                      clean_comment=True):
 
-        # Remove the 'ORDER undefined' comment nodes
-        # (as we will define them here)
+        # Get the science exposure element from the template
+        # (it must be the first one without assigned order)
 
-        for node in exposures.childNodes:
-            try:
-                if 'ORDER undefined' in str(node.data):
-                    exposures.removeChild(node)
-            except:
-                pass
+        for exposure in self.exposures.getElementsByTagName('exposure'):
+            if exposure.getAttribute('order') == '%%%':
+                assert exposure.getAttribute('type') == 'science'
+                science_exposure_template = exposure
+                break
 
-        return exposures
+        # Add the requested amount of science exposures before the science
+        # exposure from the template
 
-                
-    def set_exposures(self, num_dither_positions):
-        logging.warning('TBR 1')
-
-        #get a clone of the exposures element and wipe it of everything bar the
-        #initial calibs
-        #make no assumptions about the OB calibration strategy, just take from
-        #the template
-
-        # Clone the exposures element
-
-        exposures = self.exposures.cloneNode(True)
-
-        calibs_after_science = []
-        pre_sci = True
-        order = 0
-
-        cleaned_exposures = self._clean_exposures(exposures)
-
-        exposures = cleaned_exposures
-
-        #identify the first comment node after the set of <exposure> elements
-        #this allows us to insert the new elements there, rather than at the end
+        order = self.first_science_order - 1
         
-        comment_ref_node = None
-        cr_node = exposures.childNodes[-1]
-        pre_exp = True
-        previous_node = exposures.childNodes[0]
+        for i in range(num_science_exposures):
 
-        for node in exposures.childNodes:
-            if str(node.nodeName)[0] != '#':
-                pre_exp = False
-
-            if str(node.nodeName)[0] == '#':
-                if pre_exp == False:
-                    #must be a comment node
-                    #previous must be a text node
-                    #(<DOM Text node 'u'\n      \n\n '...'>)
-                    if ((str(previous_node.nodeName) == '#text') and
-                        (str(node.nodeName) == '#comment')):
-
-                        comment_ref_node = node
-                        #want to insert new exposures before this node
-                        break
-            previous_node = node
-                
-        for exposure in exposures.getElementsByTagName('exposure'):
-            if exposure.getAttribute('type') == 'science':
-                pre_sci = False
-                sibling = exposure.nextSibling
-                exposures.removeChild(exposure)
-                exposures.removeChild(sibling)
-            else:
-                sibling = exposure.nextSibling
-                exposures.removeChild(sibling)                
-                if pre_sci == False:
-                    calibs_after_science.append(exposure)
-                    exposures.removeChild(exposure)
-                else:
-                    order = int(exposure.getAttribute('order'))
-        
-        sci_dummy = self.exposures.getElementsByTagName('exposure')[4]
-        sci_exps = []
-        order += 1
-        self.first_science_order = order
-        for i in range(num_dither_positions):
-            sci = sci_dummy.cloneNode(True)
-            sci.setAttribute('order',value=str(order))
-            sci.setAttribute('arm',value='both')
-            sci_exps.append(sci)
             order += 1
-            #exposures.appendChild(sci)
-            exposures.insertBefore(sci,comment_ref_node)
-            cr_node_clone = cr_node.cloneNode(True)
-#            exposures.insertBefore(cr_node_clone,comment_ref_node)
 
-        #now add the trailing calibration exposure elements
-        for calib in calibs_after_science:
-            calib.setAttribute('order',value=str(order))
-            #exposures.appendChild(calib)
-            exposures.insertBefore(calib,comment_ref_node)
-            cr_node_clone = cr_node.cloneNode(True)
-            if (calib.getAttribute('arm') in ['both','blue']):
-                #assumes sequence is always red,blue for arm-independent
-                #<exposure> entries!
-                order += 1
+            science_exposure = science_exposure_template.cloneNode(True)
 
-        cr_node_clone = cr_node.cloneNode(True)
-        exposures.insertBefore(cr_node_clone,comment_ref_node)
+            attrib_dict = {
+                'arm': 'both',
+                'exp_time': science_exptime,
+                'order': order
+            }
 
-        # Remove the old exposures element and replace with this one
+            self._set_attribs(science_exposure, attrib_dict)
+            
+            self.exposures.insertBefore(science_exposure,
+                                        science_exposure_template)
 
-        self.exposures.parentNode.replaceChild(exposures, self.exposures)
-        self.exposures = exposures
+        # Remove the science exposure element from the template
+
+        self.exposures.removeChild(science_exposure_template)
+
+        # Assign the order value to the calibration exposures after the
+        # science exposures
+
+        previous_arm = 'both'
+        current_arm = 'both'
+        arm_flag = False
+
+        for exposure in self.exposures.getElementsByTagName('exposure'):
+
+            if exposure.getAttribute('order') == '%%%':
+
+                # Guess whether the order should be increased or not
+
+                previous_arm = current_arm
+                current_arm = exposure.getAttribute('arm')
+
+                if ((previous_arm == 'both') or (current_arm == 'both') or
+                    (current_arm == previous_arm) or (arm_flag == True)):
+                    order += 1
+                    arm_flag = False
+                else:
+                    arm_flag = True
+
+                # Set the order
+
+                attrib_dict = {'order': order}
+
+                self._set_attribs(exposure, attrib_dict)
+
+        # Identify the last comment node in the exposures elements
+
+        if clean_comment == True:
+
+            comment_string = '[[ORDER undefined until exposure code known]]'
+
+            for node in self.exposures.childNodes:
+                try:
+                    if comment_string in node.data:
+                        self.exposures.removeChild(node)
+                except:
+                    pass
 
     
     def set_observation(self, attrib_dict):
@@ -284,10 +276,6 @@ class _OBXML:
             
     def set_fields(self, obsmode, entry_group, targcat):
         logging.warning('TBR 3')
-
-        if self.first_science_order is None:
-            logging.error('Setting of exposures element has to be done before')
-            raise SystemExit(3)
         
         #now generate field template
         fields_clone = self.fields.cloneNode(True)
@@ -581,6 +569,18 @@ class _IFUDriverCat:
         else:
             num_dither_positions = ifu_dither
 
+        # Guess the number of science exposures
+
+        logging.warning('TBD (get it from progtemp)')
+        num_science_exposures = num_dither_positions
+
+        assert (num_dither_positions % num_science_exposures == 0)
+
+        # Guess the time of each science exposure
+
+        logging.warning('TBD (get it from progtemp)')
+        science_exptime = 1200
+
         # Set the position angle (if possible)
 
         if obsmode == 'LIFU':
@@ -630,7 +630,7 @@ class _IFUDriverCat:
 
         # Set the contents of the exposures element
 
-        ob_xml.set_exposures(num_dither_positions)
+        ob_xml.set_exposures(num_science_exposures, science_exptime)
 
         # Set the attributes of the observation element
 
@@ -707,7 +707,7 @@ class _IFUDriverCat:
             'Processing {} non-custom dither OBs for LIFU'.format(
                 len(non_custom_dithers_list)))
 
-        for entry in non_custom_dithers_list:
+        for lifu_entry in non_custom_dithers_list:
 
             entry_group = [lifu_entry]
 
