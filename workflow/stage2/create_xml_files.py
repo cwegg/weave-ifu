@@ -106,9 +106,49 @@ class _OBXML:
         return datamver
 
 
+    def _remove_elem_list_by_name(self, elem_name_list):
+
+        for elem_name in elem_name_list:
+            for node in self.dom.getElementsByTagName(elem_name):
+                parent = node.parentNode
+                parent.removeChild(node)
+
+
     def remove_configure_outputs(self):
 
-        logging.warning('RCO TBDeveloped')
+        # Remove some attributes from the observation element
+
+        configure_attrib_list = ['configure_version', 'seed']
+
+        for attrib in configure_attrib_list:
+            if attrib in self.configure.attributes.keys():
+                self.configure.removeAttribute(attrib)
+
+        # Remove some attributes from the target elements
+
+        target_attrib_list = [
+            'automatic', 'configid', 'fibreid', 'ifu_pa', 'ifu_spaxel',
+            'targx', 'targy'
+        ]
+
+        for attrib in configure_attrib_list:
+            if attrib in self.configure.attributes.keys():
+                self.configure.removeAttribute(attrib)
+
+        # Remove some elements
+
+        elem_list = [
+            'optical_axis', 'distortion_coefficients',
+            'telescope', 'focal_plane_map', 'hour_angle_limits', 'offsets'
+        ]
+
+        self._remove_elem_list_by_name(elem_list)
+
+                
+    def remove_non_used_elements(self, elem_list=['simulation',
+                                                  'avoidance_list', 'group']):
+
+        self._remove_elem_list_by_name(elem_list)
 
 
     def _set_attribs(self, elem, attrib_dict):
@@ -130,9 +170,31 @@ class _OBXML:
         self._set_attribs(self.root, attrib_dict)
 
         
-    def set_spectrograph(self, progtemp):
+    def set_spectrograph(self, binning_y=None, resolution=None,
+                         red_vph=None, blue_vph=None):
 
-        logging.warning('Spectrograph TBDeveloped')
+        vph_dict = {'red': red_vph, 'blue': blue_vph}
+
+        for colour in ['red', 'blue']:
+
+            elem_name = '{}_Arm'.format(colour)
+
+            elem = self.spectrograph.getElementsByTagName(elem_name)[0]
+
+            vph = vph_dict[colour]
+
+            attrib_dict = {}
+
+            if binning_y is not None:
+                attrib_dict['binning_Y'] = binning_y
+
+            if resolution is not None:
+                attrib_dict['resolution'] = resolution
+
+            if vph_dict[colour] is not None:
+                attrib_dict['VPH'] = vph_dict[colour]
+
+            self._set_attribs(elem, attrib_dict)
 
                 
     def set_exposures(self, num_science_exposures, science_exptime,
@@ -545,10 +607,18 @@ class _IFUDriverCat:
             observation_name = '{}-{}'.format(first_entry['TARGNAME'],
                                               first_entry['TARGID'])
             plate = 'LIFU'
+            max_calibration = 547
+            max_guide = 1
+            max_sky = 56
+            num_sky_fibres = 603
             max_fibres = 603
         elif obsmode == 'mIFU':
             observation_name = first_entry['TARGNAME']
             plate = 'PLATE_B'
+            max_calibration = 37
+            max_guide = 8
+            max_sky = 73
+            num_sky_fibres = 740
             max_fibres = 740
 
         # Guess the number of dither positions
@@ -570,6 +640,14 @@ class _IFUDriverCat:
         logging.warning('TBD (get it from progtemp)')
         science_exptime = 1200
 
+        # Guess some parameters from progtemp
+
+        logging.warning('TBD (get it from progtemp)')
+        binning_y = 1
+        resolution = 'low'
+        red_vph = 'VPH1'
+        blue_vph = 'VPH1'
+
         # Set the position angle (if possible)
 
         if obsmode == 'LIFU':
@@ -590,6 +668,10 @@ class _IFUDriverCat:
         # Remove the elements and attributes which are configure outputs
                         
         ob_xml.remove_configure_outputs()
+
+        # Remove the non-used elements
+                        
+        ob_xml.remove_non_used_elements()
 
         # Check DATAMVER of the IFU driver cat and the XML template
 
@@ -615,7 +697,8 @@ class _IFUDriverCat:
 
         # Set the contents of the spectrograph element
 
-        ob_xml.set_spectrograph(progtemp)
+        ob_xml.set_spectrograph(binning_y=binning_y, resolution=resolution,
+                                red_vph=red_vph, blue_vph=blue_vph)
 
         # Set the contents of the exposures element
 
@@ -639,6 +722,10 @@ class _IFUDriverCat:
         # Set the attributes of the dithering element
 
         configure_attrib_dict = {
+            'max_calibration': max_calibration,
+            'max_guide': max_guide,
+            'max_sky': max_sky,
+            'num_sky_fibres': num_sky_fibres,
             'plate': plate
         }
 
