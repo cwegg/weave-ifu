@@ -131,9 +131,10 @@ class _OBXML:
             'targx', 'targy'
         ]
 
-        for attrib in configure_attrib_list:
-            if attrib in self.configure.attributes.keys():
-                self.configure.removeAttribute(attrib)
+        for node in self.dom.getElementsByTagName('target'):
+            for attrib in target_attrib_list:
+                if attrib in node.attributes.keys():
+                    node.removeAttribute(attrib)
 
         # Remove some elements
 
@@ -157,8 +158,19 @@ class _OBXML:
 
             if key in elem.attributes.keys():
 
-                value = str(attrib_dict[key])
-                elem.setAttribute(key, value=str(value))
+                value = attrib_dict[key]
+
+                try:
+                    isnan_flag = np.isnan(value)
+                except:
+                    isnan_flag = False
+
+                if isnan_flag == False:
+                    str_value = str(value)
+                else:
+                    str_value = ''
+
+                elem.setAttribute(key, value=str_value)
 
             else:
 
@@ -271,11 +283,9 @@ class _OBXML:
             comment_string = '[[ORDER undefined until exposure code known]]'
 
             for node in self.exposures.childNodes:
-                try:
+                if node.nodeType is xml.dom.minidom.Node.COMMENT_NODE:
                     if comment_string in node.data:
                         self.exposures.removeChild(node)
-                except:
-                    pass
 
     
     def set_observation(self, attrib_dict):
@@ -288,9 +298,9 @@ class _OBXML:
         self._set_attribs(self.configure, attrib_dict)
 
         
-    def set_obsconstraints(self, obstemp):
+    def set_obsconstraints(self, attrib_dict):
 
-        logging.warning('Obsconstraints TBDeveloped')
+        self._set_attribs(self.obsconstraints, attrib_dict)
 
     
     def set_dithering(self, attrib_dict):
@@ -324,103 +334,212 @@ class _OBXML:
 
         self.surveys.removeChild(survey_template)
 
+
+    def _get_mid_value(self, list):
+
+        min_value = np.min(list)
+        max_value = np.max(list)
+
+        mid_value = (min_value + max_value) / 2
+
+        return mid_value
+
+
+    def _get_mid_ra(self, ra_list, dec_value, max_dist=3):
+
+        min_ra_value = np.min(ra_list)
+        max_ra_value = np.max(ra_list)
+
+        diff_ra = (max_ra_value - min_ra_value) * np.cos(dec_value)
+
+        # If we are not in the edge, get the trivial solution
+
+        if diff_ra < max_dist:
+
+            mid_value = self._get_mid_value([min_ra_value, max_ra_value])
+
+        # If it is in edge of the coordinate system, it is a bit tricky
+
+        else:
+
+            left_edge_ra_value = np.min([ra for ra in ra_list if ra >= 180])
+            right_edge_ra_value = np.max([ra for ra in ra_list if ra < 180])
+
+            edge_diff_ra = (((right_edge_ra_value + 360) - left_edge_ra_value) *
+                            np.cos(dec_value))
+
+            if edge_diff_ra < max_dist:
+
+                mid_value = self._get_mid_value([left_edge_ra_value,
+                                                 (right_edge_ra_value + 360)])
+
+                if mid_value >= 360:
+                    midvalue -= 360
+
+            else:
+
+                raise ValueError('unexpected range of RA values')
+
+        return mid_value
+
             
-    def set_fields(self, obsmode, entry_group, targcat):
-        logging.warning('TBR 3')
+    def set_fields(self, obsmode, entry_group, targcat=None,
+                   num_science_exposures=None):
+
+        # Check the input parameters
+
+        assert obsmode in ['LIFU', 'mIFU']
+
+        if obsmode == 'LIFU':
+            assert num_science_exposures % len(entry_group) == 0
+
+        # A dictionary for mapping column names of the entries to attributes
+
+        col_to_attrib_dict = {
+            'TARGSRVY': 'targsrvy',
+            'TARGPROG': 'targprog',
+            'TARGID': 'targid',
+            'TARGNAME': 'targname',
+            'TARGPRIO': 'targprio',
+            'GAIA_RA': 'targra',
+            'GAIA_DEC': 'targdec',
+            'GAIA_EPOCH': 'targepoch',
+            'GAIA_PMRA': 'targpmra',
+            'GAIA_PMDEC': 'targpmdec',
+            'GAIA_PARAL': 'targparal'
+        }
+
+        # Get a empty field element to use it as template
+
+        field_list = self.fields.getElementsByTagName('field')
         
-        #now generate field template
-        fields_clone = self.fields.cloneNode(True)
+        field_template = field_list[0].cloneNode(True)
 
-        #clear it
-        field_list = fields_clone.getElementsByTagName('field')
-        field_clone = field_list[0].cloneNode(True)
-        for field in field_list:
-            fields_clone.removeChild(field)
+        for node in field_template.getElementsByTagName('target'):
+            field_template.removeChild(node)
 
-        target_list = field_clone.getElementsByTagName('target')
-        node_list = field_clone.childNodes
+        for node in field_template.childNodes:
+            if node.nodeType is xml.dom.minidom.Node.COMMENT_NODE:
+                field_template.removeChild(node)
 
-        while len(field_clone.childNodes) != 0:
-            for target in field_clone.childNodes:
-                field_clone.removeChild(target)
+        # Get a target element and save it as template
 
-        #now remove the existing <fields> element
-        self.observation.removeChild(self.fields)
+        target_list = self.fields.getElementsByTagName('target')
 
-        ##########
+        target_template = None
 
-        base_target = self.fields.getElementsByTagName('target')[0]
+        for target in target_list:
+            if target.getAttribute('targuse') == 'T':
+                target_template = target.cloneNode(True)
+                break
 
-        #assembly order:
-        #1.target
-        #2.field
-        #3.fields
-        order = self.first_science_order
-        field = None
-        col_names = entry_group[0].array.columns.names
-        for i in range(len(entry_group)):
-            row = entry_group[i]
-            target = base_target.cloneNode(True)
+        assert target_template is not None
 
-            # remove things we shouldn't have as the xml gets passed into
-            # Configure
-            to_remove = ['configid', 'fibreid']
-            for rem in to_remove:
-                target.removeAttribute(rem)
+        # Clean the fields element
 
-            _row = {}
-            for col in col_names:
-                _row[col] = row[col]
-                if (str(row[col]) == 'nan') and np.isnan(row[col]):
-                    _row[col] = ''
-            row = _row
-             
-            target.setAttribute('targra',value=str(row['GAIA_RA']))
-            target.setAttribute('targdec',value=str(row['GAIA_DEC']))
-            target.setAttribute('targpmra',value=str(row['GAIA_PMRA']))
-            target.setAttribute('targpmdec',value=str(row['GAIA_PMDEC']))
-            target.setAttribute('targepoch',value=str(row['GAIA_EPOCH']))
-            target.setAttribute('targparal',value=str(row['GAIA_PARAL']))
-            target.setAttribute('targid',value=str(row['TARGID']))
-            target.setAttribute('targname',value=str(row['TARGNAME']))
-            target.setAttribute('targprog',value=str(row['TARGPROG']))
-            target.setAttribute('targcat',value=targcat)
-            target.setAttribute('targprio',value=str(row['TARGPRIO']))
-            target.setAttribute('targuse',value='T')
-            target.setAttribute('targsrvy',value=str(row['TARGSRVY']))
+        for node in self.fields.getElementsByTagName('field'):
+            self.fields.removeChild(node)
 
-            if (obsmode == 'LIFU'):
-                #generate a <field> element to add this target to
-                field = field_clone.cloneNode(True)
-                field.setAttribute('order',value=str(order))
-                field.setAttribute('RA_d',value=str(row['GAIA_RA']))
-                field.setAttribute('Dec_d',value=str(row['GAIA_DEC']))
-                field.appendChild(target)
-                #now add this field to the fields element
-                fields_clone.appendChild(field)
+        # For LIFU:
+        # - If it is a non-custom dither,
+        #   one field with one target will be added
+        # - If it is a custom dither,
+        #   one field with one target will be added per science exposure
+        #   (it is worth noting that in case of having 3 dither positions and
+        #    6 exposures, we will repeat the dither pattern twice)
 
-                order += 1
+        if obsmode == 'LIFU':
 
-            elif (obsmode == 'mIFU'):
-                #if this is the first of the targets, then generate the field,
-                #otherwise use the existing <field>
+            assert num_science_exposures % len(entry_group) == 0
 
-                #remember - we require fixed IFU_DITHER patterns for mIFU, so
-                #multiple <field> entries not needed
-                if i == 0:
-                    field = field_clone.cloneNode(True)
-                    field.setAttribute('order',value=str(order))
-                    field.setAttribute('RA_d',value=str(row['GAIA_RA']))
-                    field.setAttribute('Dec_d',value=str(row['GAIA_DEC']))
+            for i in range(num_science_exposures):
+
+                entry = entry_group[i % len(entry_group)]
+
+                # Create a new field for the entry
+
+                order = self.first_science_order + i
+
+                # field_ra = entry['GAIA_RA']
+                # field_dec = entry['GAIA_DEC']
+
+                field = field_template.cloneNode(True)
+
+                field_attrib_dict = {
+                    # 'Dec_d': field_dec,
+                    # 'RA_d': field_ra,
+                    'order': order
+                    }
+
+                self._set_attribs(field, field_attrib_dict)
+
+                # Create a target for the entry
+
+                target = target_template.cloneNode(True)
+
+                target_attrib_dict = {}
+
+                target_attrib_dict['targuse'] = 'T'
+                target_attrib_dict['targcat'] = targcat
+
+                for col in col_to_attrib_dict.keys():
+                    target_attrib_dict[col_to_attrib_dict[col]] = entry[col]
+
+                self._set_attribs(target, target_attrib_dict)
+
+                # Add target to field
+
                 field.appendChild(target)
 
-        if (obsmode == 'mIFU'):
-            #now add this field to the fields element
-            fields_clone.appendChild(field)
-            
+                # Add field to fields
 
-        #...and finally to observation
-        self.observation.appendChild(fields_clone)
+                self.fields.appendChild(field)
+
+        # For mIFU: One field with sereral targets will be added
+
+        elif obsmode == 'mIFU':
+
+            # Create a new field
+
+            order = self.first_science_order
+
+            ra_list = [entry['GAIA_RA'] for entry in entry_group]
+            dec_list = [entry['GAIA_DEC'] for entry in entry_group]
+
+            field_dec = self._get_mid_value(dec_list)
+            field_ra = self._get_mid_ra(ra_list, field_dec)
+
+            field = field_template.cloneNode(True)
+
+            field_attrib_dict = {
+                # 'Dec_d': field_dec,
+                # 'RA_d': field_ra,
+                'order': order
+                }
+
+            self._set_attribs(field, field_attrib_dict)
+
+            # Add a target per entry to the field
+
+            for entry in entry_group:
+
+                target = target_template.cloneNode(True)
+
+                target_attrib_dict = {}
+
+                target_attrib_dict['targuse'] = 'T'
+                target_attrib_dict['targcat'] = targcat
+
+                for col in col_to_attrib_dict.keys():
+                    target_attrib_dict[col_to_attrib_dict[col]] = entry[col]
+
+                self._set_attribs(target, target_attrib_dict)
+
+                field.appendChild(target)
+
+            # Add the field to fields
+
+            self.fields.appendChild(field)
 
                 
     def _remove_empty_lines(self, xml_text):
@@ -648,6 +767,15 @@ class _IFUDriverCat:
         red_vph = 'VPH1'
         blue_vph = 'VPH1'
 
+        # Guess some parameters from obstemp
+
+        logging.warning('TBD (get it from obstemp)')
+        elevation_min = 65.0
+        moondist_min = 120
+        seeing_max = 1.3
+        skybright_max = 21.9
+        transparency_min = 0.9
+
         # Set the position angle (if possible)
 
         if obsmode == 'LIFU':
@@ -733,7 +861,15 @@ class _IFUDriverCat:
 
         # Set the attributes of the obsconstraints element
 
-        ob_xml.set_obsconstraints(obstemp)
+        obsconstraints_attrib_dict = {
+            'elevation_min': elevation_min,
+            'moondist_min': moondist_min,
+            'seeing_max': seeing_max,
+            'skybright_max': skybright_max,
+            'transparency_min': transparency_min
+        }
+
+        ob_xml.set_obsconstraints(obsconstraints_attrib_dict)
 
         # Set the attributes of the dithering element
 
@@ -749,7 +885,8 @@ class _IFUDriverCat:
 
         # Set the contents of the fields element
 
-        ob_xml.set_fields(obsmode, entry_group, self.targcat)
+        ob_xml.set_fields(obsmode, entry_group, targcat=self.targcat,
+                          num_science_exposures=num_science_exposures)
 
         # Write the OB XML to a file
 
