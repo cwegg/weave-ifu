@@ -1079,8 +1079,6 @@ class _IFUDriverCat:
                       mifu_num_extra=0, output_dir='', prefix='', suffix='-t',
                       pass_datamver=False):
 
-        logging.warning('calibration as input')
-
         # Get the DATAMVER of the XML template
 
         xml_template_dom = xml.dom.minidom.parse(xml_template)
