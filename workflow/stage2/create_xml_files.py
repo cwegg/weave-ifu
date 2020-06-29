@@ -29,7 +29,11 @@ from collections import OrderedDict
 import numpy as np
 from astropy.io import fits
 
-from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
+from workflow.utils.get_obstemp_info import (get_obstemp_info,
+                                             get_obstemp_dict)
+from workflow.utils.get_progtemp_info import (get_progtemp_dict,
+                                              get_progtemp_info,
+                                              get_obsmode_from_progtemp)
 from workflow.utils.get_resources import get_blank_xml_template
 
 
@@ -711,11 +715,36 @@ class _IFUDriverCat:
         targsrvy_list = list(set([entry['TARGSRVY'] for entry in entry_group]))
         targsrvy_list.sort()
 
-        # Guess the OBSMODE from PROGTEMP
+        # Guess some parameters which depends on PROGTEMP
 
-        obsmode = get_obsmode_from_progtemp(progtemp)
+        progtemp_datamver, progtemp_dict, forbidden_dict = (
+            get_progtemp_dict(filename=None, assert_orb=True))
+
+        spectrograph_dict = get_progtemp_info(progtemp,
+                                              progtemp_dict=progtemp_dict)
+
+        obsmode = spectrograph_dict['obsmode']
 
         assert obsmode in ['LIFU', 'mIFU']
+
+        assert (spectrograph_dict['red_resolution'] ==
+                spectrograph_dict['blue_resolution'])
+        resolution = spectrograph_dict['red_resolution']
+                
+        red_vph = spectrograph_dict['red_vph']
+        blue_vph = spectrograph_dict['blue_vph']
+
+        assert (spectrograph_dict['red_num_exposures'] ==
+                spectrograph_dict['blue_num_exposures'])
+        num_science_exposures = spectrograph_dict['red_num_exposures']
+
+        assert (spectrograph_dict['red_exp_time'] ==
+                spectrograph_dict['blue_exp_time'])
+        science_exptime = 1200
+
+        assert (spectrograph_dict['red_binning_y'] ==
+                spectrograph_dict['blue_binning_y'])
+        binning_y = 1
 
         # Set the some paremeters which depends on OBSMODE:
         #  - Name of the observation
@@ -747,34 +776,23 @@ class _IFUDriverCat:
         else:
             num_dither_positions = ifu_dither
 
-        # Guess the number of science exposures
-
-        logging.warning('TBD (get it from progtemp)')
-        num_science_exposures = num_dither_positions
-
         assert (num_dither_positions % num_science_exposures == 0)
-
-        # Guess the time of each science exposure
-
-        logging.warning('TBD (get it from progtemp)')
-        science_exptime = 1200
-
-        # Guess some parameters from progtemp
-
-        logging.warning('TBD (get it from progtemp)')
-        binning_y = 1
-        resolution = 'low'
-        red_vph = 'VPH1'
-        blue_vph = 'VPH1'
 
         # Guess some parameters from obstemp
 
-        logging.warning('TBD (get it from obstemp)')
-        elevation_min = 65.0
-        moondist_min = 120
-        seeing_max = 1.3
-        skybright_max = 21.9
-        transparency_min = 0.9
+        logging.warning('Check datamvers')
+        logging.warning('obstemg/progtemp as input')
+        logging.warning('calibration as input')
+        obstemp_datamver, obstemp_dict = get_obstemp_dict(filename=None)
+
+        obsconstraints_dict = get_obstemp_info(obstemp,
+                                               obstemp_dict=obstemp_dict)
+
+        elevation_min = obsconstraints_dict['elevation_min']
+        moondist_min = obsconstraints_dict['moondist_min']
+        seeing_max = obsconstraints_dict['seeing_max']
+        skybright_max = obsconstraints_dict['skybright_max']
+        transparency_min = obsconstraints_dict['transparency_min']
 
         # Set the position angle (if possible)
 

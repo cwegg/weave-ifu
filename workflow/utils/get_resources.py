@@ -91,3 +91,52 @@ def get_blank_xml_template(file_path='BlankXMLTemplate.xml',
     
     return file_path
 
+
+def get_progtemp(file_path='progtemp.dat',
+                 url=('http://casu.ast.cam.ac.uk/weave/data_model/misc/' +
+                      'progtemp.dat')):
+    """
+    Download the latest version of progtemp.dat.
+
+    Parameters
+    ----------
+    file_path : str, optional
+        The path used to save the downloaded file.
+    url : str, optional
+        The URL with the location ot the file in Internet.
+
+    Returns
+    -------
+    file_path : str
+        The path used to save the downloaded file.
+    """
+    
+    _urlretrieve(url, file_path)
+    
+    return file_path
+
+
+def get_obstemp(file_path='obstemp.dat',
+                url=('http://casu.ast.cam.ac.uk/weave/data_model/misc/' +
+                     'obstemp.dat')):
+    """
+    Download the latest version of obstemp.dat.
+
+    Parameters
+    ----------
+    file_path : str, optional
+        The path used to save the downloaded file.
+    url : str, optional
+        The URL with the location ot the file in Internet.
+
+    Returns
+    -------
+    file_path : str
+        The path used to save the downloaded file.
+    """
+    
+    _urlretrieve(url, file_path)
+    
+    return file_path
+
+
