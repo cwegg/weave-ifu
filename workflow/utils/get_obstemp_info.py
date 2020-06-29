@@ -22,7 +22,7 @@ import os as _os
 import re as _re
 import tempfile as _tempfile
 
-from workflow.utils.get_resources import get_obstemp as _get_obstemp
+from workflow.utils.get_resources import get_obstemp_file as _get_obstemp_file
 
 
 def get_obstemp_dict(filename=None):
@@ -44,11 +44,11 @@ def get_obstemp_dict(filename=None):
 
     if filename is None:
         filename = _os.path.join(_tempfile.mkdtemp(), 'obstemp.dat')
-        _get_obstemp(file_path=filename)
+        _get_obstemp_file(file_path=filename)
 
     # Set of the regex expected to be found in the file
 
-    datamver_regex = '^#DATAMVER (.?)'
+    datamver_regex = '^#DATAMVER (.+)$'
     header_regex = '^[A-Z_]{5}:$'
     seeing_max_regex = \
         '^([A-Z])____: observation:obsconstraints:seeing_max=([0-9.]+)$'
@@ -112,8 +112,6 @@ def get_obstemp_dict(filename=None):
         elif clean_line == '':
             pass
         else:
-            import ipdb
-            ipdb.set_trace()
             raise ValueError
 
     return datamver, obstemp_dict

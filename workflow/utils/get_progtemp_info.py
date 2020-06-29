@@ -22,7 +22,7 @@ import os as _os
 import re as _re
 import tempfile as _tempfile
 
-from workflow.utils.get_resources import get_progtemp as _get_progtemp
+from workflow.utils.get_resources import get_progtemp_file as _get_progtemp_file
 
 
 def get_progtemp_dict(filename=None, assert_orb=True):
@@ -49,11 +49,11 @@ def get_progtemp_dict(filename=None, assert_orb=True):
 
     if filename is None:
         filename = _os.path.join(_tempfile.mkdtemp(), 'progtemp.dat')
-        _get_progtemp(file_path=filename)
+        _get_progtemp_file(file_path=filename)
 
     # Set of the regex expected to be found in the file
 
-    datamver_regex = '^#DATAMVER (.?)'
+    datamver_regex = '^#DATAMVER (.+)$'
     header_regex = '^[0-9_]{5}:$'
     n_regex = (
         '^([0-9])____: '
@@ -165,6 +165,8 @@ def get_progtemp_dict(filename=None, assert_orb=True):
         elif clean_line == '':
             pass
         else:
+            import ipdb
+            ipdb.set_trace()
             raise ValueError
 
     # Read each line and extract its info
@@ -238,11 +240,7 @@ def get_progtemp_info(progtemp, progtemp_dict=None, add_datamver=True):
 
     for char_key in char_key_dict.keys():
 
-        try:
-            aux_dict = progtemp_dict[char_key][char_key_dict[char_key]]
-        except:
-            import ipdb
-            ipdb.set_trace()
+        aux_dict = progtemp_dict[char_key][char_key_dict[char_key]]
 
         for key in aux_dict.keys():
             spectrograph_dict[key] = aux_dict[key]

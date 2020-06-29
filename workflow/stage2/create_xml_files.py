@@ -34,27 +34,29 @@ from workflow.utils.get_obstemp_info import (get_obstemp_info,
 from workflow.utils.get_progtemp_info import (get_progtemp_dict,
                                               get_progtemp_info,
                                               get_obsmode_from_progtemp)
-from workflow.utils.get_resources import get_blank_xml_template
+from workflow.utils.get_resources import (get_blank_xml_template,
+                                          get_progtemp_file,
+                                          get_obstemp_file)
 
 
 class _OBXML:
 
     
-    def __init__(self, xml_template):
+    def __init__(self, filename):
 
         # Save the input filename
         
-        self.xml_template = xml_template
+        self.filename = filename
 
         # Parse the XML template
 
         try:
 
-            self.dom = xml.dom.minidom.parse(self.xml_template)
+            self.dom = xml.dom.minidom.parse(self.filename)
 
         except:
 
-            logging.error('File {} would not parse'.format(self.xml_template))
+            logging.error('File {} would not parse'.format(self.filename))
 
             raise SystemExit(1)
 
@@ -698,8 +700,8 @@ class _IFUDriverCat:
         return output_path
 
     
-    def _process_ob(self, entry_group, xml_template, output_dir='',
-                    prefix=None, suffix='-t', pass_datamver=False):
+    def _process_ob(self, entry_group, xml_template, progtemp_dict,
+                    obstemp_dict, output_dir='', prefix=None, suffix='-t'):
 
         # Get some information from the first entry of the group
 
@@ -716,9 +718,6 @@ class _IFUDriverCat:
         targsrvy_list.sort()
 
         # Guess some parameters which depends on PROGTEMP
-
-        progtemp_datamver, progtemp_dict, forbidden_dict = (
-            get_progtemp_dict(filename=None, assert_orb=True))
 
         spectrograph_dict = get_progtemp_info(progtemp,
                                               progtemp_dict=progtemp_dict)
@@ -780,11 +779,6 @@ class _IFUDriverCat:
 
         # Guess some parameters from obstemp
 
-        logging.warning('Check datamvers')
-        logging.warning('obstemg/progtemp as input')
-        logging.warning('calibration as input')
-        obstemp_datamver, obstemp_dict = get_obstemp_dict(filename=None)
-
         obsconstraints_dict = get_obstemp_info(obstemp,
                                                obstemp_dict=obstemp_dict)
 
@@ -818,18 +812,6 @@ class _IFUDriverCat:
         # Remove the non-used elements
                         
         ob_xml.remove_non_used_elements()
-
-        # Check DATAMVER of the IFU driver cat and the XML template
-
-        xml_datamver = ob_xml.get_datamver()
-
-        if self.datamver != xml_datamver:
-            logging.critical(
-               'DATAMVER mismatch ({} != {}): Stop unless you are sure!'.format(
-                    self.datamver, xml_datamver))
-
-            if pass_datamver == False:
-                raise SystemExit(2)
 
         # Set the attributes of the root element
         
@@ -914,8 +896,9 @@ class _IFUDriverCat:
         ob_xml.write_xml(output_path)
 
         
-    def _generate_lifu_xmls(self, lifu_entry_list, xml_template, output_dir='',
-                            prefix='', suffix='-t', pass_datamver=False):
+    def _generate_lifu_xmls(self, lifu_entry_list, xml_template, progtemp_dict,
+                            obstemp_dict, output_dir='', prefix='',
+                            suffix='-t'):
 
         # How do you group entries belonging to the same OB?
         # (for custom dithers)
@@ -942,9 +925,9 @@ class _IFUDriverCat:
 
             entry_group = [lifu_entry]
 
-            self._process_ob(entry_group, xml_template, output_dir=output_dir,
-                             prefix=prefix, suffix=suffix,
-                             pass_datamver=pass_datamver)
+            self._process_ob(entry_group, xml_template, progtemp_dict,
+                             obstemp_dict, output_dir=output_dir, prefix=prefix,
+                             suffix=suffix)
 
         # Detect the custom dithers and save them into a dict
 
@@ -968,15 +951,15 @@ class _IFUDriverCat:
                 len(custom_dithers_dict)))
 
         for entry_group in custom_dithers_dict.values():
-            self._process_ob(entry_group, xml_template, output_dir=output_dir,
-                             prefix=prefix, suffix=suffix,
-                             pass_datamver=pass_datamver)
+            self._process_ob(entry_group, xml_template, progtemp_dict,
+                             obstemp_dict, output_dir=output_dir, prefix=prefix,
+                             suffix=suffix)
 
                 
-    def _generate_mifu_xmls(self, mifu_entry_list, xml_template,
-                            mifu_mode='aufbau', mifu_num_calibs=2,
+    def _generate_mifu_xmls(self, mifu_entry_list, xml_template, progtemp_dict,
+                            obstemp_dict, mifu_mode='aufbau', mifu_num_calibs=2,
                             mifu_num_extra=0, output_dir='', prefix='',
-                            suffix='-t', pass_datamver=False):
+                            suffix='-t'):
 
         # What happens if there are (e.g.) 100 bundles in a given key and
         # mifu_num_calibs is 2?
@@ -1086,14 +1069,61 @@ class _IFUDriverCat:
                 len(fields_dict), len(ob_nested_list), mifu_mode))
 
         for entry_group in ob_nested_list:
-            self._process_ob(entry_group, xml_template, output_dir=output_dir,
-                             prefix=prefix, suffix=suffix,
-                             pass_datamver=pass_datamver)
+            self._process_ob(entry_group, xml_template, progtemp_dict,
+                             obstemp_dict, output_dir=output_dir,
+                             prefix=prefix, suffix=suffix)
 
                     
-    def generate_xmls(self, xml_template, mifu_mode='aufbau', mifu_num_calibs=2,
+    def generate_xmls(self, xml_template, progtemp_file=None,
+                      obstemp_file=None, mifu_mode='aufbau', mifu_num_calibs=2,
                       mifu_num_extra=0, output_dir='', prefix='', suffix='-t',
                       pass_datamver=False):
+
+        logging.warning('calibration as input')
+
+        # Get the DATAMVER of the XML template
+
+        xml_template_dom = xml.dom.minidom.parse(xml_template)
+        xml_datamver = xml_template_dom.childNodes[0].getAttribute('datamver')
+
+        # Get the dictionaries to interpret PROGTEMP and OBSTEMP, and their
+        # DATAMVER values
+
+        progtemp_datamver, progtemp_dict, forbidden_dict = get_progtemp_dict(
+            filename=progtemp_file, assert_orb=True)
+
+        obstemp_datamver, obstemp_dict = get_obstemp_dict(
+            filename=obstemp_file)
+
+        # Check DATAMVER of the IFU driver cat, the XML template, PROGTEMP file
+        # and OBSTEMP file are consistend
+
+        if self.datamver != xml_datamver:
+            logging.critical(
+               'DATAMVER mismatch ({} != {}) for XML template: '.format(
+                    self.datamver, xml_datamver) +
+                'Stop unless you are sure!')
+
+            if pass_datamver == False:
+                raise SystemExit(2)
+
+        if self.datamver != progtemp_datamver:
+            logging.critical(
+               'DATAMVER mismatch ({} != {}) for PROGTEMP file: '.format(
+                    self.datamver, progtemp_datamver) +
+                'Stop unless you are sure!')
+
+            if pass_datamver == False:
+                raise SystemExit(2)
+
+        if self.datamver != obstemp_datamver:
+            logging.critical(
+               'DATAMVER mismatch ({} != {}) for OBSTEMP file: '.format(
+                    self.datamver, obstemp_datamver) +
+                'Stop unless you are sure!')
+
+            if pass_datamver == False:
+                raise SystemExit(2)
 
         # Classify the entries into LIFU and mIFU
         
@@ -1120,20 +1150,23 @@ class _IFUDriverCat:
         # Generate the LIFU XMLs
                 
         self._generate_lifu_xmls(lifu_entry_list, xml_template,
+                                 progtemp_dict, obstemp_dict,
                                  output_dir=output_dir, prefix=prefix,
-                                 suffix=suffix, pass_datamver=pass_datamver)
+                                 suffix=suffix)
 
         # Generate the mIFU XMLs
                 
         self._generate_mifu_xmls(mifu_entry_list, xml_template,
+                                 progtemp_dict, obstemp_dict,
                                  mifu_mode=mifu_mode,
                                  mifu_num_calibs=mifu_num_calibs,
                                  mifu_num_extra=mifu_num_extra,
                                  output_dir=output_dir, prefix=prefix,
-                                 suffix=suffix, pass_datamver=pass_datamver)
+                                 suffix=suffix)
 
 
 def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
+                     progtemp_file=None, obstemp_file=None,
                      mifu_mode='aufbau', mifu_num_calibs=2, mifu_num_extra=0,
                      prefix=None, suffix='-t', pass_datamver=False,
                      overwrite=False):
@@ -1148,6 +1181,10 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
         Name of the directory which will containe the output XML files.
     xml_template : str
         A blank XML template to be populated with the information of the OBs.
+    progtemp_file : str, optional
+        A progtemp.dat file with the definition of PROGTEMP.
+    obstemp_file : str, optional
+        A obstemp.dat file with the definition of OBSTEMP.
     mifu_mode : {'aufbau', 'equipartition', 'all'}, optional
         Grouping mode for mIFU targets.
     mifu_num_calibs : int, optional
@@ -1183,7 +1220,9 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
 
     # Create the XML files
 
-    ifu_driver_cat.generate_xmls(xml_template, mifu_mode=mifu_mode,
+    ifu_driver_cat.generate_xmls(xml_template, progtemp_file=progtemp_file,
+                                 obstemp_file=obstemp_file,
+                                 mifu_mode=mifu_mode,
                                  mifu_num_calibs=mifu_num_calibs,
                                  mifu_num_extra=mifu_num_extra,
                                  output_dir=output_dir,
@@ -1203,6 +1242,17 @@ if __name__ == '__main__':
                         default='aux/BlankXMLTemplate.xml',
                         help="""a blank XML template to be populated with the
                         information of the OBs""")
+
+    parser.add_argument('--progtemp_file', dest='progtemp_file',
+                        default='aux/progtemp.dat',
+                        help="""a progtemp.dat file with the definition of
+                        PROGTEMP""")
+
+
+    parser.add_argument('--obstemp_file', dest='obstemp_file',
+                        default='aux/obstemp.dat',
+                        help="""a obstemp.dat file with the definition of
+                        OBSTEMP""")
 
     parser.add_argument('--mifu_mode', dest='mifu_mode', default='aufbau',
                         choices=['aufbau', 'equipartition', 'all'],
@@ -1259,7 +1309,17 @@ if __name__ == '__main__':
         logging.info('Downloading the blank XML template')
         get_blank_xml_template(file_path=args.xml_template)
 
+    if not os.path.exists(args.progtemp_file):
+        logging.info('Downloading the progtemp file')
+        get_progtemp_file(file_path=args.progtemp_file)
+
+    if not os.path.exists(args.obstemp_file):
+        logging.info('Downloading the obstemp file')
+        get_obstemp_file(file_path=args.obstemp_file)
+
     create_xml_files(args.ifu_driver_cat, args.output_dir, args.xml_template,
+                     progtemp_file=args.progtemp_file,
+                     obstemp_file=args.obstemp_file,
                      mifu_mode=args.mifu_mode,
                      mifu_num_calibs=args.mifu_num_calibs,
                      mifu_num_extra=args.mifu_num_extra,
