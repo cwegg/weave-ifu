@@ -25,4 +25,6 @@ workflow/stage1/aux/Aladin.jar
 
 # Stage-2 files:
 workflow/stage2/aux/BlankXMLTemplate.xml
+workflow/stage2/aux/obstemp.dat
+workflow/stage2/aux/progtemp.dat
 
