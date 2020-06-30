@@ -18,9 +18,9 @@
 #
 
 
-import datetime
+import datetime as _datetime
 
-from astropy.io import fits
+from astropy.io import fits as _fits
 
 
 def _try_to_copy_comment(kwd_type, hdu, i, template_hdu, j):
@@ -110,7 +110,7 @@ def create_sub_template(catalogue_template, output_filename, col_list,
 
     # Read the catalogue template
 
-    template_hdulist = fits.open(catalogue_template)
+    template_hdulist = _fits.open(catalogue_template)
     template_primary_hdr = template_hdulist[0].header
     template_hdu = template_hdulist[1]
 
@@ -156,15 +156,15 @@ def create_sub_template(catalogue_template, output_filename, col_list,
 
             # Create the column and add it to the column list
 
-            column = fits.Column(name=col_name, format=col_format,
-                                 disp=col_disp, unit=col_unit, null=col_null)
+            column = _fits.Column(name=col_name, format=col_format,
+                                  disp=col_disp, unit=col_unit, null=col_null)
 
             column_list.append(column)
 
     # Create the HDU from the column list
     
-    coldefs = fits.ColDefs(column_list)
-    hdu = fits.BinTableHDU.from_columns(coldefs)
+    coldefs = _fits.ColDefs(column_list)
+    hdu = _fits.BinTableHDU.from_columns(coldefs)
 
     # Copy the comments of the original catalogue for the created keywords
 
@@ -196,7 +196,7 @@ def create_sub_template(catalogue_template, output_filename, col_list,
     
     # Create the primary header copying its keywords from the template
     
-    primary_hdr = fits.Header()
+    primary_hdr = _fits.Header()
     
     basic_kwd_list =['SIMPLE', 'BITPIX', 'NAXIS', 'EXTEND', 'COMMENT']
     
@@ -220,17 +220,17 @@ def create_sub_template(catalogue_template, output_filename, col_list,
     # Update the keyword DATETIME if requested (and it exists)
     
     if (update_datetime is True) and ('DATETIME' in primary_hdr.keys()):
-        datetime_str = datetime.datetime.utcnow().strftime(
+        datetime_str = _datetime.datetime.utcnow().strftime(
                            '%Y-%m-%d %H:%M:%S.%f')
         primary_hdr['DATETIME'] = datetime_str
 
     # Create the primary HDU
     
-    primary_hdu = fits.PrimaryHDU(header=primary_hdr)
+    primary_hdu = _fits.PrimaryHDU(header=primary_hdr)
     
     # Create a HDU list and save it to a file
     
-    hdulist = fits.HDUList([primary_hdu, hdu])
+    hdulist = _fits.HDUList([primary_hdu, hdu])
 
     hdulist.writeto(output_filename, checksum=checksum, overwrite=overwrite)
 
