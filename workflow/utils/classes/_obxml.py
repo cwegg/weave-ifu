@@ -1,0 +1,573 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2020 Cambridge Astronomical Survey Unit
+#
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+
+import logging
+import xml.dom.minidom as _minidom
+
+import numpy as _np
+
+
+class OBXML:
+
+    
+    def __init__(self, filename):
+
+        # Save the input filename
+        
+        self.filename = filename
+
+        # Parse the XML template
+
+        try:
+
+            self.dom = _minidom.parse(self.filename)
+
+        except:
+
+            logging.error('File {} would not parse'.format(self.filename))
+
+            raise SystemExit(1)
+
+        # Ingest the XML template
+
+        self._ingest_xml()
+
+        # Set the order of the first science exposure as unknown
+
+        self._set_first_science_order()
+
+
+    def _ingest_xml(self):
+
+        self.root = self.dom.childNodes[0]
+
+        self.spectrograph = self.dom.getElementsByTagName('spectrograph')[0]
+        self.exposures = self.dom.getElementsByTagName('exposures')[0]
+        self.observation = self.dom.getElementsByTagName('observation')[0]
+        self.configure = self.dom.getElementsByTagName('configure')[0]
+        self.obsconstraints = self.dom.getElementsByTagName('obsconstraints')[0]
+        self.dithering = self.dom.getElementsByTagName('dithering')[0]
+        self.surveys = self.dom.getElementsByTagName('surveys')[0]
+        self.fields = self.dom.getElementsByTagName('fields')[0]
+
+
+    def _set_first_science_order(self):
+
+        last_pre_science_order = 0
+
+        for exposure in self.exposures.getElementsByTagName('exposure'):
+
+            if exposure.getAttribute('type') != 'science':
+
+                order = exposure.getAttribute('order')
+
+                if (order != '%%%'):
+                    last_pre_science_order = int(order)
+                else:
+                    break
+
+            else:
+
+                break
+
+        self.first_science_order = last_pre_science_order + 1
+
+        
+    def get_datamver(self):
+
+        datamver = self.root.getAttribute('datamver')
+
+        return datamver
+
+
+    def _remove_elem_list_by_name(self, elem_name_list):
+
+        for elem_name in elem_name_list:
+            for node in self.dom.getElementsByTagName(elem_name):
+                parent = node.parentNode
+                parent.removeChild(node)
+
+
+    def remove_configure_outputs(self):
+
+        # Remove some attributes from the observation element
+
+        configure_attrib_list = ['configure_version', 'seed']
+
+        for attrib in configure_attrib_list:
+            if attrib in self.configure.attributes.keys():
+                self.configure.removeAttribute(attrib)
+
+        # Remove some attributes from the target elements
+
+        target_attrib_list = [
+            'automatic', 'configid', 'fibreid', 'ifu_pa', 'ifu_spaxel',
+            'targx', 'targy'
+        ]
+
+        for node in self.dom.getElementsByTagName('target'):
+            for attrib in target_attrib_list:
+                if attrib in node.attributes.keys():
+                    node.removeAttribute(attrib)
+
+        # Remove some elements
+
+        elem_list = [
+            'optical_axis', 'distortion_coefficients',
+            'telescope', 'focal_plane_map', 'hour_angle_limits', 'offsets'
+        ]
+
+        self._remove_elem_list_by_name(elem_list)
+
+                
+    def remove_non_used_elements(self, elem_list=['simulation',
+                                                  'avoidance_list', 'group']):
+
+        self._remove_elem_list_by_name(elem_list)
+
+
+    def _set_attribs(self, elem, attrib_dict):
+
+        for key in attrib_dict.keys():
+
+            if key in elem.attributes.keys():
+
+                value = attrib_dict[key]
+
+                try:
+                    isnan_flag = _np.isnan(value)
+                except:
+                    isnan_flag = False
+
+                if isnan_flag == False:
+                    str_value = str(value)
+                else:
+                    str_value = ''
+
+                elem.setAttribute(key, value=str_value)
+
+            else:
+
+                raise KeyError
+
+
+    def set_root_attrib(self, attrib_dict):
+
+        self._set_attribs(self.root, attrib_dict)
+
+        
+    def set_spectrograph(self, binning_y=None, resolution=None,
+                         red_vph=None, blue_vph=None):
+
+        vph_dict = {'red': red_vph, 'blue': blue_vph}
+
+        for colour in ['red', 'blue']:
+
+            elem_name = '{}_Arm'.format(colour)
+
+            elem = self.spectrograph.getElementsByTagName(elem_name)[0]
+
+            vph = vph_dict[colour]
+
+            attrib_dict = {}
+
+            if binning_y is not None:
+                attrib_dict['binning_Y'] = binning_y
+
+            if resolution is not None:
+                attrib_dict['resolution'] = resolution
+
+            if vph_dict[colour] is not None:
+                attrib_dict['VPH'] = vph_dict[colour]
+
+            self._set_attribs(elem, attrib_dict)
+
+                
+    def set_exposures(self, num_science_exposures, science_exptime,
+                      clean_comment=True):
+
+        # Get the science exposure element from the template
+        # (it must be the first one without assigned order)
+
+        for exposure in self.exposures.getElementsByTagName('exposure'):
+            if exposure.getAttribute('order') == '%%%':
+                assert exposure.getAttribute('type') == 'science'
+                science_exposure_template = exposure
+                break
+
+        # Add the requested amount of science exposures before the science
+        # exposure from the template
+
+        order = self.first_science_order - 1
+        
+        for i in range(num_science_exposures):
+
+            order += 1
+
+            science_exposure = science_exposure_template.cloneNode(True)
+
+            attrib_dict = {
+                'arm': 'both',
+                'exp_time': science_exptime,
+                'order': order
+            }
+
+            self._set_attribs(science_exposure, attrib_dict)
+            
+            self.exposures.insertBefore(science_exposure,
+                                        science_exposure_template)
+
+        # Remove the science exposure element from the template
+
+        self.exposures.removeChild(science_exposure_template)
+
+        # Assign the order value to the calibration exposures after the
+        # science exposures
+
+        previous_arm = 'both'
+        current_arm = 'both'
+        arm_flag = False
+
+        for exposure in self.exposures.getElementsByTagName('exposure'):
+
+            if exposure.getAttribute('order') == '%%%':
+
+                # Guess whether the order should be increased or not
+
+                previous_arm = current_arm
+                current_arm = exposure.getAttribute('arm')
+
+                if ((previous_arm == 'both') or (current_arm == 'both') or
+                    (current_arm == previous_arm) or (arm_flag == True)):
+                    order += 1
+                    arm_flag = False
+                else:
+                    arm_flag = True
+
+                # Set the order
+
+                attrib_dict = {'order': order}
+
+                self._set_attribs(exposure, attrib_dict)
+
+        # Identify the last comment node in the exposures elements
+
+        if clean_comment == True:
+
+            comment_string = '[[ORDER undefined until exposure code known]]'
+
+            for node in self.exposures.childNodes:
+                if node.nodeType is _minidom.Node.COMMENT_NODE:
+                    if comment_string in node.data:
+                        self.exposures.removeChild(node)
+
+    
+    def set_observation(self, attrib_dict):
+
+        self._set_attribs(self.observation, attrib_dict)
+
+
+    def set_configure(self, attrib_dict):
+
+        self._set_attribs(self.configure, attrib_dict)
+
+        
+    def set_obsconstraints(self, attrib_dict):
+
+        self._set_attribs(self.obsconstraints, attrib_dict)
+
+    
+    def set_dithering(self, attrib_dict):
+
+        self._set_attribs(self.dithering, attrib_dict)
+
+        
+    def set_surveys(self, targsrvy_list, max_fibres, priority='1.0'):
+
+        # Get the survey element from the template (there should be only one)
+
+        survey_template = self.surveys.getElementsByTagName('survey')[0]
+
+        # Add the requested amount of survey elements before the template
+
+        for targsrvy in targsrvy_list:
+
+            survey = survey_template.cloneNode(True)
+
+            attrib_dict = {
+                'name': targsrvy,
+                'priority': priority,
+                'max_fibres': max_fibres
+            }
+
+            self._set_attribs(survey, attrib_dict)
+            
+            self.surveys.insertBefore(survey, survey_template)
+
+        # Remove the survey element from the template
+
+        self.surveys.removeChild(survey_template)
+
+
+    def _get_mid_value(self, list):
+
+        min_value = _np.min(list)
+        max_value = _np.max(list)
+
+        mid_value = (min_value + max_value) / 2
+
+        return mid_value
+
+
+    def _get_mid_ra(self, ra_list, dec_value, max_dist=3):
+
+        min_ra_value = _np.min(ra_list)
+        max_ra_value = _np.max(ra_list)
+
+        diff_ra = (max_ra_value - min_ra_value) * _np.cos(dec_value)
+
+        # If we are not in the edge, get the trivial solution
+
+        if diff_ra < max_dist:
+
+            mid_value = self._get_mid_value([min_ra_value, max_ra_value])
+
+        # If it is in edge of the coordinate system, it is a bit tricky
+
+        else:
+
+            left_edge_ra_value = _np.min([ra for ra in ra_list if ra >= 180])
+            right_edge_ra_value = _np.max([ra for ra in ra_list if ra < 180])
+
+            edge_diff_ra = (((right_edge_ra_value + 360) - left_edge_ra_value) *
+                            _np.cos(dec_value))
+
+            if edge_diff_ra < max_dist:
+
+                mid_value = self._get_mid_value([left_edge_ra_value,
+                                                 (right_edge_ra_value + 360)])
+
+                if mid_value >= 360:
+                    midvalue -= 360
+
+            else:
+
+                raise ValueError('unexpected range of RA values')
+
+        return mid_value
+
+            
+    def set_fields(self, obsmode, entry_group, targcat=None,
+                   num_science_exposures=None):
+
+        # Check the input parameters
+
+        assert obsmode in ['LIFU', 'mIFU']
+
+        if obsmode == 'LIFU':
+            assert num_science_exposures % len(entry_group) == 0
+
+        # A dictionary for mapping column names of the entries to attributes
+
+        col_to_attrib_dict = {
+            'TARGSRVY': 'targsrvy',
+            'TARGPROG': 'targprog',
+            'TARGID': 'targid',
+            'TARGNAME': 'targname',
+            'TARGPRIO': 'targprio',
+            'GAIA_RA': 'targra',
+            'GAIA_DEC': 'targdec',
+            'GAIA_EPOCH': 'targepoch',
+            'GAIA_PMRA': 'targpmra',
+            'GAIA_PMDEC': 'targpmdec',
+            'GAIA_PARAL': 'targparal'
+        }
+
+        # Get a empty field element to use it as template
+
+        field_list = self.fields.getElementsByTagName('field')
+        
+        field_template = field_list[0].cloneNode(True)
+
+        for node in field_template.getElementsByTagName('target'):
+            field_template.removeChild(node)
+
+        for node in field_template.childNodes:
+            if node.nodeType is _minidom.Node.COMMENT_NODE:
+                field_template.removeChild(node)
+
+        # Get a target element and save it as template
+
+        target_list = self.fields.getElementsByTagName('target')
+
+        target_template = None
+
+        for target in target_list:
+            if target.getAttribute('targuse') == 'T':
+                target_template = target.cloneNode(True)
+                break
+
+        assert target_template is not None
+
+        # Clean the fields element
+
+        for node in self.fields.getElementsByTagName('field'):
+            self.fields.removeChild(node)
+
+        # For LIFU:
+        # - If it is a non-custom dither,
+        #   one field with one target will be added
+        # - If it is a custom dither,
+        #   one field with one target will be added per science exposure
+        #   (it is worth noting that in case of having 3 dither positions and
+        #    6 exposures, we will repeat the dither pattern twice)
+
+        if obsmode == 'LIFU':
+
+            assert num_science_exposures % len(entry_group) == 0
+
+            for i in range(num_science_exposures):
+
+                entry = entry_group[i % len(entry_group)]
+
+                # Create a new field for the entry
+
+                order = self.first_science_order + i
+
+                # field_ra = entry['GAIA_RA']
+                # field_dec = entry['GAIA_DEC']
+
+                field = field_template.cloneNode(True)
+
+                field_attrib_dict = {
+                    # 'Dec_d': field_dec,
+                    # 'RA_d': field_ra,
+                    'order': order
+                    }
+
+                self._set_attribs(field, field_attrib_dict)
+
+                # Create a target for the entry
+
+                target = target_template.cloneNode(True)
+
+                target_attrib_dict = {}
+
+                target_attrib_dict['targuse'] = 'T'
+                target_attrib_dict['targcat'] = targcat
+
+                for col in col_to_attrib_dict.keys():
+                    target_attrib_dict[col_to_attrib_dict[col]] = entry[col]
+
+                self._set_attribs(target, target_attrib_dict)
+
+                # Add target to field
+
+                field.appendChild(target)
+
+                # Add field to fields
+
+                self.fields.appendChild(field)
+
+        # For mIFU: One field with sereral targets will be added
+
+        elif obsmode == 'mIFU':
+
+            # Create a new field
+
+            order = self.first_science_order
+
+            ra_list = [entry['GAIA_RA'] for entry in entry_group]
+            dec_list = [entry['GAIA_DEC'] for entry in entry_group]
+
+            field_dec = self._get_mid_value(dec_list)
+            field_ra = self._get_mid_ra(ra_list, field_dec)
+
+            field = field_template.cloneNode(True)
+
+            field_attrib_dict = {
+                # 'Dec_d': field_dec,
+                # 'RA_d': field_ra,
+                'order': order
+                }
+
+            self._set_attribs(field, field_attrib_dict)
+
+            # Add a target per entry to the field
+
+            for entry in entry_group:
+
+                target = target_template.cloneNode(True)
+
+                target_attrib_dict = {}
+
+                target_attrib_dict['targuse'] = 'T'
+                target_attrib_dict['targcat'] = targcat
+
+                for col in col_to_attrib_dict.keys():
+                    target_attrib_dict[col_to_attrib_dict[col]] = entry[col]
+
+                self._set_attribs(target, target_attrib_dict)
+
+                field.appendChild(target)
+
+            # Add the field to fields
+
+            self.fields.appendChild(field)
+
+                
+    def _remove_empty_lines(self, xml_text):
+
+        parsed_xml = _minidom.parseString(xml_text)
+
+        pretty_xml = parsed_xml.toprettyxml(indent=' ')
+
+        clean_xml_text = '\n'.join([line for line in pretty_xml.split('\n')
+                                    if line.strip()])
+
+        return clean_xml_text
+
+
+    def _remove_xml_declaration(self, xml_text):
+
+        parsed_xml = _minidom.parseString(xml_text)
+
+        root = parsed_xml.documentElement
+
+        clean_xml_text = root.toxml(parsed_xml.encoding)
+
+        return clean_xml_text
+
+
+    def write_xml(self, filename, remove_empty_lines=True, declaration=False):
+
+        pretty_xml = self.dom.toprettyxml()
+
+        if remove_empty_lines is True:
+            pretty_xml = self._remove_empty_lines(pretty_xml)
+
+        if declaration is False:
+            pretty_xml = self._remove_xml_declaration(pretty_xml)
+
+        logging.info('\tWriting to {}'.format(filename))
+
+        with open(filename, 'w') as f:
+            f.write(pretty_xml)    
+
