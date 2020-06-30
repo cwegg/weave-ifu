@@ -127,7 +127,7 @@ class stage3(OBXML):
         return xmls
 
                         
-    def _calibs(self,mifu_ncalibs=2):
+    def _add_calib_stars(self,mifu_ncalibs=2):
         obsmode = self.observation.getAttribute('obs_type')
         if obsmode == 'LIFU':
             # No calibration targets needed!
@@ -255,7 +255,7 @@ class stage3(OBXML):
         return xmls
 
     
-    def _guidestars(self):
+    def _add_guide_stars(self):
 
         obsmode = self.observation.getAttribute('obs_type')
         max_guide = int(self.configure.getAttribute('max_guide'))
@@ -293,7 +293,7 @@ class stage3(OBXML):
         pa_actual = pa
         print('WARNING: guidestar search will not adopt new PA - implement this!')
         # guides,pa_actual = gs.get_guide(as_xml=True)
-        guides_table = gs.get_guide(as_xml=True)
+        guides_table = gs.get_guide()
 
         guides = self._guides_to_xml(guides_table)
         if obsmode == 'LIFU':   
@@ -317,12 +317,12 @@ class stage3(OBXML):
         #     print(g.toxml())
 
         
-    def go(self,mifu_ncalibs=2):
+    def add_guide_and_calib_stars(self,mifu_ncalibs=2):
 
         # 1. Generate calibs where required
-        self._calibs(mifu_ncalibs=mifu_ncalibs)
+        self._add_calib_stars(mifu_ncalibs=mifu_ncalibs)
         # 2. Generate guidestar(s)
-        self._guidestars()
+        self._add_guide_stars()
 
 
 if __name__ == '__main__':
@@ -358,7 +358,7 @@ if __name__ == '__main__':
         output_file = output_dir+os.path.basename(filename)
         
         stage3_ifu = stage3(filename)
-        stage3_ifu.go()
+        stage3_ifu.add_guide_and_calib_stars()
         stage3_ifu.write_xml(output_file)
     
     print('IFU XMLs written to: {0}'.format(output_dir))

@@ -374,7 +374,7 @@ class GuideStars:
                 dither_OK = seff._dither_check(guide_sel)
                 if not dither_OK:
                     return None
-            return [guide_sel]
+            return Table(guide_sel)
         return self.guides_filter
 
 
@@ -408,7 +408,7 @@ class GuideStars:
         return target
 
         
-    def get_guide(self,annular_fail=True,as_xml=True):
+    def get_guide(self,annular_fail=True):
         """
         Master function to return a guide star once the object is instantiated.
         
@@ -418,9 +418,6 @@ class GuideStars:
              If there is no guidestar in GC FOV, search an annulus and define
              the PA required to get a guidestar. Return most centralised
              candidate.
-        as_xml : bool, optional
-             Returns the result as an XML <target> element that can be added to
-             a <field> element.
         
         Returns
         -------
