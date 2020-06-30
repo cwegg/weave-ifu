@@ -53,7 +53,7 @@ from astropy.table import Table
 from astropy_healpix import HEALPix
 
 
-class GuideStar:
+class GuideStars:
     """
     Handle the retrieval of WEAVE guide stars for the LIFU or MOS.
     

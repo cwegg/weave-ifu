@@ -25,8 +25,8 @@ from operator import indexOf, countOf
 
 import numpy as np
 
-from guidestar import GuideStar
-from calibstar import CalibStar
+from workflow.utils.classes import GuideStars
+from workflow.utils.classes import CalibStars
 
 
 class stage3:
@@ -151,7 +151,7 @@ class stage3:
         # there can be only one field element at this stage...
         ra = float(field.getAttribute('RA_d'))
         dec = float(field.getAttribute('Dec_d'))
-        cs = CalibStar(ra,dec,pa,'mIFU',annular=False,plot=False)
+        cs = CalibStars(ra,dec,pa,'mIFU',annular=False,plot=False)
         calibs_table = cs.get_calib()
 
         if calibs_table == None:
@@ -296,7 +296,7 @@ class stage3:
         # there can be only one field element at this stage...
         ra = float(field.getAttribute('RA_d'))
         dec = float(field.getAttribute('Dec_d'))
-        gs = GuideStar(ra,dec,pa,obs_mode,max_guides=max_guides[obs_mode])
+        gs = GuideStars(ra,dec,pa,obs_mode,max_guides=max_guides[obs_mode])
 
         pa_actual = pa
         print('WARNING: guidestar search will not adopt new PA - implement this!')

@@ -53,7 +53,7 @@ from astropy.table import Table
 from astropy_healpix import HEALPix
 
 
-class CalibStar:
+class CalibStars:
     """
     Handle the retrieval of WEAVE calib stars for the mIFU or MOS.
     
