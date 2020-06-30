@@ -308,7 +308,7 @@ class stage3(OBXML):
         #     print(g.toxml())
 
         
-    def go(self,output_loc,mifu_ncalibs=2):
+    def go(self,mifu_ncalibs=2):
 
         self.targets_base = self.fields.getElementsByTagName('target')
 
@@ -317,11 +317,6 @@ class stage3(OBXML):
         # 2. Generate guidestar(s)
         self._guidestars()
 
-        output_file = output_loc+os.path.basename(filename)
-
-        self.write_xml(output_file)
-
-        
 
 if __name__ == '__main__':
 
@@ -353,7 +348,11 @@ if __name__ == '__main__':
         raise SystemExit('No XML files found in %s'%(input_loc))
 
     for filename in filename_list:
+        output_file = output_dir+os.path.basename(filename)
+        
         stage3_ifu = stage3(filename)
-        stage3_ifu.go(output_dir)
+        stage3_ifu.go()
+        stage3_ifu.write_xml(output_file)
     
     print('IFU XMLs written to: {0}'.format(output_dir))
+
