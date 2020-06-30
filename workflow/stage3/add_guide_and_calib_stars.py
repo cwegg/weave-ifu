@@ -81,10 +81,10 @@ class stage3(OBXML):
 
     
     def _calibs_to_xml(self,calibs):
-    
-        xmls = []
 
         target_template = self.fields.getElementsByTagName('target')[2]
+    
+        xmls = []
     
         for calib in calibs:
 
@@ -128,15 +128,19 @@ class stage3(OBXML):
 
                         
     def _calibs(self,mifu_ncalibs=2):
-        obs_mode = self.observation.getAttribute('obs_type')
-        if obs_mode == 'LIFU':
+        obsmode = self.observation.getAttribute('obs_type')
+        if obsmode == 'LIFU':
             # No calibration targets needed!
             return
-        pa = 0.0
         field =  self.fields.getElementsByTagName('field')[0]
-        # there can be only one field element at this stage...
+        all_targets = field.getElementsByTagName('target')
+        targ0 = field.getElementsByTagName('target')[0]
+
         ra = float(field.getAttribute('RA_d'))
         dec = float(field.getAttribute('Dec_d'))
+
+        pa = 0.0
+        # there can be only one field element at this stage...
         cs = CalibStars(ra,dec,pa,'mIFU',annular=False,plot=False)
         calibs_table = cs.get_calib()
 
@@ -148,14 +152,12 @@ class stage3(OBXML):
         # need to choose mifu_ncalibs of these
         calib_selection = []
         calib_sector_selection = []
-        field =  self.fields.getElementsByTagName('field')[0]
         
         # get angular distribution of calibs:
         calib_countdata = self._angular_dist(calibs,ra,dec,input_type='xml')
 
         while len(calib_selection) != mifu_ncalibs:
             # get non-guide targets (ie bundle centres)
-            all_targets = field.getElementsByTagName('target')
             targets = []
             for target in all_targets:
                 if target.getAttribute('targuse') in ['C','T']:
@@ -206,7 +208,6 @@ class stage3(OBXML):
                 raise SystemExit('Could not add viable calibration bundle to field')
 
         for targ_calib in calib_selection:
-            targ0 = field.getElementsByTagName('target')[0]
             field.insertBefore(targ_calib,targ0)
 
 
@@ -256,23 +257,27 @@ class stage3(OBXML):
     
     def _guidestars(self):
 
-        obs_mode = self.observation.getAttribute('obs_type')
+        obsmode = self.observation.getAttribute('obs_type')
+        max_guide = int(self.configure.getAttribute('max_guide'))
+        field =  self.fields.getElementsByTagName('field')[0]
+        str_pa = self.observation.getAttribute('pa')
+
         max_guides = {}
         max_guides['LIFU'] = None
-        max_guides['mIFU'] = int(self.configure.getAttribute('max_guide'))
+        max_guides['mIFU'] = max_guide
 
-        if obs_mode == 'mIFU':
+        if obsmode == 'mIFU':
             pa = 0.0
             
-            if np.isnan(float(self.observation.getAttribute('pa'))):
+            if np.isnan(float(str_pa)):
                 print('assertion error to be revisited')
             else:
-                assert float(self.observation.getAttribute('pa')) == pa
+                assert float(str_pa) == pa
             
         else:
             pa = 0.0
-            if self.observation.getAttribute('pa') != '%%%':
-                pa = float(self.observation.getAttribute('pa'))
+            if str_pa != '%%%':
+                pa = float(str_pa)
 
         if 1:
             # testing override
@@ -280,11 +285,10 @@ class stage3(OBXML):
             print('WARNING: PA set to 0.0 for the moment')
 
 
-        field =  self.fields.getElementsByTagName('field')[0]
         # there can be only one field element at this stage...
         ra = float(field.getAttribute('RA_d'))
         dec = float(field.getAttribute('Dec_d'))
-        gs = GuideStars(ra,dec,pa,obs_mode,max_guides=max_guides[obs_mode])
+        gs = GuideStars(ra,dec,pa,obsmode,max_guides=max_guides[obsmode])
 
         pa_actual = pa
         print('WARNING: guidestar search will not adopt new PA - implement this!')
@@ -292,14 +296,14 @@ class stage3(OBXML):
         guides_table = gs.get_guide(as_xml=True)
 
         guides = self._guides_to_xml(guides_table)
-        if obs_mode == 'LIFU':   
+        if obsmode == 'LIFU':   
             self.observation.setAttribute('pa',value=str(pa_actual))
 
         
         if guides == None:
             raise SystemExit('Cannot proceed without valid guidestar')
             
-        for guide in guides[:min(len(guides),int(self.configure.getAttribute('max_guide')))]:
+        for guide in guides[:min(len(guides),max_guide)]:
             # get the first <target> in the field, add this one before it
             targ0 = field.getElementsByTagName('target')[0]
             field.insertBefore(guide,targ0)
