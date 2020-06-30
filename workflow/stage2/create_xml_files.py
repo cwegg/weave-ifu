@@ -718,6 +718,8 @@ class _IFUDriverCat:
         targsrvy_list.sort()
 
         # Guess some parameters which depends on PROGTEMP
+        
+        chained = ('+' in progtemp)
 
         spectrograph_dict = get_progtemp_info(progtemp,
                                               progtemp_dict=progtemp_dict)
@@ -835,6 +837,7 @@ class _IFUDriverCat:
         # Set the attributes of the observation element
 
         observation_attrib_dict = {
+            'chained': chained,
             'name': observation_name,
             'obstemp': obstemp,
             'obs_type': obsmode,
