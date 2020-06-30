@@ -20,6 +20,7 @@
 
 import argparse
 import logging
+import os
 import re
 from collections import OrderedDict
 
@@ -798,7 +799,8 @@ if __name__ == '__main__':
     parser.add_argument('catalogue',
                         help='a FITS file with an IFU driver catalogue')
     
-    parser.add_argument('--template', default='./aux/ifu_driver_template.fits',
+    parser.add_argument('--template',
+                        default=os.path.join('aux', 'ifu_driver_template.fits'),
                         help='a FITS file containing an IFU driver template')
 
     parser.add_argument('--no_check_vs_template', dest='check_vs_template',

@@ -202,10 +202,10 @@ if __name__ == '__main__':
     ############################################################################
     # Set the location of the template and the output file and directory
     
-    ifu_driver_template = './aux/ifu_driver_template.fits'
+    ifu_driver_template = os.path.join('aux', 'ifu_driver_template.fits')
     
-    output_dir = './output/'
-    output_filename = output_dir + 'WC_2020A1-ifu_driver_cat.fits'
+    output_dir = 'output'
+    output_filename = os.path.join(output_dir, 'WC_2020A1-ifu_driver_cat.fits')
     
     ############################################################################
     # Create the output directory if it does not exist

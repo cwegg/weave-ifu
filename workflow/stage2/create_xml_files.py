@@ -693,18 +693,18 @@ if __name__ == '__main__':
                         help="""a FITS file containing an IFU driver cat""")
 
     parser.add_argument('--xml_template', dest='xml_template',
-                        default='aux/BlankXMLTemplate.xml',
+                        default=os.path.join('aux', 'BlankXMLTemplate.xml'),
                         help="""a blank XML template to be populated with the
                         information of the OBs""")
 
     parser.add_argument('--progtemp_file', dest='progtemp_file',
-                        default='aux/progtemp.dat',
+                        default=os.path.join('aux', 'progtemp.dat'),
                         help="""a progtemp.dat file with the definition of
                         PROGTEMP""")
 
 
     parser.add_argument('--obstemp_file', dest='obstemp_file',
-                        default='aux/obstemp.dat',
+                        default=os.path.join('aux', 'obstemp.dat'),
                         help="""a obstemp.dat file with the definition of
                         OBSTEMP""")
 
