@@ -91,7 +91,7 @@ class GuideStars:
         self.guides = None
         self.guide_url = "http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/guides/"
         self.guide_filename = "Guides_S4_<HEALPIX>.fits"
-        self.cache_dir = './cache/'
+        self.cache_dir = './aux/'
 
         if not self.obsmode in ['LIFU','mIFU']:
             print('ERROR: must specify LIFU or mIFU obsmode')

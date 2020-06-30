@@ -28,3 +28,7 @@ workflow/stage2/aux/BlankXMLTemplate.xml
 workflow/stage2/aux/obstemp.dat
 workflow/stage2/aux/progtemp.dat
 
+# Stage-3 files:
+workflow/stage3/aux/Guides_*.fits
+workflow/stage3/aux/WD_*.fits
+

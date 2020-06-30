@@ -94,7 +94,7 @@ class CalibStars:
         self.calibs = None
         self.calib_url = "http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/resources/calibs/"
         self.calib_filename = "WD_S4_<HEALPIX>.fits"
-        self.cache_dir = './cache/'
+        self.cache_dir = './aux/'
         
         if not self.obsmode in ['MOS','mIFU']:
             print('ERROR: must specify MOS or mIFU obsmode')

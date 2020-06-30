@@ -377,7 +377,7 @@ if __name__ == '__main__':
         print('Usage: ./stage3.py location')
         raise SystemExit(0)
 
-    output_dir = '../stage4/input_tmp/'
+    output_dir = '../stage3/output/'
 
     if 1:
         cmd = 'rm -Rf %s/*.xml'%(output_dir)
