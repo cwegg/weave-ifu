@@ -46,13 +46,8 @@ class stage3:
     """
 
     
-    def __init__(self,input_loc,output_loc,mifu_ncalibs=2):
-        print('Reading in XMLs from %s'%(input_loc))
-        self.xmls = glob.glob(input_loc+'/*.xml')
-        if len(self.xmls) == 0:
-            raise SystemExit('No XML files found in %s'%(input_loc))
-        self.output_loc = output_loc
-        self.mifu_ncalibs = mifu_ncalibs
+    def __init__(self,filename):
+        self.filename = filename
     
             
     def _ingest_xml(self,dom):
@@ -345,23 +340,23 @@ class stage3:
             f.write(finalxml)    
 
         
-    def go(self):
+    def go(self,output_loc,mifu_ncalibs=2):
 
-        for xml_file in self.xmls:
-            try:
-                dom = xml.dom.minidom.parse(xml_file)
-            except xml.parsers.expat.ExpatError:
-                print("File {0} would not parse".format(xml_file))
-                raise SystemExit(0)
+        try:
+            dom = xml.dom.minidom.parse(filename)
+        except xml.parsers.expat.ExpatError:
+            print("File {0} would not parse".format(filename))
+            raise SystemExit(0)
 
-            output_file = self.output_loc+os.path.basename(xml_file)
-            self._ingest_xml(dom)
-            # 1. Generate calibs where required
-            self._calibs(mifu_ncalibs=self.mifu_ncalibs)
-            # 2. Generate guidestar(s)
-            self._guidestars()
+        output_file = output_loc+os.path.basename(filename)
 
-            self._write_xml(output_file)
+        self._ingest_xml(dom)
+        # 1. Generate calibs where required
+        self._calibs(mifu_ncalibs=mifu_ncalibs)
+        # 2. Generate guidestar(s)
+        self._guidestars()
+
+        self._write_xml(output_file)
 
         
 
@@ -386,8 +381,16 @@ if __name__ == '__main__':
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    
-    stage3_ifu = stage3(input_xml_loc,output_dir)   ## add specifiers for mIFU grouping / overloading fields /etc behaviour here
-    stage3_ifu.go()
+    print('Reading in XMLs from %s'%(input_xml_loc))
+
+    filename_list = glob.glob(input_xml_loc+'/*.xml')
+    filename_list.sort()
+
+    if len(filename_list) == 0:
+        raise SystemExit('No XML files found in %s'%(input_loc))
+
+    for filename in filename_list:
+        stage3_ifu = stage3(filename)
+        stage3_ifu.go(output_dir)
     
     print('IFU XMLs written to: {0}'.format(output_dir))
