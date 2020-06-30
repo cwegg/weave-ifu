@@ -67,3 +67,76 @@ def get_aladin_jar(file_path='Aladin.jar',
     
     return file_path
 
+
+def get_blank_xml_template(file_path='BlankXMLTemplate.xml',
+                           url=('http://casu.ast.cam.ac.uk/weave/data_model/' +
+                                'misc/BlankXMLTemplate.xml')):
+    """
+    Download the latest version of the blank XML template.
+
+    Parameters
+    ----------
+    file_path : str, optional
+        The path used to save the downloaded file.
+    url : str, optional
+        The URL with the location ot the file in Internet.
+
+    Returns
+    -------
+    file_path : str
+        The path used to save the downloaded file.
+    """
+    
+    _urlretrieve(url, file_path)
+    
+    return file_path
+
+
+def get_progtemp_file(file_path='progtemp.dat',
+                      url=('http://casu.ast.cam.ac.uk/weave/data_model/misc/' +
+                           'progtemp.dat')):
+    """
+    Download the latest version of progtemp.dat.
+
+    Parameters
+    ----------
+    file_path : str, optional
+        The path used to save the downloaded file.
+    url : str, optional
+        The URL with the location ot the file in Internet.
+
+    Returns
+    -------
+    file_path : str
+        The path used to save the downloaded file.
+    """
+    
+    _urlretrieve(url, file_path)
+    
+    return file_path
+
+
+def get_obstemp_file(file_path='obstemp.dat',
+                     url=('http://casu.ast.cam.ac.uk/weave/data_model/misc/' +
+                          'obstemp.dat')):
+    """
+    Download the latest version of obstemp.dat.
+
+    Parameters
+    ----------
+    file_path : str, optional
+        The path used to save the downloaded file.
+    url : str, optional
+        The URL with the location ot the file in Internet.
+
+    Returns
+    -------
+    file_path : str
+        The path used to save the downloaded file.
+    """
+    
+    _urlretrieve(url, file_path)
+    
+    return file_path
+
+
