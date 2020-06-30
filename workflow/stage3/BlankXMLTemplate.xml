@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8" ?>  
+
+<weave author="%%%" cc_report="%%%" datamver="8.00" report_verbosity="%%%">
+  <!--
+      Detailed documentation for this file is available in:
+      - WEAVE-ICD-025 "Configure XML Definition"
+      - WEAVE-ICD-030 "WEAVE SPA to SWG & QAG ICD"
+ 
+      These files can be obtained from the WEAVE Operational Repository:
+      http://casu.ast.cam.ac.uk/weave/
+
+      Please consult these documents BEFORE requesting assistance.
+
+      This file represents a blank XML template (WEAVE data model
+      version indicated in <root> as datamver) that is ready to be
+      filled with:
+
+      1. Instrument configuration information
+      2. Field observing constraints appropriate to either...
+      3a. ...targets from "protofield" FITS files containing ~1500-2000 targets (for MOS; run through Configure)
+      3b. ...insertion of a populated IFU array containing 640 fibers and one guide star (for LIFU)
+      3c. ..."driver targets" for assiging fibre bundles to targets (for mIFU; run through Configure)
+
+      Tools to generate appropriate instrument configuration
+      (PROGTEMP) code and observational constraint (OBSTEMP) codes can
+      be found at the WASP:
+
+      http://wasp.ast.cam.ac.uk
+
+      This XML file must be submitted to the WASP for validation prior
+      to observation.
+
+      The author's email address should be added to the "author"
+      attribute of the <root> element, along with any additional email
+      addresses for those requiring WASP validation reports.
+
+      Please choose the verbosity level of the WASP report in the
+      "report_verbosity" attribute.
+
+  -->
+  
+  <programme>
+    <!-- Each XML Observing Block has a PROGTEMP value, which defines
+         how the instrument is configured.  Please bear in mind the
+         "NORBI.X" mnemonic for PROGTEMP codes:
+
+         PROGTEMP = "NORBI.X(+)"
+	 N = i(N)strument configuration
+	 O = (O)B length
+	 R = (R)ed arm exposure code
+	 B = (B)lue arm exposure code
+	 I = B(I)nning in the spectral direction
+	 X(+) = Duplicate this XML Observing Block X times. Follow this with a "+" to chain these cloned 
+	        OBs so that completion of one in the chain boosts the weights (within a survey) of the
+		remaining OBs.
+
+	 Only targets with the same PROGTEMP should be observed within
+	 this OB.
+
+    -->
+    <spectrograph>
+      <red_Arm binning_X="%%%" binning_Y="%%%" resolution="%%%" speed="slow" VPH="%%%"/> 
+      <blue_Arm binning_X="%%%" binning_Y="%%%" resolution="%%%" speed="slow" VPH="%%%"/> 
+      <!-- 
+
+        <spectrograph>: defines the the configuration for both arms of the Spectrograph
+        (both arms are mandatory)        
+        (all attributes mandatory)
+        
+        speed: arm readout speed for the program. Possible (legql) values "fast", "slow"                                     [fixed in template]
+        resolution:  arm resolution for the program. Possible values are "low", "high"                                       [defined by PROGTEMP]
+        binning_X: arm detector binning in spatial direction for the program. Possible values: "1","2","3","4" (pixels)      [fixed in template]
+        binning_Y: arm detector binning in spectral direction for the program. Possible values: "1","2","3","4" (pixels)     [defined by PROGTEMP]
+        VPH: Arm Grating; Possible Values are "n/a", "vph1","vph2" and "vp3". ("vph3" only for Blue Arm)                     [defined by PROGTEMP]
+
+         i(N)strument configuration: translated into "type", "VPH" etc, eg:                  [NORBI.X]
+         =============================                                                        ^
+         PROGTEMP     type    resolution   red_Arm   blue_Arm
+	 1****.*      "MOS"   "low"        "VPH1"    "VPH1"
+	 2****.*      "MOS"   "high"       "VPH2"    "VPH2"
+	 3****.*      "MOS"   "high"       "VPH2"    "VPH3"
+	 4****.*      "LIFU"  "low"        "VPH1"    "VPH1"
+	 5****.*      "LIFU"  "high"       "VPH2"    "VPH2"
+	 6****.*      "LIFU"  "high"       "VPH2"    "VPH3"
+	 7****.*      "mIFU"  "low"        "VPH1"    "VPH1"
+	 8****.*      "mIFU"  "high"       "VPH2"    "VPH2"
+	 9****.*      "mIFU"  "high"       "VPH2"    "VPH3"
+
+	 B(I)nning in the spectral direction:                                                [NORBI.X]
+         =============================                                                            ^
+         PROGTEMP     spectral binning
+	 ****1.*      1x
+	 ****2.*      2x
+	 ****3.*      3x
+	 ****4.*      4x
+	 ****9.*      (custom set)
+         (all other values forbidden)
+
+	 Some attributes remain unchangable: readout is always "slow",
+	 spatial binning is always = 1x.
+
+         Custom (9) spectral binning is not available to WEAVE science
+         teams, and for all other cases must be agreed with ING in
+         advance.
+
+      -->
+    </spectrograph>
+    <exposures>
+
+      <!-- The SWG should provide for a limited number of observing
+           templates ("Exposures") here, with a fixed calibration
+           recipe.
+
+           (O)B length specifier:                                                            [NORBI.X]
+           ========================                                                            ^
+
+	   This PROGTEMP component specifies the overall OB length
+	   (inclusive of overheads). Whilst we provide the option of
+	   setting the following OB lengths, please be aware that not
+	   all OB lengths are available (eg, for WEAVE science teams)
+
+	   Code     OB length (mins)
+	   0        30 
+	   1        60
+	   2        90
+	   3        120
+	   9        (custom set)
+
+           Where O=9, then the RB component of PROGTEMP (below) is
+           ignored, and the user sets exposure times manually. This
+           mode is not available to WEAVE science teams.
+
+
+	   (R)ed or (B)lue arm exposure code:                                                [NORBI.X]
+	   ==================================                                                   ^^
+
+           (NB. the TEXP column is for illustrative purposes and includes 
+	   overheads in the total OB execution time - actual time on-target
+	   will be less)
+
+	   It is WEAVE policy to "lock" the arms: ie, the Red and Blue
+	   arms must be observed with the same exposures within an OB.
+
+           WEAVE science teams are permitted a limited subset of the
+           below exposure options. PI surveys may use other
+           combinations at their own risk.
+
+	   CODE   TEXP (min) per exposure     OB0      OB1      OB2      OB3
+	   0       -                          1x30     1x60m    1x90m    1x120m
+	   1      60                          -        -        -        2x60m
+	   2      30                          -        2x30m    3x30m    4x30m
+	   3      20                          -        3x20m    5x18m    6x20m
+	   4      15                          2x15m    4x15m    6x15m    8x15m
+	   5      12                          -        5x12m    -        10x12m
+           6      10                          3x10m    6x10m    9x10m    12x10m
+	   7      8.55                        -        7x8.55m  10x8.55m 14x8.55m
+	   8      7.5                         4x7.5m   8x7.5m   12x7.5m  16x7.5m
+	   9      6                           5x6m     9x6m     15x6m    20x6m
+
+	   TEXP ~= 60mins/code
+
+
+	   Some examples:
+
+           PROGTEMP = "11331" (MOS, LR, R:3x20mins, B:3x20mins)
+           PROGTEMP = "23331" (MOS, HR-Blue, R:6x20mins, B:6x20mins)
+           PROGTEMP = "32332" (MOS, HR-Green, R:5x18mins, B:5x18mins, x2 spectral binning)
+
+           Some RB combinations might be restricted due to excessive readout overheads, eg:
+
+           PROGTEMP = "23601" (MOS, HR-Blue, R:12x10mins, B:1x120m)
+	   The red arm here would incur a significant overhead readout penalty, and would not be completed at around the same time as the blue arm.
+
+      -->
+
+      <exposure arm="red" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="20" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="1" type="fibre_lampflat"/>
+      <exposure arm="blue" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="20" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="1" type="fibre_lampflat"/>
+      <exposure arm="red" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="45" ff_ilu_2="34" ff_ilu_3="56" order="2" type="arc"/>
+      <exposure arm="blue" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="0" ff_ilu_1="45" ff_ilu_2="0" ff_ilu_3="0" order="2" type="arc"/>
+      <exposure arm="%%%" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="%%%" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="%%%" type="science"/>
+      <exposure arm="red" cal_lamp="ThAr" cal_lamp_filter_A="0.5" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="%%%" type="arc"/> <!-- [[ORDER undefined until exposure code known]]-->
+      <exposure arm="blue" cal_lamp="ThAr" cal_lamp_filter_A="0.5" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="%%%" type="arc"/> <!-- [[ORDER undefined until exposure code known]]-->
+      
+
+      <!--
+	What do these values mean?
+	<exposure>: defines the sequence of exposures the WEAVE instrument will take within this OB. All attributes are mandatory.
+
+        arm: Arm to perform the observation with. Possible values: "both", "red", "blue".                                                    [fixed in template]
+        cal_lamp: Possible values are: "None", "Hg", "Ne", "He", "Zn", "Cd", "ThAr", "ThArCr", "QTH", "W" corresponding  to the lamp chosen. [fixed in template]
+        cal_lamp_filter_A: Calib lamp filter A position. Possible values: "WYC_ND0.5", "WYC_ND2.0", "WYC_ND3.0"                              [fixed in template]
+        cal_lamp_filter_B: Calib lamp filter B position. Possible values: "WYC_GG395", "WYC_BG38"                                            [fixed in template]
+        exp_time: Time of exposure (in secs).                                                                                                [defined by PROGTEMP]
+        ff_ilu_1: Arm flat field illumination LED 1. Possible values:[0-100] where 0  corresponds to Off and 100 to the max intensity.       [fixed in template]
+        ff_ilu_2: Arm flat field illumination LED 2. Possible values:[0-100] where 0  corresponds to Off and 100 to the max intensity.       [fixed in template]
+        ff_ilu_3: Arm flat field illumination LED 3. Possible values:[0-100] where 0  corresponds to Off and 100 to the max intensity.       [fixed in template]
+        order: Order of execution of the exposure with the sequence. For science exposures, links to <field> element below                   [auto-generated by FITS -> XML code]
+        type: Exposure type: "arc","bias","dark","fibre_lampflat","fibre_twiflat","fibre_skyflat","detector_flat","science","salsa_lampflat",
+	                     "salsa_twiflat","salsa_skyflat","salsa_arc","stdfibre_lampflat","stdfibre_skyflat","stdfibre_twiflat"           [auto-generated by FITS -> XML code]
+
+      -->
+    </exposures> 
+
+      <!-- Some surveys would like to duplicate observing blocks.
+
+           X = Duplicate this OB x(X) times                                       [NORBI.X]
+           ===========================                                                   ^
+
+           This component is entirely optional - XMLChecking will not
+           fail if there is no X value in the PROGTEMP.
+
+           If a survey wishes to duplicate this OB, then they can add
+           the .X directive onto the end of the PROGTEMP
+           code.
+
+           Furthermore, if users want to "chain" these OBs together,
+           such that the observation of one of these clones increases
+           the chance that the remaining OBs in this group are
+           observed, then a "+" can be added to the end of PROGTEMP.
+
+           The "+" instructs the WEAVE Scheduler to increase the
+           (internal, survey-specific) weight of all OBs in this
+           group. This provides a mechanism to ensure that once a
+           series of observations are started, completion of the chain
+           becomes a progressively higher priority above other OBs
+           from this survey.
+
+           Some examples:
+
+           PROGTEMP = "11331.4" - Create 4 OBs with the fibre configuraion as defined in this XML
+	   PROGTEMP = "11331.4+" - As above, but probabilistically link them to ensure the chain is completed
+      -->
+
+  </programme>   
+
+
+  <observation casuid="-1" chained="%%%" coordinate_system="ICRS" linkedgroup="%%%" name="%%%" ob_class="science" ob_priority="1.0" obsgroup="%%%" obsgroup_validity="%%%" obstemp="%%%" obs_type="%%%" pa="%%%" progtemp="%%%" tac_alloc="%%%" tac_id="%%%" trimester="%%%">
+      <configure configure_version="%%%" max_calibration="25" max_guide="8" max_sky="100" num_sky_fibres="%%%" plate="%%%" seed="%%%">
+	<conditions epoch="%%%" ha="%%%" pressure="%%%" relative_humidity="%%%" temperature="%%%" tlr="%%%"/>
+	<hour_angle_limits earliest="%%%" latest="%%%"/>
+	<telescope east_longitude="-17.881639" height="2332.0" latitude="28.760583"/>
+	<focal_plane_map focal_length="11724.24" nominal_focal_length="11724.24">
+	  <optical_axis r0="%%%" x0="%%%" y0="%%%"/>
+	  <distortion_coefficients c1="%%%" c3="%%%" c5="%%%" c7="%%%"/>
+	</focal_plane_map>
+      </configure>
+      <!-- The "obsconstraints" component must be populated at the .fits -> .xml converter stage
+	   (prior to running configure). Each target has an OBSTEMP (recorded in <observation>) value, which defines:
+
+         OBSTEMP = "STAMB"
+	 S = (S)eeing
+	 T = (T)ransparency
+	 A = (A)irmass/elevation
+	 M = (M)oon distance            
+	 B = Sky (B)rightness   
+   
+         Each OBSTEMP component is divided into grades (A,B,C,D,E...) with "A" being the best. These will need to
+	 translate these into their numerical values as defined within the WEAVE data model, eg:
+
+         OBSTEMP = "AAAAA"
+	 S = "A" -> seeing_max="1.3"
+	 T = "A" -> transparency_min="0.9"
+	 A = "A" -> elevation_min="65.0"
+         M = "A" -> moondist_min="120"
+	 B = "A" -> skybright_max="21.9"
+
+    --> 
+    <obsconstraints elevation_min="%%%" moondist_min="%%%" seeing_max="%%%" skybright_max="%%%" transparency_min="%%%"/> 
+
+    <!-- The strategy for dithering within an OB is defined in the
+         "apply dither" attribute of the <dithering>
+         element. Dithering is only supported for the WEAVE IFU modes,
+         and can take the following values:
+
+	 Code     Meaning
+	 -1       Custom dither pattern (LIFU only)
+	 0        No dithering (this value is mandatory for MOS)
+	 3        Use pre-defined 3-dither pattern
+	 5        Use pre-defined 5-dither pattern
+
+         The pre-defined dither patterns can be found in the fibre
+         configuration config file within the WEAVE Data Model
+
+         Please be aware that use of these pre-defined patterns may
+         result in holes in the reconstructed cubelets for mIFU data
+         (eg, the 3-dither pattern)
+        
+         If a custom dither pattern is specified, then the <offsets>
+         element will need to be populated. This is completed by the
+         IFU workflow software.
+    -->
+    
+    <dithering apply_dither="%%%"/>
+    <offsets offset_step_ra="%%%" offset_step_dec="%%%"/>
+    <surveys>
+      <survey name="%%%" priority="%%%" max_fibres="%%%"/>
+      <!-- The priority in this element refers to the inter-survey
+	   priority in cases where this field is shared. It has no
+	   effect if the OB contains only one survey.
+      -->
+    </surveys>
+    <!-- The order attribute within the <field> element corresponds to
+         the order attributes in the <exposure> elements. For the MOS,
+         they are left empty (as there is no dithering in the
+         MOS). However, for the LIFU each dither position must have a
+         <field> entry that in turn points to an <exposure> with a
+         type="science" attribute.
+
+    -->    
+    <fields>
+    <field RA_d="%%%" Dec_d="%%%" order="%%%"> <!-- [[Decimal degrees]]-->
+      <!-- Guide targets: -->
+      <target automatic="%%%" cname="%%%" configid="%%%" fibreid="%%%" targcat="%%%" targclass="STAR" targdec="%%%" targepoch="%%%" targid="%%%" targname="%%%" targparal="%%%" targpmdec="%%%" targpmra="%%%" targprio="%%%" targprog="%%%" targra="%%%" targsrvy="%%%" targuse="G" targx="%%%" targy="%%%">
+	<photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/></target>
+     <!-- ... -->
+     <!-- ... -->
+     <!-- Now science targets: -->
+     <target automatic="%%%" cname="%%%" configid="%%%" fibreid="%%%" ifu_pa="%%%" ifu_spaxel="%%%" targcat="%%%" targclass="%%%" targdec="%%%" targepoch="%%%" targid="%%%" targname="%%%" targparal="%%%" targpmdec="%%%" targpmra="%%%" targprio="%%%" targprog="%%%" targra="%%%" targsrvy="%%%" targuse="T" targx="%%%" targy="%%%">
+
+       <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+     </target>
+     <!-- ... -->
+     <!-- ... -->
+     <!-- Now calibration targets: -->
+     <target automatic="%%%" cname="%%%" configid="%%%" fibreid="%%%" ifu_pa="%%%" ifu_spaxel="%%%" targcat="%%%" targclass="%%%" targdec="%%%" targepoch="%%%" targid="%%%" targname="%%%" targparal="%%%" targpmdec="%%%" targpmra="%%%" targprio="%%%" targprog="%%%" targra="%%%" targsrvy="%%%" targuse="C" targx="%%%" targy="%%%">
+       <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+     </target>
+      <!-- ... -->
+      <!-- ... -->
+      <!-- Now sky targets: -->
+     <target automatic="%%%" cname="%%%" configid="%%%" fibreid="%%%" ifu_pa="%%%" ifu_spaxel="%%%" targcat="%%%" targclass="%%%" targdec="%%%" targepoch="%%%" targid="%%%" targname="%%%" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="%%%" targprog="%%%" targra="%%%" targsrvy="%%%" targuse="S" targx="%%%" targy="%%%"></target>
+      <!-- ... -->
+      <!-- ... -->
+      <!-- ... -->
+      <!-- ... -->
+      <!-- Now avoidance mask: -->
+      <avoidance_list>
+	<mask Dec_d="%%%" RA_d="%%%" radius="%%%" />
+      </avoidance_list>
+
+      <group>
+	<target automatic="%%%" cname="%%%" configid="%%%" fibreid="%%%" ifu_pa="%%%" ifu_spaxel="%%%" targcat="%%%" targclass="%%%" targdec="%%%" targepoch="%%%" targid="%%%" targname="%%%" targparal="%%%" targpmdec="%%%" targpmra="%%%" targprio="%%%" targprog="%%%" targra="%%%" targsrvy="%%%" targuse="T" targx="%%%" targy="%%%">
+       <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+	</target>
+      </group>
+
+      
+
+    </field>
+    </fields>
+  </observation> 
+</weave>
