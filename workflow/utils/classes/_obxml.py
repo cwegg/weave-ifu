@@ -533,17 +533,6 @@ class OBXML:
             self.fields.appendChild(field)
 
 
-    def _remove_xml_declaration(self, xml_text):
-
-        parsed_xml = _minidom.parseString(xml_text)
-
-        root = parsed_xml.documentElement
-
-        clean_xml_text = root.toxml(parsed_xml.encoding)
-
-        return clean_xml_text
-
-
     def write_xml(self, filename):
     
         # Get a pretty XML text
@@ -552,25 +541,25 @@ class OBXML:
 
         # Remove the empty lines from it
         
-        parsed_xml = _minidom.parseString(xml_text)
+        parsed_xml = _minidom.parseString(pretty_xml)
 
-        pretty_xml = parsed_xml.toprettyxml(indent=' ')
+        pretty_xml2 = parsed_xml.toprettyxml(indent=' ')
 
-        pretty_xml = '\n'.join([line for line in pretty_xml.split('\n')
-                                if line.strip()])
+        clean_pretty_xml = '\n'.join([line for line in pretty_xml2.split('\n')
+                                      if line.strip()])
 
         # Remove the XML declaration from it
 
-        parsed_xml = _minidom.parseString(xml_text)
+        clean_parsed_xml = _minidom.parseString(clean_pretty_xml)
 
-        root = parsed_xml.documentElement
+        clean_root = parsed_xml.documentElement
 
-        pretty_xml = root.toxml(parsed_xml.encoding)
+        output_xml = clean_root.toxml(clean_parsed_xml.encoding)
         
         # Write the XML text to a file
 
         logging.info('\tWriting to {}'.format(filename))
 
         with open(filename, 'w') as f:
-            f.write(pretty_xml)    
+            f.write(output_xml)
 
