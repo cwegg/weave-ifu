@@ -27,9 +27,10 @@ import numpy as np
 
 from workflow.utils.classes import GuideStars
 from workflow.utils.classes import CalibStars
+from workflow.utils.classes import OBXML
 
 
-class stage3:
+class stage3(OBXML):
     """
     Add things to the XML files
     
@@ -44,19 +45,6 @@ class stage3:
     input_loc : str
         Directory of the output XML files to be written
     """
-
-    
-    def __init__(self,filename):
-        self.filename = filename
-    
-            
-    def _ingest_xml(self,dom):
-        self.dom = dom
-        root = dom.childNodes[0]
-        self.observation = root.getElementsByTagName('observation')[0]
-        self.configure = dom.getElementsByTagName('configure')[0]
-        self.fields = dom.getElementsByTagName('fields')[0]
-        self.targets_base = self.fields.getElementsByTagName('target')
 
             
     def _angular_dist(self,data,ra0,dec0,da=36,input_type='table'):
@@ -319,44 +307,19 @@ class stage3:
         #         print(gs.guides_filter['ANGLE'][i])
         #     print(g.toxml())
 
-
-    def _remove_empty_lines(self,xml_text):
-        reparsed = xml.dom.minidom.parseString(xml_text)
-        return '\n'.join([line for line in reparsed.toprettyxml(indent=' ').split('\n') if line.strip()])
-
-
-    def _remove_xml_declaration(self,xml_text):
-        doc = xml.dom.minidom.parseString(xml_text)
-        root = doc.documentElement
-        xml_text_without_declaration = root.toxml(doc.encoding)
-        return xml_text_without_declaration
-            
-
-    def _write_xml(self,filename):
-        newxml = self._remove_empty_lines(self.dom.toprettyxml())
-        finalxml = self._remove_xml_declaration(newxml)
-        print('Writing to %s'%(filename))
-        with open(filename, 'w') as f:
-            f.write(finalxml)    
-
         
     def go(self,output_loc,mifu_ncalibs=2):
 
-        try:
-            dom = xml.dom.minidom.parse(filename)
-        except xml.parsers.expat.ExpatError:
-            print("File {0} would not parse".format(filename))
-            raise SystemExit(0)
+        self.targets_base = self.fields.getElementsByTagName('target')
 
-        output_file = output_loc+os.path.basename(filename)
-
-        self._ingest_xml(dom)
         # 1. Generate calibs where required
         self._calibs(mifu_ncalibs=mifu_ncalibs)
         # 2. Generate guidestar(s)
         self._guidestars()
 
-        self._write_xml(output_file)
+        output_file = output_loc+os.path.basename(filename)
+
+        self.write_xml(output_file)
 
         
 
