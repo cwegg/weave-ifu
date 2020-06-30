@@ -83,9 +83,12 @@ class stage3(OBXML):
     def _calibs_to_xml(self,calibs):
     
         xmls = []
+
+        target_template = self.fields.getElementsByTagName('target')[2]
     
         for calib in calibs:
-            xml_target = self.targets_base[2].cloneNode(True)
+
+            xml_target = target_template.cloneNode(True)
 
 
             ## NB: this will FAIL when we move from OpR3b catalogues, due to new column names for errors etc
@@ -211,9 +214,11 @@ class stage3(OBXML):
     
         xmls = []
 
+        target_template = self.fields.getElementsByTagName('target')[0]
+
         for guide in guides:
 
-            xml_target = self.targets_base[0].cloneNode(True)
+            xml_target = target_template.cloneNode(True)
 
             xml_target.setAttribute('cname',str(guide['CNAME']))
             xml_target.setAttribute('targid',str(guide['TARGID']))
@@ -309,8 +314,6 @@ class stage3(OBXML):
 
         
     def go(self,mifu_ncalibs=2):
-
-        self.targets_base = self.fields.getElementsByTagName('target')
 
         # 1. Generate calibs where required
         self._calibs(mifu_ncalibs=mifu_ncalibs)
