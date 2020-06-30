@@ -137,6 +137,8 @@ def get_obstemp_info(obstemp, obstemp_dict=None, add_datamver=True):
     obsconstraints_dict : dict
         A dictionary containing the information of the observation contraints.
     """
+    
+    assert _re.match('^[A-Z]{5}$', obstemp)
 
     obsconstraints_dict = {}
 
