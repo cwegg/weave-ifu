@@ -221,6 +221,8 @@ def get_progtemp_info(progtemp, progtemp_dict=None, add_datamver=True):
     spectrograph_dict : dict
         A dictionary containing the information of the progtemp value.
     """
+    
+    assert _re.match('^[0-9]{5}(\.[0-9]+(\+)?)?$', progtemp)
  
     spectrograph_dict = {}
  
