@@ -77,14 +77,14 @@ class GuideStars:
     """
 
 
-    def __init__(self,ra,dec,pa,obsmode,nside=32,dither_pattern=None,max_guides=None):
+    def __init__(self,ra,dec,pa,obsmode,nside=32,dither_pattern=None,max_guide=None):
         self.ra = ra
         self.dec = dec
         self.pa = pa
         self.obsmode = obsmode
         self.nside = nside
         self.dither_pattern = dither_pattern
-        self.max_guides = max_guides
+        self.max_guide = max_guide
         
         self.plate_scale = 17.8   ##  "/mm
         
@@ -309,10 +309,10 @@ class GuideStars:
 
             angular_diffs = []
             
-            if (self.max_guides) and (self.obsmode != 'LIFU'):
-                # need to select the "best" guides up to max_guides, azimuthally distributed
-                # sampling = 360.0 / float(self.max_guides)
-                sampling_points = np.arange(0,360.0,360.0 / float(self.max_guides))
+            if (self.max_guide) and (self.obsmode != 'LIFU'):
+                # need to select the "best" guides up to max_guide, azimuthally distributed
+                # sampling = 360.0 / float(self.max_guide)
+                sampling_points = np.arange(0,360.0,360.0 / float(self.max_guide))
                 for s in sampling_points:
                     diffs = [abs(s-ang) for ang in _angles]
                     minval = min(diffs)

@@ -84,10 +84,6 @@ class stage3(OBXML):
         field =  self.fields.getElementsByTagName('field')[0]
         str_pa = self.observation.getAttribute('pa')
 
-        max_guides = {}
-        max_guides['LIFU'] = None
-        max_guides['mIFU'] = max_guide
-
         if obsmode == 'mIFU':
             pa = 0.0
             
@@ -110,7 +106,7 @@ class stage3(OBXML):
         # there can be only one field element at this stage...
         ra = float(field.getAttribute('RA_d'))
         dec = float(field.getAttribute('Dec_d'))
-        gs = GuideStars(ra,dec,pa,obsmode,max_guides=max_guides[obsmode])
+        gs = GuideStars(ra,dec,pa,obsmode,max_guide=max_guide)
 
         pa_actual = pa
         print('WARNING: guidestar search will not adopt new PA - implement this!')
