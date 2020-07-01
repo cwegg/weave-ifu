@@ -31,184 +31,6 @@ from workflow.utils.classes import OBXML
 
 
 class stage3(OBXML):
-    """
-    Add things to the XML files
-    
-    This class provides the code to take a series of input XML files containing
-    IFU data (mIFU or LIFU) and updates them according to the PROGTEMP, OBSTEMP
-    values, in addition to adding guide star(s) and calibration (WD) targets.
-
-    Parameters
-    ----------
-    input_loc : str
-        Directory of the input XML files
-    input_loc : str
-        Directory of the output XML files to be written
-    """
-
-            
-    def _angular_dist(self,data,ra0,dec0,da=36,input_type='table'):
-        counts = []
-        targ_angles = []
-        for target in data:
-            # translated position:
-            if input_type == 'table':
-                targ_ra = ra0 - target['GAIA_RA']
-                targ_dec = dec0 - target['GAIA_DEC']
-            else:
-                targ_ra = ra0 - float(target.getAttribute('targra'))
-                targ_dec = dec0 - float(target.getAttribute('targdec'))
-            # determine the azimuthal angles
-            targ_ang = np.arctan2(targ_dec,targ_ra)
-            targ_ang = (targ_ang*180.0) / np.pi
-            if targ_ang < 0:
-                targ_ang += 360.0
-            targ_angles.append(targ_ang)
-
-
-        # counts per sector
-        # assume 10 sectors (2 arms per sector)
-
-        count_data = {}
-        
-        for aa in np.arange(0,360,da):
-            in_sector = np.array([(ang >= aa) and (ang < (aa + da)) for ang in targ_angles])
-            count = countOf(in_sector,True)
-            selected_targets = np.array(data)[in_sector]
-            count_data[aa] = {'count':count,'selected':selected_targets}
-
-        return count_data
-
-    
-    def _calibs_to_xml(self,calibs):
-
-        target_template = self.fields.getElementsByTagName('target')[2]
-    
-        xmls = []
-    
-        for calib in calibs:
-
-            xml_target = target_template.cloneNode(True)
-
-
-            ## NB: this will FAIL when we move from OpR3b catalogues, due to new column names for errors etc
-
-            xml_target.setAttribute('cname',str(calib['CNAME']))
-            xml_target.setAttribute('targid',str(calib['TARGID']))
-            xml_target.setAttribute('targra',str(calib['GAIA_RA']))
-            xml_target.setAttribute('targdec',str(calib['GAIA_DEC']))
-            xml_target.setAttribute('targpmra',str(calib['GAIA_PMRA']))
-            xml_target.setAttribute('targpmdec',str(calib['GAIA_PMDEC']))
-            xml_target.setAttribute('targprio',str(calib['TARGPRIO']))
-            xml_target.setAttribute('targuse',str(calib['TARGUSE']))
-            xml_target.setAttribute('targsrvy',str(calib['TARGSRVY']))
-            xml_target.setAttribute('targname',str(calib['TARGNAME']))
-            xml_target.setAttribute('targprog',str(calib['TARGPROG']))
-            xml_target.setAttribute('targclass',str(calib['TARGCLASS']))
-            xml_target.setAttribute('targcat',str(calib['TARGCAT']))
-            xml_target.setAttribute('targepoch',str(calib['GAIA_EPOCH']))
-            xml_target.setAttribute('targparal',str(calib['GAIA_PARAL']))
-            xml_target.setAttribute('targprio',"10")
-
-            xml_photom = xml_target.getElementsByTagName('photometry')[0]
-            bands = ['g','r','i']
-            for b in bands:
-                xml_photom.setAttribute('mag_%s'%(b),"")
-                xml_photom.setAttribute('emag_%s'%(b),"")
-            xml_photom.setAttribute('mag_gg',str(calib['GAIA_MAG_GG']))
-            xml_photom.setAttribute('emag_gg',str(calib['GAIA_EMAG_GG']))
-            xml_photom.setAttribute('mag_bp',str(calib['GAIA_MAG_BP']))
-            xml_photom.setAttribute('emag_bp',str(calib['GAIA_EMAG_BP']))
-            xml_photom.setAttribute('mag_rp',str(calib['GAIA_MAG_RP']))
-            xml_photom.setAttribute('emag_rp',str(calib['GAIA_EMAG_RP']))
-            
-            xmls.append(xml_target)
-
-        return xmls
-
-                        
-    def _add_calib_stars(self,mifu_ncalibs=2):
-        obsmode = self.observation.getAttribute('obs_type')
-        if obsmode == 'LIFU':
-            # No calibration targets needed!
-            return
-        field =  self.fields.getElementsByTagName('field')[0]
-        all_targets = field.getElementsByTagName('target')
-        targ0 = field.getElementsByTagName('target')[0]
-
-        ra = float(field.getAttribute('RA_d'))
-        dec = float(field.getAttribute('Dec_d'))
-
-        pa = 0.0
-        # there can be only one field element at this stage...
-        cs = CalibStars(ra,dec,pa,'mIFU',annular=False,plot=False)
-        calibs_table = cs.get_calib()
-
-        if calibs_table == None:
-            raise SystemExit('Cannot proceed without valid calibration bundle(s)!')
-
-        calibs = self._calibs_to_xml(calibs_table)
-
-        # need to choose mifu_ncalibs of these
-        calib_selection = []
-        calib_sector_selection = []
-        
-        # get angular distribution of calibs:
-        calib_countdata = self._angular_dist(calibs,ra,dec,input_type='xml')
-
-        while len(calib_selection) != mifu_ncalibs:
-            # get non-guide targets (ie bundle centres)
-            targets = []
-            for target in all_targets:
-                if target.getAttribute('targuse') in ['C','T']:
-                    targets.append(target)
-                
-            targ_angles = []
-
-            counts = self._angular_dist(targets,ra,dec,input_type='xml')
-            _sectors = list(counts.keys())
-            _sectors.sort()
-            sectors = []
-            for s in _sectors:
-                if (s in calib_countdata.keys()) and (calib_countdata[s]['count'] > 0):
-                    sectors.append(s)
-            sectors = np.array(sectors)
-            sector_counts = []
-            sector_counts = np.array([counts[s]['count'] for s in sectors])
-            if len(calib_sector_selection) > 0:
-                sector_counts[3] += 1
-            mins = np.where(sector_counts == min(sector_counts))[0]
-            if len(mins) > 1:
-                if len(calib_sector_selection) > 0:
-                    # choose something not in already selected sector, ideally far away
-                    mdist = []
-                    mid = []
-                    for m in mins:
-                        if not m in calib_sector_selection:
-                            mdist.append(sum([abs(m-c) for c in calib_sector_selection]))
-                            mid.append(m)
-                    if len(mdist) == 0:
-                        # you just have to choose something...
-                        mins = mins[0]
-                    else:
-                        mins = mid[indexOf(mdist,max(mdist))]
-            else:
-                mins = mins[0]
-            min_sector = sectors[mins]
-            # this is the sector the WD should be selected from
-            calib_sector_selection.append(min_sector)
-            added = False
-            for calib_candidate in calib_countdata[min_sector]['selected']:
-                if not calib_candidate in calib_selection:
-                    calib_selection.append(calib_candidate)
-                    calib_countdata[min_sector]['count'] -= 1
-                    added = True
-                    break
-            if not added:
-                raise SystemExit('Could not add viable calibration bundle to field')
-
-        for targ_calib in calib_selection:
-            field.insertBefore(targ_calib,targ0)
 
 
     def _guides_to_xml(self,guides):
@@ -316,13 +138,175 @@ class stage3(OBXML):
         #         print(gs.guides_filter['ANGLE'][i])
         #     print(g.toxml())
 
-        
-    def add_guide_and_calib_stars(self,mifu_ncalibs=2):
+            
+    def _angular_dist(self,data,ra0,dec0,da=36,input_type='table'):
+        counts = []
+        targ_angles = []
+        for target in data:
+            # translated position:
+            if input_type == 'table':
+                targ_ra = ra0 - target['GAIA_RA']
+                targ_dec = dec0 - target['GAIA_DEC']
+            else:
+                targ_ra = ra0 - float(target.getAttribute('targra'))
+                targ_dec = dec0 - float(target.getAttribute('targdec'))
+            # determine the azimuthal angles
+            targ_ang = np.arctan2(targ_dec,targ_ra)
+            targ_ang = (targ_ang*180.0) / np.pi
+            if targ_ang < 0:
+                targ_ang += 360.0
+            targ_angles.append(targ_ang)
 
-        # 1. Generate calibs where required
-        self._add_calib_stars(mifu_ncalibs=mifu_ncalibs)
-        # 2. Generate guidestar(s)
+
+        # counts per sector
+        # assume 10 sectors (2 arms per sector)
+
+        count_data = {}
+        
+        for aa in np.arange(0,360,da):
+            in_sector = np.array([(ang >= aa) and (ang < (aa + da)) for ang in targ_angles])
+            count = countOf(in_sector,True)
+            selected_targets = np.array(data)[in_sector]
+            count_data[aa] = {'count':count,'selected':selected_targets}
+
+        return count_data
+
+    
+    def _calibs_to_xml(self,calibs):
+
+        target_template = self.fields.getElementsByTagName('target')[2]
+    
+        xmls = []
+    
+        for calib in calibs:
+
+            xml_target = target_template.cloneNode(True)
+
+
+            ## NB: this will FAIL when we move from OpR3b catalogues, due to new column names for errors etc
+
+            xml_target.setAttribute('cname',str(calib['CNAME']))
+            xml_target.setAttribute('targid',str(calib['TARGID']))
+            xml_target.setAttribute('targra',str(calib['GAIA_RA']))
+            xml_target.setAttribute('targdec',str(calib['GAIA_DEC']))
+            xml_target.setAttribute('targpmra',str(calib['GAIA_PMRA']))
+            xml_target.setAttribute('targpmdec',str(calib['GAIA_PMDEC']))
+            xml_target.setAttribute('targprio',str(calib['TARGPRIO']))
+            xml_target.setAttribute('targuse',str(calib['TARGUSE']))
+            xml_target.setAttribute('targsrvy',str(calib['TARGSRVY']))
+            xml_target.setAttribute('targname',str(calib['TARGNAME']))
+            xml_target.setAttribute('targprog',str(calib['TARGPROG']))
+            xml_target.setAttribute('targclass',str(calib['TARGCLASS']))
+            xml_target.setAttribute('targcat',str(calib['TARGCAT']))
+            xml_target.setAttribute('targepoch',str(calib['GAIA_EPOCH']))
+            xml_target.setAttribute('targparal',str(calib['GAIA_PARAL']))
+            xml_target.setAttribute('targprio',"10")
+
+            xml_photom = xml_target.getElementsByTagName('photometry')[0]
+            bands = ['g','r','i']
+            for b in bands:
+                xml_photom.setAttribute('mag_%s'%(b),"")
+                xml_photom.setAttribute('emag_%s'%(b),"")
+            xml_photom.setAttribute('mag_gg',str(calib['GAIA_MAG_GG']))
+            xml_photom.setAttribute('emag_gg',str(calib['GAIA_EMAG_GG']))
+            xml_photom.setAttribute('mag_bp',str(calib['GAIA_MAG_BP']))
+            xml_photom.setAttribute('emag_bp',str(calib['GAIA_EMAG_BP']))
+            xml_photom.setAttribute('mag_rp',str(calib['GAIA_MAG_RP']))
+            xml_photom.setAttribute('emag_rp',str(calib['GAIA_EMAG_RP']))
+            
+            xmls.append(xml_target)
+
+        return xmls
+
+                        
+    def _add_calib_stars(self,mifu_num_calibs=2):
+        obsmode = self.observation.getAttribute('obs_type')
+        if obsmode == 'LIFU':
+            # No calibration targets needed!
+            return
+        field =  self.fields.getElementsByTagName('field')[0]
+        all_targets = field.getElementsByTagName('target')
+        targ0 = field.getElementsByTagName('target')[0]
+
+        ra = float(field.getAttribute('RA_d'))
+        dec = float(field.getAttribute('Dec_d'))
+
+        pa = 0.0
+        # there can be only one field element at this stage...
+        cs = CalibStars(ra,dec,pa,'mIFU',annular=False,plot=False)
+        calibs_table = cs.get_calib()
+
+        if calibs_table == None:
+            raise SystemExit('Cannot proceed without valid calibration bundle(s)!')
+
+        calibs = self._calibs_to_xml(calibs_table)
+
+        # need to choose mifu_num_calibs of these
+        calib_selection = []
+        calib_sector_selection = []
+        
+        # get angular distribution of calibs:
+        calib_countdata = self._angular_dist(calibs,ra,dec,input_type='xml')
+
+        while len(calib_selection) != mifu_num_calibs:
+            # get non-guide targets (ie bundle centres)
+            targets = []
+            for target in all_targets:
+                if target.getAttribute('targuse') in ['C','T']:
+                    targets.append(target)
+                
+            targ_angles = []
+
+            counts = self._angular_dist(targets,ra,dec,input_type='xml')
+            _sectors = list(counts.keys())
+            _sectors.sort()
+            sectors = []
+            for s in _sectors:
+                if (s in calib_countdata.keys()) and (calib_countdata[s]['count'] > 0):
+                    sectors.append(s)
+            sectors = np.array(sectors)
+            sector_counts = []
+            sector_counts = np.array([counts[s]['count'] for s in sectors])
+            if len(calib_sector_selection) > 0:
+                sector_counts[3] += 1
+            mins = np.where(sector_counts == min(sector_counts))[0]
+            if len(mins) > 1:
+                if len(calib_sector_selection) > 0:
+                    # choose something not in already selected sector, ideally far away
+                    mdist = []
+                    mid = []
+                    for m in mins:
+                        if not m in calib_sector_selection:
+                            mdist.append(sum([abs(m-c) for c in calib_sector_selection]))
+                            mid.append(m)
+                    if len(mdist) == 0:
+                        # you just have to choose something...
+                        mins = mins[0]
+                    else:
+                        mins = mid[indexOf(mdist,max(mdist))]
+            else:
+                mins = mins[0]
+            min_sector = sectors[mins]
+            # this is the sector the WD should be selected from
+            calib_sector_selection.append(min_sector)
+            added = False
+            for calib_candidate in calib_countdata[min_sector]['selected']:
+                if not calib_candidate in calib_selection:
+                    calib_selection.append(calib_candidate)
+                    calib_countdata[min_sector]['count'] -= 1
+                    added = True
+                    break
+            if not added:
+                raise SystemExit('Could not add viable calibration bundle to field')
+
+        for targ_calib in calib_selection:
+            field.insertBefore(targ_calib,targ0)
+
+        
+    def add_guide_and_calib_stars(self,mifu_num_calibs=2):
+
         self._add_guide_stars()
+        self._add_calib_stars(mifu_num_calibs=mifu_num_calibs)
 
 
 if __name__ == '__main__':
