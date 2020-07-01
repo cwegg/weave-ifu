@@ -268,9 +268,112 @@ class CalibStars:
         self._retrieve_calibcats()
         target = self._select_target(annular=True)
         return target
+            
+            
+#    # Method taken from stage 3 to be adapted here
+#    def _angular_dist(self, calibs_table, central_ra, central_dec, da=36):
+
+#        counts = []
+
+#        angles = []
+#        for target in calibs_table:
+#            coord_ra = central_ra - target['GAIA_RA']
+#            coord_dec = central_dec - target['GAIA_DEC']
+#            coord_ra = central_ra - float(target.getAttribute('targra'))
+#            coord_dec = central_dec - float(target.getAttribute('targdec'))
+
+#            # determine the azimuthal angles
+#            targ_ang = np.rad2deg(np.arctan2(targ_dec, targ_ra))
+#            targ_ang = (targ_ang*180.0) / np.pi
+#            if targ_ang < 0:
+#                targ_ang += 360.0
+#            targ_angles.append(targ_ang)
+
+
+#        # counts per sector
+#        # assume 10 sectors (2 arms per sector)
+
+#        count_data = {}
+#        
+#        for aa in np.arange(0,360,da):
+#            in_sector = np.array([(ang >= aa) and (ang < (aa + da)) for ang in targ_angles])
+#            count = countOf(in_sector,True)
+#            selected_targets = np.array(calibs_table)[in_sector]
+#            count_data[aa] = {'count':count,'selected':selected_targets}
+
+#        return count_data
+        
+#    # Piece of code taken from stage 3 to be adapted here
+#    def _blabla():
+#        from operator import countOf
+#        calibs = self._calibs_to_xml(calibs_table)
+
+#        # need to choose mifu_num_calibs of these
+#        calib_selection = []
+#        calib_sector_selection = []
+#        
+#        # get angular distribution of calibs:
+#        calib_countdata = self._angular_dist(calibs, central_ra, central_dec)
+
+#        while len(calib_selection) != mifu_num_calibs:
+#            # get non-guide targets (ie bundle centres)
+#            targets = []
+#            for target in all_targets:
+#                if target.getAttribute('targuse') in ['C','T']:
+#                    targets.append(target)
+#                
+#            counts = self._angular_dist(targets,central_ra,central_dec)
+#            _sectors = list(counts.keys())
+#            _sectors.sort()
+#            sectors = []
+#            for s in _sectors:
+#                if ((s in calib_countdata.keys()) and
+#                    (calib_countdata[s]['count'] > 0)):
+#                    sectors.append(s)
+#            sectors = np.array(sectors)
+#            sector_counts = []
+#            sector_counts = np.array([counts[s]['count'] for s in sectors])
+#            if len(calib_sector_selection) > 0:
+#                sector_counts[3] += 1
+#            mins = np.where(sector_counts == min(sector_counts))[0]
+#            if len(mins) > 1:
+#                if len(calib_sector_selection) > 0:
+#                    # choose something not in already selected sector,
+#                    # ideally far away
+#                    mdist = []
+#                    mid = []
+#                    for m in mins:
+#                        if not m in calib_sector_selection:
+#                            mdist.append(sum([abs(m-c)
+#                                              for c in calib_sector_selection]))
+#                            mid.append(m)
+#                    if len(mdist) == 0:
+#                        # you just have to choose something...
+#                        mins = mins[0]
+#                    else:
+#                        mins = mid[indexOf(mdist,max(mdist))]
+#            else:
+#                mins = mins[0]
+#            min_sector = sectors[mins]
+#            # this is the sector the WD should be selected from
+#            calib_sector_selection.append(min_sector)
+#            added = False
+#            for calib_candidate in calib_countdata[min_sector]['selected']:
+#                if not calib_candidate in calib_selection:
+#                    calib_selection.append(calib_candidate)
+#                    calib_countdata[min_sector]['count'] -= 1
+#                    added = True
+#                    break
+#            if not added:
+#                raise SystemExit(
+#                    'Could not add viable calibration bundle to field')
+
 
         
-    def get_calib(self, annular_fail=True):
+        
+
+        
+    def get_table(self, annular_fail=True):
         """
         Master function to return a calib star once the object is instantiated.
         
@@ -298,6 +401,8 @@ class CalibStars:
         if type(calibs) == type(None):
             print('No calibration stars found...')
             return None
+            
+        
             
         return calibs
 

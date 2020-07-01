@@ -23,6 +23,9 @@ import xml.dom.minidom as _minidom
 
 import numpy as _np
 
+from ._calibstars import CalibStars as _CalibStars
+from ._guidestars import GuideStars as _GuideStars
+
 
 class OBXML:
 
@@ -562,4 +565,225 @@ class OBXML:
 
         with open(filename, 'w') as f:
             f.write(output_xml)
+
+    
+    def _get_obsmode(self):
+
+        obsmode = self.observation.getAttribute('obs_type')
+
+        return obsmode
+
+    
+    def _get_central_ra_dec(self, obsmode):
+
+        # Get the first field
+
+        first_field = self.fields.getElementsByTagName('field')[0]
+
+        # For non-LIFU observations, get the centre from the field element
+        if obsmode != 'LIFU':
+
+            central_ra = float(first_field.getAttribute('RA_d'))
+            central_dec = float(first_field.getAttribute('Dec_d'))
+
+        else:
+
+            central_ra = None
+            central_dec = None
+
+            for target in first_field.getElementsByTagName('target'):
+                
+                targuse = target.getAttribute('targuse')
+
+                if targuse == 'T':
+                    central_ra = float(target.getAttribute('targra'))
+                    central_dec = float(target.getAttribute('targdec'))
+
+        return central_ra, central_dec
+
+    
+    def _get_pa(self):
+
+        str_pa = self.observation.getAttribute('pa')
+
+        if str_pa != '%%%':
+            pa = float(str_pa)
+        else:
+            pa = _np.nan
+
+        return pa
+
+    
+    def _get_max_guide(self):
+
+        max_guide = int(self.configure.getAttribute('max_guide'))
+
+        return max_guide
+
+
+    def _get_guide_stars(self):
+
+        obsmode = self._get_obsmode()
+
+        central_ra, central_dec = self._get_central_ra_dec(obsmode)
+        pa = self._get_pa()
+        max_guide = self._get_max_guide()
+
+        guide_stars = _GuideStars(central_ra, central_dec, pa, obsmode,
+                                  max_guide=max_guide)
+
+        actual_pa, full_guides_table = guide_stars.get_table()
+
+        guides_table = full_guides_table[0:max_guide]
+
+        return actual_pa, guides_table
+
+
+    def _set_pa(self, pa):
+
+        self._set_attribs(self.observation, {'pa': pa})
+
+        
+    def _add_target(self, field, target_attrib_dict, photometry_attrib_dict):
+
+        for target in field.getElementsByTagName('target'):
+            targuse = target.getAttribute('targuse')
+            if targuse == 'T':
+                first_science_target = target
+                break
+
+        new_target = first_science_target.cloneNode(True)
+
+        self._set_attribs(new_target, target_attrib_dict)
+
+        new_target_photometry = new_target.getElementsByTagName('photometry')[0]
+
+        self._set_attribs(new_target_photometry, photometry_attrib_dict)
+
+        field.insertBefore(new_target, first_science_target)
+
+
+    def _add_table_as_targets(self, table):
+
+        col_to_attrib_target_dict = {
+            'CNAME': 'cname',
+            'TARGCAT': 'targcat',
+            'TARGCLASS': 'targclass',
+            'GAIA_DEC': 'targdec',
+            'GAIA_EPOCH': 'targepoch',
+            'TARGID': 'targid',
+            'TARGNAME': 'targname',
+            'GAIA_PARAL': 'targparal',
+            'GAIA_PMDEC': 'targpmdec',
+            'GAIA_PMRA': 'targpmra',
+            'TARGPRIO': 'targprio',
+            'TARGPROG': 'targprog',
+            'GAIA_RA': 'targra',
+            'TARGSRVY': 'targsrvy',
+            'TARGUSE': 'targuse'
+        }
+        
+        col_to_attrib_photometry_dict = {
+            'GAIA_EMAG_BP': 'emag_bp',
+            'EMAG_G': 'emag_g',
+            'GAIA_EMAG_GG': 'emag_gg',
+            'EMAG_I': 'emag_i',
+            'EMAG_R': 'emag_r',
+            'GAIA_EMAG_RP': 'emag_rp',
+            'GAIA_MAG_BP': 'mag_bp',
+            'MAG_G': 'mag_g',
+            'GAIA_MAG_GG': 'mag_gg',
+            'MAG_I': 'mag_i',
+            'MAG_R': 'mag_r',
+            'GAIA_MAG_RP': 'mag_rp',
+        }
+
+        for row in table:
+            
+            target_attrib_dict = {
+                col_to_attrib_target_dict[col]: row[col]
+                for col in col_to_attrib_target_dict.keys()
+            }
+
+            photometry_attrib_dict = {
+                col_to_attrib_photometry_dict[col]: row[col]
+                for col in col_to_attrib_photometry_dict.keys()
+            }
+
+            for field in self.fields.getElementsByTagName('field'):
+                self._add_target(field, target_attrib_dict,
+                                 photometry_attrib_dict)
+
+
+    def _set_guide_stars(self, actual_pa, guides_table):
+
+        # Update the PA value if needed
+
+        pa = self._get_pa()
+
+        if actual_pa != pa:
+            if not _np.isnan(pa):
+                logging.info('Requested value for PA has NOT been adopted')
+            self._set_pa(actual_pa)
+
+        # Add the guide stars to the XML file
+
+        if len(guides_table) == 0:
+            logging.error('There is not guide stars available')
+            raise SystemExit(2)
+
+        self._add_table_as_targets(guides_table)
+
+                
+    def _add_guide_stars(self):
+
+        actual_pa, guides_table = self._get_guide_stars()
+
+        self._set_guide_stars(actual_pa, guides_table)
+
+                        
+    def _get_calib_stars(self, mifu_num_calibs=2):
+
+        obsmode = self._get_obsmode()
+
+        central_ra, central_dec = self._get_central_ra_dec(obsmode)
+        pa = self._get_pa()
+
+        calib_stars = _CalibStars(central_ra, central_dec, pa, obsmode)
+
+        full_calibs_table = calib_stars.get_table()
+
+        calibs_table = full_calibs_table[0:mifu_num_calibs]
+
+        return calibs_table
+
+
+    def _set_calib_stars(self, calibs_table):
+
+        # Add the guide stars to the XML file
+
+        if len(calibs_table) == 0:
+            logging.error('There is not guide stars available')
+            raise SystemExit(2)
+
+        self._add_table_as_targets(calibs_table)
+
+
+    def _add_calib_stars(self, mifu_num_calibs=2):
+
+        obsmode = self._get_obsmode()
+
+        if obsmode == 'LIFU':
+            # No calibration stars needed!
+            return
+
+        calibs_table = self._get_calib_stars(mifu_num_calibs=mifu_num_calibs)
+
+        self._set_calib_stars(calibs_table)
+
+        
+    def add_guide_and_calib_stars(self, mifu_num_calibs=2):
+
+        self._add_guide_stars()
+        self._add_calib_stars(mifu_num_calibs=mifu_num_calibs)
 
