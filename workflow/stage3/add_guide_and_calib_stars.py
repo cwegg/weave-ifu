@@ -19,6 +19,7 @@
 
 
 import glob
+import logging
 import os
 import xml.dom.minidom
 from operator import indexOf, countOf
@@ -32,107 +33,175 @@ from workflow.utils.classes import OBXML
 
 class stage3(OBXML):
 
-
-    def _guides_to_xml(self,guides):
     
-        xmls = []
-
-        target_template = self.fields.getElementsByTagName('target')[0]
-
-        for guide in guides:
-
-            xml_target = target_template.cloneNode(True)
-
-            xml_target.setAttribute('cname',str(guide['CNAME']))
-            xml_target.setAttribute('targid',str(guide['TARGID']))
-            xml_target.setAttribute('targra',str(guide['GAIA_RA']))
-            xml_target.setAttribute('targdec',str(guide['GAIA_DEC']))
-            xml_target.setAttribute('targpmra',str(guide['GAIA_PMRA']))
-            xml_target.setAttribute('targpmdec',str(guide['GAIA_PMDEC']))
-            xml_target.setAttribute('targprio',str(guide['TARGPRIO']))
-            xml_target.setAttribute('targuse',str(guide['TARGUSE']))
-            xml_target.setAttribute('targsrvy',str(guide['TARGSRVY']))
-            xml_target.setAttribute('targname',str(guide['TARGNAME']))
-            xml_target.setAttribute('targprog',str(guide['TARGPROG']))
-            xml_target.setAttribute('targclass',str(guide['TARGCLASS']))
-            xml_target.setAttribute('targcat',str(guide['TARGCAT']))
-            xml_target.setAttribute('targepoch',str(guide['GAIA_EPOCH']))
-            xml_target.setAttribute('targparal',str(guide['GAIA_PARAL']))
-            xml_target.setAttribute('targprio',"10")
-
-            xml_photom = xml_target.getElementsByTagName('photometry')[0]
-            bands = ['g','r','i']
-            for b in bands:
-                xml_photom.setAttribute('mag_%s'%(b),"")
-                xml_photom.setAttribute('emag_%s'%(b),"")
-            xml_photom.setAttribute('mag_gg',str(guide['GAIA_MAG_GG']))
-            xml_photom.setAttribute('emag_gg',str(guide['GAIA_EMAG_GG']))
-            xml_photom.setAttribute('mag_bp',str(guide['GAIA_MAG_BP']))
-            xml_photom.setAttribute('emag_bp',str(guide['GAIA_EMAG_BP']))
-            xml_photom.setAttribute('mag_rp',str(guide['GAIA_MAG_RP']))
-            xml_photom.setAttribute('emag_rp',str(guide['GAIA_EMAG_RP']))
-    
-            xmls.append(xml_target)
-
-        return xmls
-
-    
-    def _add_guide_stars(self):
+    def _get_obsmode(self):
 
         obsmode = self.observation.getAttribute('obs_type')
-        max_guide = int(self.configure.getAttribute('max_guide'))
-        field =  self.fields.getElementsByTagName('field')[0]
+
+        return obsmode
+
+    
+    def _get_central_ra_dec(self, obsmode):
+
+        # Get the first field
+
+        first_field = self.fields.getElementsByTagName('field')[0]
+
+        # For non-LIFU observations, get the centre from the field element
+        if obsmode != 'LIFU':
+
+            central_ra = float(first_field.getAttribute('RA_d'))
+            central_dec = float(first_field.getAttribute('Dec_d'))
+
+        else:
+
+            central_ra = None
+            central_dec = None
+
+            for target in first_field.getElementsByTagName('target'):
+                
+                targuse = target.getAttribute('targuse')
+
+                if targuse == 'T':
+                    central_ra = float(target.getAttribute('targra'))
+                    central_dec = float(target.getAttribute('targdec'))
+
+        return central_ra, central_dec
+
+    
+    def _get_pa(self):
+
         str_pa = self.observation.getAttribute('pa')
 
-        if obsmode == 'mIFU':
-            pa = 0.0
-            
-            if np.isnan(float(str_pa)):
-                print('assertion error to be revisited')
-            else:
-                assert float(str_pa) == pa
-            
+        if str_pa != '%%%':
+            pa = float(str_pa)
         else:
-            pa = 0.0
-            if str_pa != '%%%':
-                pa = float(str_pa)
+            pa = np.nan
 
-        if 1:
-            # testing override
-            pa = 0.0
-            print('WARNING: PA set to 0.0 for the moment')
+        return pa
+
+    
+    def _get_max_guide(self):
+
+        max_guide = int(self.configure.getAttribute('max_guide'))
+
+        return max_guide
 
 
-        # there can be only one field element at this stage...
-        ra = float(field.getAttribute('RA_d'))
-        dec = float(field.getAttribute('Dec_d'))
-        gs = GuideStars(ra,dec,pa,obsmode,max_guide=max_guide)
+    def _get_guide_stars(self):
 
-        pa_actual = pa
-        print('WARNING: guidestar search will not adopt new PA - implement this!')
-        # guides,pa_actual = gs.get_guide(as_xml=True)
-        guides_table = gs.get_guide()
+        obsmode = self._get_obsmode()
 
-        guides = self._guides_to_xml(guides_table)
-        if obsmode == 'LIFU':   
-            self.observation.setAttribute('pa',value=str(pa_actual))
+        central_ra, central_dec = self._get_central_ra_dec(obsmode)
+        pa = self._get_pa()
+        max_guide = self._get_max_guide()
+
+        guide_stars = GuideStars(central_ra, central_dec, pa, obsmode,
+                                 max_guide=max_guide)
+
+        actual_pa, full_guides_table = guide_stars.get_table()
+
+        guides_table = full_guides_table[0:max_guide]
+
+        return actual_pa, guides_table
+
+
+    def _set_pa(self, pa):
+
+        self._set_attribs(self.observation, {'pa': pa})
 
         
-        if guides == None:
-            raise SystemExit('Cannot proceed without valid guidestar')
-            
-        for guide in guides[:min(len(guides),max_guide)]:
-            # get the first <target> in the field, add this one before it
-            targ0 = field.getElementsByTagName('target')[0]
-            field.insertBefore(guide,targ0)
+    def _add_target(self, field, target_attrib_dict, photometry_attrib_dict):
 
-        # index = np.arange(len(guides))
-        # np.random.shuffle(index)
-        # for i in index[:8]:
-        #     g = guides[i]
-        #     if 1:
-        #         print(gs.guides_filter['ANGLE'][i])
-        #     print(g.toxml())
+        for target in field.getElementsByTagName('target'):
+            targuse = target.getAttribute('targuse')
+            if targuse == 'T':
+                first_science_target = target
+                break
+
+        new_target = first_science_target.cloneNode(True)
+
+        self._set_attribs(new_target, target_attrib_dict)
+
+        new_target_photometry = new_target.getElementsByTagName('photometry')[0]
+
+        self._set_attribs(new_target_photometry, photometry_attrib_dict)
+
+        field.insertBefore(new_target, first_science_target)
+
+
+    def _set_guide_stars(self, actual_pa, guides_table):
+
+        # Update the PA value if needed
+
+        pa = self._get_pa()
+
+        if actual_pa != pa:
+            if not np.isnan(pa):
+                logging.info('Requested value for PA has NOT been adopted')
+            self._set_pa(actual_pa)
+
+        # Add the guide stars to the XML file
+
+        if len(guides_table) == 0:
+            logging.error('There is not guide stars available')
+            raise SystemExit(2)
+
+        col_to_attrib_target_dict = {
+            'CNAME': 'cname',
+            'TARGCAT': 'targcat',
+            'TARGCLASS': 'targclass',
+            'GAIA_DEC': 'targdec',
+            'GAIA_EPOCH': 'targepoch',
+            'TARGID': 'targid',
+            'TARGNAME': 'targname',
+            'GAIA_PARAL': 'targparal',
+            'GAIA_PMDEC': 'targpmdec',
+            'GAIA_PMRA': 'targpmra',
+            'TARGPRIO': 'targprio',
+            'TARGPROG': 'targprog',
+            'GAIA_RA': 'targra',
+            'TARGSRVY': 'targsrvy',
+            'TARGUSE': 'targuse'
+        }
+        
+        col_to_attrib_photometry_dict = {
+            'GAIA_EMAG_BP': 'emag_bp',
+            'EMAG_G': 'emag_g',
+            'GAIA_EMAG_GG': 'emag_gg',
+            'EMAG_I': 'emag_i',
+            'EMAG_R': 'emag_r',
+            'GAIA_EMAG_RP': 'emag_rp',
+            'GAIA_MAG_BP': 'mag_bp',
+            'MAG_G': 'mag_g',
+            'GAIA_MAG_GG': 'mag_gg',
+            'MAG_I': 'mag_i',
+            'MAG_R': 'mag_r',
+            'GAIA_MAG_RP': 'mag_rp',
+        }
+
+        for guide in guides_table:
+            
+            target_attrib_dict = {
+                col_to_attrib_target_dict[col]: guide[col]
+                for col in col_to_attrib_target_dict.keys()
+            }
+
+            photometry_attrib_dict = {
+                col_to_attrib_photometry_dict[col]: guide[col]
+                for col in col_to_attrib_photometry_dict.keys()
+            }
+
+            for field in self.fields.getElementsByTagName('field'):
+                self._add_target(field, target_attrib_dict,
+                                 photometry_attrib_dict)
+
+
+    def _add_guide_stars(self):
+
+        actual_pa, guides_table = self._get_guide_stars()
+
+        self._set_guide_stars(actual_pa, guides_table)
 
             
     def _angular_dist(self,data,ra0,dec0,da=36,input_type='table'):

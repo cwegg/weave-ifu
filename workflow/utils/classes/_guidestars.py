@@ -408,7 +408,7 @@ class GuideStars:
         return target
 
         
-    def get_guide(self,annular_fail=True):
+    def get_table(self,annular_fail=True):
         """
         Master function to return a guide star once the object is instantiated.
         
@@ -437,5 +437,5 @@ class GuideStars:
             print('No guide star(s) found...')
             return None
             
-        return guides
+        return self.pa, guides
 

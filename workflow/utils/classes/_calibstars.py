@@ -100,7 +100,7 @@ class CalibStars:
             print('ERROR: must specify MOS or mIFU obsmode')
             raise SystemExit(0)
         
-        if self.pa != 0:
+        if self.pa != 0.0:
             print('ERROR: CalibStar requires PA=0')
             raise SystemExit(0)
 

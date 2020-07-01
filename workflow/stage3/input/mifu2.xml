@@ -181,7 +181,7 @@
 	   PROGTEMP = "11331.4+" - As above, but probabilistically link them to ensure the chain is completed
       -->
  </programme>
- <observation casuid="-1" chained="%%%" coordinate_system="ICRS" linkedgroup="%%%" name="CLUSTER1" ob_class="science" ob_priority="1.0" obs_type="mIFU" obsgroup="%%%" obsgroup_validity="%%%" obstemp="IAEEB" pa="nan" progtemp="71551" tac_alloc="%%%" tac_id="%%%" trimester="2020A1">
+ <observation casuid="-1" chained="%%%" coordinate_system="ICRS" linkedgroup="%%%" name="CLUSTER1" ob_class="science" ob_priority="1.0" obs_type="mIFU" obsgroup="%%%" obsgroup_validity="%%%" obstemp="IAEEB" pa="0.0" progtemp="71551" tac_alloc="%%%" tac_id="%%%" trimester="2020A1">
   <configure configure_version="%%%" max_calibration="25" max_guide="8" max_sky="100" num_sky_fibres="%%%" plate="PLATE_B" seed="%%%">
    <conditions epoch="%%%" ha="%%%" pressure="%%%" relative_humidity="%%%" temperature="%%%" tlr="%%%"/>
    <hour_angle_limits earliest="%%%" latest="%%%"/>
