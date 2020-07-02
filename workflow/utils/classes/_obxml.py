@@ -537,27 +537,18 @@ class OBXML:
 
 
     def write_xml(self, filename):
-    
-        # Get a pretty XML text
 
+        # Get a pretty indented XML with its proper XML declaration
+    
         pretty_xml = self.dom.toprettyxml()
 
-        # Remove the empty lines from it
-        
         parsed_xml = _minidom.parseString(pretty_xml)
 
-        pretty_xml2 = parsed_xml.toprettyxml(indent='  ')
+        pretty_xml2 = parsed_xml.toprettyxml(indent='  ',
+                                             encoding='utf-8').decode('utf-8')
 
-        clean_pretty_xml = '\n'.join([line for line in pretty_xml2.split('\n')
-                                      if line.strip()])
-
-        # Remove the XML declaration from it
-
-        clean_parsed_xml = _minidom.parseString(clean_pretty_xml)
-
-        clean_root = clean_parsed_xml.documentElement
-
-        output_xml = clean_root.toxml(clean_parsed_xml.encoding)
+        output_xml = '\n'.join([line for line in pretty_xml2.split('\n')
+                                if line.strip()])
         
         # Write the XML text to a file
 
