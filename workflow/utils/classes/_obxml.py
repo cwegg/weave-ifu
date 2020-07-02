@@ -548,7 +548,7 @@ class OBXML:
                                              encoding='utf-8').decode('utf-8')
 
         output_xml = '\n'.join([line for line in pretty_xml2.split('\n')
-                                if line.strip()])
+                                if line.strip()]) + '\n'
         
         # Write the XML text to a file
 
