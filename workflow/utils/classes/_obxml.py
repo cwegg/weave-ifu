@@ -445,8 +445,13 @@ class OBXML:
         if obsmode == 'LIFU':
 
             assert num_science_exposures % len(entry_group) == 0
+            
+            if len(entry_group) != 1:
+                num_fields = num_science_exposures
+            else:
+                num_fields = 1
 
-            for i in range(num_science_exposures):
+            for i in range(num_fields):
 
                 entry = entry_group[i % len(entry_group)]
 
