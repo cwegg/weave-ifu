@@ -506,8 +506,8 @@ class OBXML:
             field = field_template.cloneNode(True)
 
             field_attrib_dict = {
-                # 'Dec_d': field_dec,
-                # 'RA_d': field_ra,
+                'Dec_d': field_dec,
+                'RA_d': field_ra,
                 'order': order
                 }
 
@@ -580,7 +580,11 @@ class OBXML:
 
         first_field = self.fields.getElementsByTagName('field')[0]
 
-        # For non-LIFU observations, get the centre from the field element
+        # For non-LIFU observations, get the centre from the field element,
+        # for LIFU observations, get the centre from the central fibre
+        # (which should be the only one with TARGUSE=T when this method is
+        # called, or the first one)
+
         if obsmode != 'LIFU':
 
             central_ra = float(first_field.getAttribute('RA_d'))
@@ -598,6 +602,8 @@ class OBXML:
                 if targuse == 'T':
                     central_ra = float(target.getAttribute('targra'))
                     central_dec = float(target.getAttribute('targdec'))
+
+                    break
 
         return central_ra, central_dec
 
@@ -621,7 +627,7 @@ class OBXML:
         return max_guide
 
 
-    def _get_guide_stars(self):
+    def _get_guide_stars(self, all_guide_stars=False):
 
         obsmode = self._get_obsmode()
 
@@ -634,7 +640,10 @@ class OBXML:
 
         actual_pa, full_guides_table = guide_stars.get_table()
 
-        guides_table = full_guides_table[0:max_guide]
+        if all_guide_stars is False:
+            guides_table = full_guides_table[0:max_guide]
+        else:
+            guides_table = full_guides_table
 
         return actual_pa, guides_table
 
@@ -644,7 +653,8 @@ class OBXML:
         self._set_attribs(self.observation, {'pa': pa})
 
         
-    def _add_target(self, field, target_attrib_dict, photometry_attrib_dict):
+    def _add_target(self, field, target_attrib_dict, photometry_attrib_dict,
+                    assert_targuse=None):
 
         for target in field.getElementsByTagName('target'):
             targuse = target.getAttribute('targuse')
@@ -654,16 +664,25 @@ class OBXML:
 
         new_target = first_science_target.cloneNode(True)
 
+        for key in new_target.attributes.keys():
+            assert key in target_attrib_dict.keys()
+
         self._set_attribs(new_target, target_attrib_dict)
 
+        if assert_targuse is not None:
+            assert new_target.getAttribute('targuse') == assert_targuse
+
         new_target_photometry = new_target.getElementsByTagName('photometry')[0]
+
+        for key in new_target_photometry.attributes.keys():
+            assert key in photometry_attrib_dict.keys()
 
         self._set_attribs(new_target_photometry, photometry_attrib_dict)
 
         field.insertBefore(new_target, first_science_target)
 
 
-    def _add_table_as_targets(self, table):
+    def _add_table_as_targets(self, table, assert_targuse=None):
 
         col_to_attrib_target_dict = {
             'CNAME': 'cname',
@@ -712,7 +731,8 @@ class OBXML:
 
             for field in self.fields.getElementsByTagName('field'):
                 self._add_target(field, target_attrib_dict,
-                                 photometry_attrib_dict)
+                                 photometry_attrib_dict,
+                                 assert_targuse=assert_targuse)
 
 
     def _set_guide_stars(self, actual_pa, guides_table):
@@ -732,17 +752,18 @@ class OBXML:
             logging.error('There is not guide stars available')
             raise SystemExit(2)
 
-        self._add_table_as_targets(guides_table)
+        self._add_table_as_targets(guides_table, assert_targuse='G')
 
                 
-    def _add_guide_stars(self):
+    def _add_guide_stars(self, all_guide_stars=False):
 
-        actual_pa, guides_table = self._get_guide_stars()
+        actual_pa, guides_table = self._get_guide_stars(
+            all_guide_stars=all_guide_stars)
 
         self._set_guide_stars(actual_pa, guides_table)
 
                         
-    def _get_calib_stars(self, mifu_num_calibs=2):
+    def _get_calib_stars(self, mifu_num_calibs=2, all_calib_stars=False):
 
         obsmode = self._get_obsmode()
 
@@ -753,7 +774,10 @@ class OBXML:
 
         full_calibs_table = calib_stars.get_table()
 
-        calibs_table = full_calibs_table[0:mifu_num_calibs]
+        if all_calib_stars is False:
+            calibs_table = full_calibs_table[0:mifu_num_calibs]
+        else:
+            calibs_table = full_calibs_table
 
         return calibs_table
 
@@ -766,10 +790,10 @@ class OBXML:
             logging.error('There is not guide stars available')
             raise SystemExit(2)
 
-        self._add_table_as_targets(calibs_table)
+        self._add_table_as_targets(calibs_table, assert_targuse='C')
 
 
-    def _add_calib_stars(self, mifu_num_calibs=2):
+    def _add_calib_stars(self, mifu_num_calibs=2, all_calib_stars=False):
 
         obsmode = self._get_obsmode()
 
@@ -777,13 +801,16 @@ class OBXML:
             # No calibration stars needed!
             return
 
-        calibs_table = self._get_calib_stars(mifu_num_calibs=mifu_num_calibs)
+        calibs_table = self._get_calib_stars(mifu_num_calibs=mifu_num_calibs,
+                                             all_calib_stars=all_calib_stars)
 
         self._set_calib_stars(calibs_table)
 
         
-    def add_guide_and_calib_stars(self, mifu_num_calibs=2):
+    def add_guide_and_calib_stars(self, mifu_num_calibs=2,
+                                  all_guide_stars=False, all_calib_stars=False):
 
-        self._add_guide_stars()
-        self._add_calib_stars(mifu_num_calibs=mifu_num_calibs)
+        self._add_guide_stars(all_guide_stars=all_guide_stars)
+        self._add_calib_stars(mifu_num_calibs=mifu_num_calibs,
+                              all_calib_stars=all_calib_stars)
 
