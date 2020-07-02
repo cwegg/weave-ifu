@@ -157,5 +157,5 @@ def get_obstemp_info(obstemp, obstemp_dict=None, add_datamver=True):
     for i, key in enumerate(key_list):
         obsconstraints_dict[key] = obstemp_dict[key][obstemp[i]]
 
-    return obstemp_dict
+    return obsconstraints_dict
 
