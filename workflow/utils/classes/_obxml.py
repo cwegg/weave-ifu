@@ -546,7 +546,7 @@ class OBXML:
         
         parsed_xml = _minidom.parseString(pretty_xml)
 
-        pretty_xml2 = parsed_xml.toprettyxml(indent=' ')
+        pretty_xml2 = parsed_xml.toprettyxml(indent='  ')
 
         clean_pretty_xml = '\n'.join([line for line in pretty_xml2.split('\n')
                                       if line.strip()])
@@ -555,7 +555,7 @@ class OBXML:
 
         clean_parsed_xml = _minidom.parseString(clean_pretty_xml)
 
-        clean_root = parsed_xml.documentElement
+        clean_root = clean_parsed_xml.documentElement
 
         output_xml = clean_root.toxml(clean_parsed_xml.encoding)
         
