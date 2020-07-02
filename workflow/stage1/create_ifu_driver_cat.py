@@ -50,6 +50,11 @@ def create_ifu_driver_cat(ifu_driver_template, data_dict, output_filename,
         submisions.
     overwrite : bool, optional
         Overwrite the output FITS file containing the IFU driver catalogue.
+
+    Returns
+    -------
+    output_filename : str
+        The name of the output file for the new IFU driver catalogue.
     """
 
     assert report_verbosity in [0, 1]
@@ -60,4 +65,6 @@ def create_ifu_driver_cat(ifu_driver_template, data_dict, output_filename,
     populate_fits_table_template(ifu_driver_template, data_dict,
                                  output_filename, primary_kwds=primary_kwds,
                                  update_datetime=True, overwrite=overwrite)
+    
+    return output_filename
 
