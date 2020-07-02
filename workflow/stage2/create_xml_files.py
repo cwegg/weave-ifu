@@ -66,7 +66,7 @@ class _IFUDriverCat:
 
         # Set the default prefix to be used for output XMLs
 
-        self.default_prefix =os.path.splitext(
+        self.default_prefix = os.path.splitext(
             os.path.basename(self.filename))[0].replace('-ifu_driver_cat', '')
 
         if self.default_prefix[-1] != '-':
@@ -350,11 +350,16 @@ class _IFUDriverCat:
                                             prefix=prefix, suffix=suffix)
 
         ob_xml.write_xml(output_path)
+        
+        return output_path
+        
 
         
     def _generate_lifu_xmls(self, lifu_entry_list, xml_template, progtemp_dict,
                             obstemp_dict, output_dir='', prefix='',
                             suffix='-t'):
+        
+        output_file_list = []
 
         # How do you group entries belonging to the same OB?
         # (for custom dithers)
@@ -381,9 +386,12 @@ class _IFUDriverCat:
 
             entry_group = [lifu_entry]
 
-            self._process_ob(entry_group, xml_template, progtemp_dict,
-                             obstemp_dict, output_dir=output_dir, prefix=prefix,
-                             suffix=suffix)
+            output_file = self._process_ob(entry_group, xml_template,
+                                           progtemp_dict, obstemp_dict,
+                                           output_dir=output_dir, prefix=prefix,
+                                           suffix=suffix)
+            
+            output_file_list.append(output_file)
 
         # Detect the custom dithers and save them into a dict
 
@@ -407,9 +415,15 @@ class _IFUDriverCat:
                 len(custom_dithers_dict)))
 
         for entry_group in custom_dithers_dict.values():
-            self._process_ob(entry_group, xml_template, progtemp_dict,
-                             obstemp_dict, output_dir=output_dir, prefix=prefix,
-                             suffix=suffix)
+        
+            output_file = self._process_ob(entry_group, xml_template,
+                                          progtemp_dict, obstemp_dict,
+                                          output_dir=output_dir, prefix=prefix,
+                                          suffix=suffix)
+            
+            output_file_list.append(output_file)
+
+        return output_file_list
 
                 
     def _generate_mifu_xmls(self, mifu_entry_list, xml_template, progtemp_dict,
@@ -432,6 +446,8 @@ class _IFUDriverCat:
 
         assert mifu_mode in ['aufbau', 'equipartition', 'all']
         assert (mifu_num_calibs >= 0) and (mifu_num_calibs < 20)
+        
+        output_file_list = []
 
         # How do you group bundles belonging to the same field?
 
@@ -525,9 +541,15 @@ class _IFUDriverCat:
                 len(fields_dict), len(ob_nested_list), mifu_mode))
 
         for entry_group in ob_nested_list:
-            self._process_ob(entry_group, xml_template, progtemp_dict,
-                             obstemp_dict, output_dir=output_dir,
-                             prefix=prefix, suffix=suffix)
+        
+            output_file = self._process_ob(entry_group, xml_template,
+                                           progtemp_dict, obstemp_dict,
+                                           output_dir=output_dir, prefix=prefix,
+                                           suffix=suffix)
+            
+            output_file_list.append(output_file)
+
+        return output_file_list
 
                     
     def generate_xmls(self, xml_template, progtemp_file=None,
@@ -603,20 +625,23 @@ class _IFUDriverCat:
 
         # Generate the LIFU XMLs
                 
-        self._generate_lifu_xmls(lifu_entry_list, xml_template,
-                                 progtemp_dict, obstemp_dict,
-                                 output_dir=output_dir, prefix=prefix,
-                                 suffix=suffix)
+        lifu_output_file_list = self._generate_lifu_xmls(
+            lifu_entry_list, xml_template, progtemp_dict, obstemp_dict,
+            output_dir=output_dir, prefix=prefix, suffix=suffix)
 
         # Generate the mIFU XMLs
                 
-        self._generate_mifu_xmls(mifu_entry_list, xml_template,
-                                 progtemp_dict, obstemp_dict,
-                                 mifu_mode=mifu_mode,
-                                 mifu_num_calibs=mifu_num_calibs,
-                                 mifu_num_extra=mifu_num_extra,
-                                 output_dir=output_dir, prefix=prefix,
-                                 suffix=suffix)
+        mifu_output_file_list = self._generate_mifu_xmls(
+            mifu_entry_list, xml_template, progtemp_dict, obstemp_dict,
+            mifu_mode=mifu_mode, mifu_num_calibs=mifu_num_calibs,
+            mifu_num_extra=mifu_num_extra, output_dir=output_dir, prefix=prefix,
+            suffix=suffix)
+        
+        # Get the list with the output files
+        
+        output_file_list = lifu_output_file_list + mifu_output_file_list
+        
+        return output_file_list
 
 
 def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
@@ -656,6 +681,11 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
         Continue even if DATAMVER mismatch is detected.
     overwrite : bool, optional
         Overwrite the output FITS file.
+
+    Returns
+    -------
+    output_file_list : list of str
+        A list with the output XML files.
     """
 
     # Check that the input IFU driver cat exists and is a file
@@ -674,14 +704,13 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
 
     # Create the XML files
 
-    ifu_driver_cat.generate_xmls(xml_template, progtemp_file=progtemp_file,
-                                 obstemp_file=obstemp_file,
-                                 mifu_mode=mifu_mode,
-                                 mifu_num_calibs=mifu_num_calibs,
-                                 mifu_num_extra=mifu_num_extra,
-                                 output_dir=output_dir,
-                                 prefix=prefix, suffix=suffix,
-                                 pass_datamver=pass_datamver)
+    output_file_list = ifu_driver_cat.generate_xmls(
+        xml_template, progtemp_file=progtemp_file, obstemp_file=obstemp_file,
+        mifu_mode=mifu_mode, mifu_num_calibs=mifu_num_calibs,
+        mifu_num_extra=mifu_num_extra, output_dir=output_dir, prefix=prefix,
+        suffix=suffix, pass_datamver=pass_datamver)
+    
+    return output_file_list
 
 
 if __name__ == '__main__':
