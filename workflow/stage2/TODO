@@ -3,4 +3,6 @@
   auxiliar file in the future.
 - Default value for binning_X should me included in the blank XML template.
 - field.RA_d and field.Dec_d to be discussed between DM, DT and LPdA.
+- observation.obs_type could be changed to observation.obs_mode/obsmode.
+  There is no problem for that, but we should be aware.
 
