@@ -293,7 +293,7 @@ class _IFUDriverCat:
             'chained': chained,
             'name': observation_name,
             'obstemp': obstemp,
-            'obs_type': obsmode,
+            'obs_mode': obsmode,
             'progtemp': progtemp,
             'trimester': self.trimester
         }

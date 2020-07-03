@@ -583,7 +583,7 @@ class OBXML:
     
     def _get_obsmode(self):
 
-        obsmode = self.observation.getAttribute('obs_type')
+        obsmode = self.observation.getAttribute('obs_mode')
 
         return obsmode
 

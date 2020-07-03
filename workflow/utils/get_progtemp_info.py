@@ -57,7 +57,7 @@ def get_progtemp_dict(filename=None, assert_orb=True):
     header_regex = '^[0-9_]{5}:$'
     n_regex = (
         '^([0-9])____: '
-        'observation:obs_type=([A-Za-z]+) '
+        'observation:mode=([A-Za-z]+) '
         'programme:spectrograph:red_Arm:resolution=([a-z]+) '
         'programme:spectrograph:red_Arm:VPH=([A-Z0-9]+) '
         'programme:spectrograph:blue_Arm:resolution=([a-z]+) '
