@@ -57,7 +57,7 @@ def get_progtemp_dict(filename=None, assert_orb=True):
     header_regex = '^[0-9_]{5}:$'
     n_regex = (
         '^([0-9])____: '
-        'observation:mode=([A-Za-z]+) '
+        'observation:obs_mode=([A-Za-z]+) '
         'programme:spectrograph:red_Arm:resolution=([a-z]+) '
         'programme:spectrograph:red_Arm:VPH=([A-Z0-9]+) '
         'programme:spectrograph:blue_Arm:resolution=([a-z]+) '
@@ -165,8 +165,6 @@ def get_progtemp_dict(filename=None, assert_orb=True):
         elif clean_line == '':
             pass
         else:
-            import ipdb
-            ipdb.set_trace()
             raise ValueError
 
     # Read each line and extract its info

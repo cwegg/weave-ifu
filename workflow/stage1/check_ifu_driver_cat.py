@@ -515,8 +515,6 @@ def _check_repeated_objects(hdu, offset_tol_arcsec=10.0):
                 logging.error(
                     'unexpected change of coordinates in non-custom dither {}:{}'.format(
                         targname, targid))
-                import ipdb
-                ipdb.set_trace()
                 result = False
         else:
 
