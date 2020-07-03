@@ -146,6 +146,16 @@ class OBXML:
         self._remove_elem_list_by_name(elem_list)
 
 
+    def _get_num_decimals(self, str_value):
+
+        if '.' in str_value:
+            num_decimals = len(str_value) - str_value.find('.') - 1
+        else:
+            num_decimals = 0
+
+        return num_decimals
+
+
     def _set_attribs(self, elem, attrib_dict):
 
         for key in attrib_dict.keys():
@@ -161,6 +171,14 @@ class OBXML:
 
                 if isnan_flag == False:
                     str_value = str(value)
+
+                    # For some attributes, configure wants to recieve a
+                    # precision better than 0.1 arcsec: We will get a string
+                    # with trailing zeros if the default decimals are not enough
+                    
+                    if key in ['targra', 'targdec', 'RA_d', 'Dec_d']:
+                        if self._get_num_decimals(str_value) < 5:
+                            str_value = '{:.5f}'.format(value)
                 else:
                     str_value = ''
 
