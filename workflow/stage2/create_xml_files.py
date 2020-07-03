@@ -611,7 +611,8 @@ class _IFUDriverCat:
             progtemp = entry['PROGTEMP']
 
             try:
-                obsmode = get_obsmode_from_progtemp(progtemp)
+                obsmode = get_obsmode_from_progtemp(progtemp,
+                                                    progtemp_dict=progtemp_dict)
             except:
                 obsmode = None
 
