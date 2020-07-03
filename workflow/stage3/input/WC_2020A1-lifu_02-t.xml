@@ -73,7 +73,7 @@
                 ("VPH3" only for <blue_Arm>)
           I(N)strument configuration:                                   [NORBI.X]
           ===========================                                    ^
-            PROGTEMP    obs_type  resolution  red_Arm.VPH  blue_Arm.VPH
+            PROGTEMP    obs_mode  resolution  red_Arm.VPH  blue_Arm.VPH
             1****.*     "MOS"     "low"       "VPH1"       "VPH1"
             2****.*     "MOS"     "high"      "VPH2"       "VPH2"
             3****.*     "MOS"     "high"      "VPH2"       "VPH3"
@@ -237,7 +237,7 @@
             chain is completed.
       -->
   </programme>
-  <observation casuid="-1" chained="False" coordinate_system="ICRS" linkedgroup="%%%" name="PSZ1_125A-PSZ1_125A" ob_class="science" ob_priority="1.0" obsgroup="%%%" obsgroup_validity="%%%" obstemp="IAEEB" obs_type="LIFU" pa="0.0" progtemp="41331" tac_alloc="%%%" tac_id="%%%" trimester="2020A1">
+  <observation casuid="-1" chained="False" coordinate_system="ICRS" linkedgroup="%%%" name="PSZ1_125A-PSZ1_125A" ob_class="science" ob_priority="1.0" obsgroup="%%%" obsgroup_validity="%%%" obstemp="IAEEB" obs_mode="LIFU" pa="0.0" progtemp="41331" tac_alloc="%%%" tac_id="%%%" trimester="2020A1">
     <configure max_calibration="547" max_guide="1" max_sky="56" num_sky_fibres="603" plate="LIFU">
       <conditions epoch="%%%" ha="%%%" pressure="%%%" relative_humidity="%%%" temperature="%%%" tlr="%%%"/>
     </configure>
