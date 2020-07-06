@@ -37,7 +37,7 @@ def _match_in_regex_list(string, regex_list):
     result = False
     
     for regex in regex_list:
-        if re.match(regex, string):
+        if _re.match(regex, string):
             result = True
             break
     
