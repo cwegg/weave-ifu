@@ -21,6 +21,7 @@
 import argparse
 import logging
 import os
+import re
 
 from astropy.io import fits
 
