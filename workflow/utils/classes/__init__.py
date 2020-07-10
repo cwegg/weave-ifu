@@ -1,4 +1,3 @@
 from ._obxml import OBXML
-from ._calibstars import CalibStars
-from ._guidestars import GuideStars
+from ._guide_and_calib_stars import GuideStars, CalibStars
 

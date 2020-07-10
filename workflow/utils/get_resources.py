@@ -18,6 +18,7 @@
 #
 
 
+import os as _os
 from urllib.request import urlretrieve as _urlretrieve
 
 
@@ -134,6 +135,64 @@ def get_obstemp_file(file_path='obstemp.dat',
     file_path : str
         The path used to save the downloaded file.
     """
+    
+    _urlretrieve(url, file_path)
+    
+    return file_path
+
+
+def get_guide_cat(healpix_index, directory='',
+                  url_template=('http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/' +
+                                'resources/guides/Guides_S4_{}.fits')):
+    """
+    Download a catalogue of guide stars for the requested HEALPix index.
+
+    Parameters
+    ----------
+    healpix_index : int
+        The desired HEALPix index.
+    directory : str, optional
+        The directory used to save the downloaded file.
+    url_template : str, optional
+        The URL with the location ot the guide catalogues in Internet.
+
+    Returns
+    -------
+    file_path : str
+        The path used to save the downloaded file.
+    """
+    
+    url = url_template.format(healpix_index)
+    file_path = _os.path.join(directory, _os.path.basename(url))
+    
+    _urlretrieve(url, file_path)
+    
+    return file_path
+
+
+def get_calib_cat(healpix_index, directory='',
+                  url_template=('http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/'
+                                'resources/calibs/WD_S4_{}.fits')):
+    """
+    Download a catalogue of calib stars for the requested HEALPix index.
+
+    Parameters
+    ----------
+    healpix_index : int
+        The desired HEALPix index.
+    directory : str, optional
+        The directory used to save the downloaded file.
+    url_template : str, optional
+        The URL with the location ot the calib catalogues in Internet.
+
+    Returns
+    -------
+    file_path : str
+        The path used to save the downloaded file.
+    """
+    
+    url = url_template.format(healpix_index)
+    file_path = _os.path.join(directory, _os.path.basename(url))
     
     _urlretrieve(url, file_path)
     

@@ -19,11 +19,13 @@
 
 
 """
-Retrieve of WEAVE guide stars (for the LIFU, mIFU and MOS modes).
+Retrieve of WEAVE guide and calib stars.
 
 The authors of this module are:
 
 - David Murphy (dmurphy@ast.cam.ac.uk),
+  Cambridge Astronomical Survey Unit (CASU, IoA).
+- Luis Peralta de Arriba (lperalta@ast.cam.ac.uk),
   Cambridge Astronomical Survey Unit (CASU, IoA).
 
 Notes
@@ -32,6 +34,7 @@ The dependencies of this module are:
 
 - Python core
 - numpy
+- matplotlib
 - astropy
 - astropy_healpix
 """
@@ -53,33 +56,15 @@ import matplotlib.pyplot as _plt
 from matplotlib.patches import Ellipse as _Ellipse
 
 from workflow.utils.get_resources import get_guide_cat as _get_guide_cat
+from workflow.utils.get_resources import get_calib_cat as _get_calib_cat
 
 
-class GuideStars:
-    """
-    Handle the retrieval of WEAVE guide stars.
-    
-    This class provides a mechanism for querying and retrieving guide star
-    targets for the construction of WEAVE 'protofields'.
-    
-    Parameters
-    ----------
-    ra : float
-        The right ascension (decimal degrees) of either the central spaxel or
-        central FoV.
-    dec : float
-        The declination (decimal degrees) of either the central spaxel or
-        central FoV.
-    obsmode : str
-        Either LIFU, mIFU or MOS.
-    dither_size_arcsec : float, optional
-        Maximum allowed size for dithering patterns.
-    nside : int, optional
-        Override the default HEALPix nside value. Will likely end in tears.
-    """
+class _AuxStars:
 
 
     def __init__(self, ra, dec, obsmode, dither_size_arcsec=10.0, nside=32):
+
+        self.star_type = ''
 
         self.ra = ra
         self.dec = dec
@@ -203,11 +188,14 @@ class GuideStars:
         self.healpix_indices = healpix_indices
 
 
-    def _retrieve_cats(self, retrieve_function):
+    def _get_cat(self, healpix_index, directory):
+
+        raise NotImplementedError
+
+
+    def _retrieve_cats(self):
 
         assert self.healpix_indices is not None
-
-        retrieve_function = _get_guide_cat
 
         table_list = []
 
@@ -215,7 +203,7 @@ class GuideStars:
 
             with _tempfile.TemporaryDirectory() as tmp_dir:
 
-                file_path = retrieve_function(healpix_index, tmp_dir)
+                file_path = self._get_cat(healpix_index, tmp_dir)
 
                 with _fits.open(file_path) as hdu_list:
                     aux_table = _Table(hdu_list[1].data)
@@ -258,7 +246,7 @@ class GuideStars:
         if self.full_table is None:
 
             self._set_healpix_indices()
-            full_table = self._retrieve_cats(_get_guide_cat)
+            full_table = self._retrieve_cats()
 
             full_table = self._add_distance_and_angle_to_table(full_table)
 
@@ -532,23 +520,25 @@ class GuideStars:
 
         if self.full_table is not None:
             logging.info(
-                '{} guide stars have been retrieved for ({}, {})'.format(
-                    len(self.full_table), self.ra, self.dec))
+                '{} {} stars have been retrieved for ({}, {})'.format(
+                    len(self.full_table), self.star_type, self.ra, self.dec))
 
         if self.selected_table is not None:
             logging.info(
-                '{} guide stars are useful for ({}, {})'.format(
-                    len(self.useful_table), self.ra, self.dec))
+                '{} {} stars are useful for ({}, {})'.format(
+                    len(self.useful_table), self.star_type, self.ra, self.dec))
 
         if self.selected_table is not None:
             if self.obsmode != 'LIFU':
                 logging.info(
-                    '{} guide stars has been selected for ({}, {})'.format(
-                        len(self.selected_table), self.ra, self.dec))
+                    '{} {} stars has been selected for ({}, {})'.format(
+                        len(self.selected_table), self.star_type,
+                        self.ra, self.dec))
             else:
                 logging.info(
-                    '{} guide stars has been selected for ({}, {})'.format(
-                        len(self.selected_table), self.ra, self.dec) +
+                    '{} {} stars has been selected for ({}, {})'.format(
+                        len(self.selected_table), self.star_type,
+                        self.ra, self.dec) +
                     ' PA = {} deg'.format(self.selected_pa))
 
 
@@ -677,8 +667,8 @@ class GuideStars:
             subplot_kw={'position': [0.03, 0.13, 0.75, 0.75]})
 
         ax.set_title(
-            '{}\nGuide stars at ({:.5f}, {:.5f})'.format(self.obsmode,
-                                                         self.ra, self.dec))
+            '{}\n{} stars at ({:.5f}, {:.5f})'.format(
+                self.obsmode, self.star_type.capitalize(), self.ra, self.dec))
 
         ax.set_xlabel('RA (deg)')
         ax.set_ylabel('Dec (deg)')
@@ -738,39 +728,8 @@ class GuideStars:
 
                 
     def get_table(self, selection='filter', verbose=True, plot_filename=None,
-                 pa_request=None, num_stars_request=None,
-                 num_central_stars=1, min_cut=0.9, max_cut=1.0):
-        """
-        Get a table with a set of selected stars with the requested conditions.
-
-        Parameters
-        ----------
-        selection : {'filter', 'useful', 'full'}
-            Selection to be made in the output table: 'full' returns all the
-            stars near to the coordinates, 'useful' returns all the stars which
-            could be used for guiding at that coordinates (ignoring any request
-            for the position angle), 'filter' returns a table following the
-            prescriptions given in the other keywords of this method)
-        verbose : bool
-            Print a summary or not.
-        plot_filename : str
-            Name of the file to save a figure with the full table, the useful
-            table and the selected table.
-        pa_request : float, optional
-            The position angle (degrees) of rotation (it can be different to
-            zero only for LIFU). np.nan and None are also valid values.
-        num_stars_request : int, optional
-            Maximum number of guide stars in the output. None means no limit.
-        num_central_stars : int
-            Number of stars near to centre to be selected (only used when
-            obsmode is not LIFU).
-        min_cut : float
-            Minimum cut factor to be used for the non-central stars (only used
-            when obsmode is not LIFU).
-        max_cut : float
-            Maximum cut factor to be used for the non-central stars (only used
-            when obsmode is not LIFU).
-        """
+                  pa_request=None, num_stars_request=None,
+                  num_central_stars=1, min_cut=0.9, max_cut=1.0):
 
         # Assert the input values
 
@@ -831,30 +790,178 @@ class GuideStars:
 
         return pa, table
 
+    
+class GuideStars(_AuxStars):
+    """
+    Handle the retrieval of WEAVE guide stars.
+    
+    This class provides a mechanism for querying and retrieving guide star
+    targets for the construction of WEAVE 'protofields'.
+    
+    Parameters
+    ----------
+    ra : float
+        The right ascension (decimal degrees) of either the central spaxel or
+        central FoV.
+    dec : float
+        The declination (decimal degrees) of either the central spaxel or
+        central FoV.
+    obsmode : str
+        Either LIFU, mIFU or MOS.
+    dither_size_arcsec : float, optional
+        Maximum allowed size for dithering patterns.
+    nside : int, optional
+        Override the default HEALPix nside value. Will likely end in tears.
+    """
 
-if __name__ == '__main__':
+    def __init__(self, ra, dec, obsmode, dither_size_arcsec=10.0, nside=32):
 
-    logging.basicConfig(level=logging.INFO)
+        super().__init__(ra, dec, obsmode,
+                         dither_size_arcsec=dither_size_arcsec, nside=nside)
 
-    ra = 33.0
-    dec = 25.0
-    obsmode = 'LIFU'
-    pa_request = 0.0
-    num_stars_request = 1
-    filename = 'lifu.png'
+        self.star_type = 'guide'
 
-    guide_stars = GuideStars(ra, dec, obsmode)
-    guide_stars.get_table(pa_request=pa_request,
-                          num_stars_request=num_stars_request,
-                          plot_filename=filename)
 
-    ra = 33.0
-    dec = 25.0
-    obsmode = 'mIFU'
-    num_stars_request = 8
-    filename = 'mifu.png'
+    def _get_cat(self, healpix_index, directory):
 
-    guide_stars = GuideStars(ra, dec, obsmode)
-    guide_stars.get_table(num_stars_request=num_stars_request,
-                          plot_filename=filename)
+        file_path = _get_guide_cat(healpix_index, directory)
+
+        return file_path
+
+
+    def get_table(self, selection='filter', verbose=True, plot_filename=None,
+                  pa_request=None, num_stars_request=None,
+                  num_central_stars=1, min_cut=0.9, max_cut=1.0):
+        """
+        Get a table with a set of selected stars with the requested conditions.
+
+        Parameters
+        ----------
+        selection : {'filter', 'useful', 'full'}
+            Selection to be made in the output table: 'full' returns all the
+            stars near to the coordinates, 'useful' returns all the stars which
+            could be used for guiding at that coordinates (ignoring any request
+            for the position angle), 'filter' returns a table following the
+            prescriptions given in the other keywords of this method.
+        verbose : bool
+            Print a summary or not.
+        plot_filename : str
+            Name of the file to save a figure with the full table, the useful
+            table and the selected table.
+        pa_request : float, optional
+            The position angle (degrees) of rotation (it can be different to
+            zero only for LIFU). np.nan and None are also valid values.
+        num_stars_request : int, optional
+            Maximum number of guide stars in the output. None means no limit.
+        num_central_stars : int, optional
+            Number of stars near to centre to be selected (only used when
+            obsmode is not LIFU).
+        min_cut : float, optional
+            Minimum cut factor to be used for the non-central stars (only used
+            when obsmode is not LIFU).
+        max_cut : float, optional
+            Maximum cut factor to be used for the non-central stars (only used
+            when obsmode is not LIFU).
+
+        Returns
+        -------
+        pa : float
+            The selected position angle.
+        table : astropy.table.Table
+            A table containing the guide stars.
+        """
+
+        pa, table = super().get_table(selection=selection, verbose=verbose,
+                                      plot_filename=plot_filename,
+                                      pa_request=pa_request,
+                                      num_stars_request=num_stars_request,
+                                      num_central_stars=num_central_stars,
+                                      min_cut=min_cut, max_cut=max_cut)
+
+        return pa, table
+
+
+class CalibStars(_AuxStars):
+    """
+    Handle the retrieval of WEAVE calib stars.
+    
+    This class provides a mechanism for querying and retrieving calib star
+    targets for the construction of WEAVE 'protofields'.
+    
+    Parameters
+    ----------
+    ra : float
+        The right ascension (decimal degrees) of either the central spaxel or
+        central FoV.
+    dec : float
+        The declination (decimal degrees) of either the central spaxel or
+        central FoV.
+    obsmode : str
+        Either LIFU, mIFU or MOS.
+    dither_size_arcsec : float, optional
+        Maximum allowed size for dithering patterns.
+    nside : int, optional
+        Override the default HEALPix nside value. Will likely end in tears.
+    """
+
+
+    def __init__(self, ra, dec, obsmode, dither_size_arcsec=10.0, nside=32):
+
+        assert obsmode != 'LIFU'
+
+        super().__init__(ra, dec, obsmode,
+                         dither_size_arcsec=dither_size_arcsec, nside=nside)
+
+        self.star_type = 'calib'
+
+
+    def _get_cat(self, healpix_index, directory):
+
+        file_path = _get_calib_cat(healpix_index, directory)
+
+        return file_path
+
+
+    def get_table(self, selection='filter', verbose=True, plot_filename=None,
+                  num_stars_request=None,
+                  num_central_stars=0, min_cut=0.2, max_cut=0.4):
+        """
+        Get a table with a set of selected stars with the requested conditions.
+
+        Parameters
+        ----------
+        selection : {'filter', 'useful', 'full'}
+            Selection to be made in the output table: 'full' returns all the
+            stars near to the coordinates, 'useful' returns all the stars which
+            which are in the field of view at that coordinates, 'filter' returns
+            a table following the prescriptions given in the other keywords of
+            this method.
+        verbose : bool
+            Print a summary or not.
+        plot_filename : str
+            Name of the file to save a figure with the full table, the useful
+            table and the selected table.
+        num_stars_request : int, optional
+            Maximum number of guide stars in the output. None means no limit.
+        num_central_stars : int, optional
+            Number of stars near to centre to be selected.
+        min_cut : float, optional
+            Minimum cut factor to be used for the non-central stars.
+        max_cut : float, optional
+            Maximum cut factor to be used for the non-central stars.
+
+        Returns
+        -------
+        table : astropy.table.Table
+            A table containing the guide stars.
+        """
+
+        pa, table = super().get_table(selection=selection, verbose=verbose,
+                                      plot_filename=plot_filename,
+                                      pa_request=None,
+                                      num_stars_request=num_stars_request,
+                                      num_central_stars=num_central_stars,
+                                      min_cut=min_cut, max_cut=max_cut)
+
+        return table
 

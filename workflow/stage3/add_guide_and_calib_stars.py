@@ -25,9 +25,12 @@ import os
 from workflow.utils.classes import OBXML
 
 
-def add_guide_and_calib_stars(xml_file_list, output_dir, mifu_num_calibs=2,
-                              all_guide_stars=False, all_calib_stars=False,
-                              overwrite=False):
+def add_guide_and_calib_stars(
+        xml_file_list, output_dir, lifu_num_guide_stars_request=1,
+        mifu_num_guide_stars_request=8, mifu_num_central_guide_stars=1,
+        mifu_min_guide_cut=0.9, mifu_max_guide_cut=1.0,
+        num_calib_stars_request=2, num_central_calib_stars=0,
+        min_calib_cut=0.2, max_calib_cut=0.4, overwrite=False):
     """
     Add guide and calib stars to XML files.
     
@@ -37,13 +40,24 @@ def add_guide_and_calib_stars(xml_file_list, output_dir, mifu_num_calibs=2,
         A list of input OB XML files.
     output_dir : str
         Name of the directory which will containe the output XML files.
-    mifu_num_calibs : int, optional
-        Number of mIFU calibration stars to be added (it will be limited by
-        max_guides attribute too).
-    all_guide_stars : bool, optional
-        Add all available guide stars to the XML file.
-    all_calib_stars : bool, optional
-        Add all available calib stars to the XML file.
+    lifu_num_guide_stars_request : int, optional
+        Maximum number of LIFU guide stars in the output. None means no limit.
+    mifu_num_guide_stars_request : int, optional
+        Maximum number of mIFU guide stars in the output. None means no limit.
+    mifu_num_central_guide_stars : int, optional
+        Number of mIFU guide stars near to centre to be selected.
+    mifu_min_guide_cut : float, optional
+        Minimum cut factor to be used for the non-central mIFU guide stars.
+    mifu_max_guide_cut : float, optional
+        Maximum cut factor to be used for the non-central mIFU guide stars.
+    num_calib_stars_request : int, optional
+        Maximum number of calib stars in the output. None means no limit.
+    num_central_calib_stars : int, optional
+        Number of calib stars near to centre to be selected.
+    min_calib_cut : float, optional
+        Minimum cut factor to be used for the non-central calib stars.
+    max_calib_cut : float, optional
+        Maximum cut factor to be used for the non-central calib stars.
     overwrite : bool, optional
         Overwrite the output FITS file.
 
@@ -74,6 +88,10 @@ def add_guide_and_calib_stars(xml_file_list, output_dir, mifu_num_calibs=2,
             output_basename_wo_ext = input_basename_wo_ext + '-gc'
 
         output_file = os.path.join(output_dir, output_basename_wo_ext + '.xml')
+        guide_plot_filename = os.path.join(
+            output_dir,output_basename_wo_ext + '-guide_stars.png')
+        calib_plot_filename = os.path.join(
+            output_dir, output_basename_wo_ext + '-calib_stars.png')
 
         # Save the output filename for the result
 
@@ -97,9 +115,18 @@ def add_guide_and_calib_stars(xml_file_list, output_dir, mifu_num_calibs=2,
         
         ob_xml = OBXML(xml_file)
 
-        ob_xml.add_guide_and_calib_stars(mifu_num_calibs=mifu_num_calibs,
-                                         all_guide_stars=all_guide_stars,
-                                         all_calib_stars=all_calib_stars)
+        ob_xml.add_guide_and_calib_stars(
+            guide_plot_filename=guide_plot_filename,
+            lifu_num_guide_stars_request=lifu_num_guide_stars_request,
+            mifu_num_guide_stars_request=mifu_num_guide_stars_request,
+            mifu_num_central_guide_stars=mifu_num_central_guide_stars,
+            mifu_min_guide_cut=mifu_min_guide_cut,
+            mifu_max_guide_cut=mifu_max_guide_cut,
+            calib_plot_filename=calib_plot_filename,
+            num_calib_stars_request=num_calib_stars_request,
+            num_central_calib_stars=num_central_calib_stars,
+            min_calib_cut=min_calib_cut,
+            max_calib_cut=max_calib_cut)
 
         ob_xml.write_xml(output_file)
 
@@ -114,22 +141,45 @@ if __name__ == '__main__':
     parser.add_argument('xml_file', nargs='+',
                         help="""an input OB XML file""")
 
-    parser.add_argument('--mifu_num_calibs', dest='mifu_num_calibs', default=2,
-                        choices=range(20), type=int,
-                        help="""number of mIFU calibration stars to be added
-                        (it will be limited by max_guides attribute too)""")
-
-    parser.add_argument('--all_guide_stars', dest='all_guide_stars',
-                        action='store_true',
-                        help='add all available guide stars to the XML file')
-
-    parser.add_argument('--all_calib_stars', dest='all_calib_stars',
-                        action='store_true',
-                        help='add all available calib stars to the XML file')
-
     parser.add_argument('--outdir', dest='output_dir', default='output',
                         help="""name of the directory which will contain the
                         output XML files""")
+
+    parser.add_argument('--lifu_num_guide_stars_request', default=1,
+                        help="""maximum number of LIFU guide stars in the
+                        output; None means no limit""")
+
+    parser.add_argument('--mifu_num_guide_stars_request', default=8,
+                        help="""maximum number of mIFU guide stars in the
+                        output; None means no limit""")
+
+    parser.add_argument('--mifu_num_central_guide_stars', default=1, type=int,
+                        help="""number of mIFU guide stars near to centre to be
+                        selected""")
+
+    parser.add_argument('--mifu_min_guide_cut', default=0.9, type=float,
+                        help="""minimum cut factor to be used for the
+                        non-central mIFU guide stars""")
+
+    parser.add_argument('--mifu_max_guide_cut', default=1.0, type=float,
+                        help="""maximum cut factor to be used for the
+                        non-central mIFU guide stars""")
+
+    parser.add_argument('--num_calib_stars_request', default=2, type=int,
+                        help="""maximum number of calib stars in the output;
+                        None means no limit""")
+
+    parser.add_argument('--num_central_calib_stars', default=0, type=int,
+                        help="""number of calib stars near to centre to be
+                        selected""")
+
+    parser.add_argument('--min_calib_cut', default=0.2, type=float,
+                        help="""minimum cut factor to be used for the
+                        non-central calib stars""")
+
+    parser.add_argument('--max_calib_cut', default=0.4, type=float,
+                        help="""maximum cut factor to be used for the
+                        non-central calib stars""")
 
     parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                         help='overwrite the output files')
@@ -148,10 +198,35 @@ if __name__ == '__main__':
     if not os.path.exists(args.output_dir):
         logging.info('Creating the output directory')
         os.mkdir(args.output_dir)
+    
+    if args.lifu_num_guide_stars_request != 'None':
+        lifu_num_guide_stars_request = args.lifu_num_guide_stars_request
+        assert type(lifu_num_guide_stars_request) == int
+    else:
+        lifu_num_guide_stars_request = None
+    
+    if args.mifu_num_guide_stars_request != 'None':
+        mifu_num_guide_stars_request = args.mifu_num_guide_stars_request
+        assert type(mifu_num_guide_stars_request) == int
+    else:
+        mifu_num_guide_stars_request = None
+    
+    if args.num_calib_stars_request != 'None':
+        num_calib_stars_request = args.num_calib_stars_request
+        assert type(num_calib_stars_request) == int
+    else:
+        num_calib_stars_request = None
 
-    add_guide_and_calib_stars(args.xml_file, args.output_dir,
-                              mifu_num_calibs=args.mifu_num_calibs,
-                              all_guide_stars=args.all_guide_stars,
-                              all_calib_stars=args.all_calib_stars,
-                              overwrite=args.overwrite)
+    add_guide_and_calib_stars(
+        args.xml_file, args.output_dir,
+        lifu_num_guide_stars_request=lifu_num_guide_stars_request,
+        mifu_num_guide_stars_request=mifu_num_guide_stars_request,
+        mifu_num_central_guide_stars=args.mifu_num_central_guide_stars,
+        mifu_min_guide_cut=args.mifu_min_guide_cut,
+        mifu_max_guide_cut=args.mifu_max_guide_cut,
+        num_calib_stars_request=num_calib_stars_request,
+        num_central_calib_stars=args.num_central_calib_stars,
+        min_calib_cut=args.min_calib_cut,
+        max_calib_cut=args.max_calib_cut,
+        overwrite=args.overwrite)
  

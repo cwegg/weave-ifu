@@ -23,8 +23,8 @@ import xml.dom.minidom as _minidom
 
 import numpy as _np
 
-from ._calibstars import CalibStars as _CalibStars
-from ._guidestars import GuideStars as _GuideStars
+from ._guide_and_calib_stars import GuideStars as _GuideStars
+from ._guide_and_calib_stars import CalibStars as _CalibStars
 
 
 class OBXML:
@@ -641,7 +641,10 @@ class OBXML:
         return max_guide
 
 
-    def _get_guide_stars(self, all_guide_stars=False):
+    def _get_guide_stars(self, plot_filename=None,
+                         lifu_num_stars_request=1, mifu_num_stars_request=8,
+                         mifu_num_central_stars=1,
+                         mifu_min_cut=0.9, mifu_max_cut=1.0):
 
         obsmode = self._get_obsmode()
 
@@ -649,15 +652,18 @@ class OBXML:
         pa = self._get_pa()
         max_guide = self._get_max_guide()
 
-        guide_stars = _GuideStars(central_ra, central_dec, pa, obsmode,
-                                  max_guide=max_guide)
-
-        actual_pa, full_guides_table = guide_stars.get_table()
-
-        if all_guide_stars is False:
-            guides_table = full_guides_table[0:max_guide]
+        if obsmode == 'LIFU':
+            num_stars_request = lifu_num_stars_request
         else:
-            guides_table = full_guides_table
+            num_stars_request = mifu_num_stars_request
+
+        guide_stars = _GuideStars(central_ra, central_dec, obsmode)
+
+        actual_pa, guides_table = guide_stars.get_table(
+            verbose=True, plot_filename=plot_filename, pa_request=pa,
+            num_stars_request=num_stars_request,
+            num_central_stars=mifu_num_central_stars,
+            min_cut=mifu_min_cut, max_cut=mifu_max_cut)
 
         return actual_pa, guides_table
 
@@ -769,29 +775,35 @@ class OBXML:
         self._add_table_as_targets(guides_table, assert_targuse='G')
 
                 
-    def _add_guide_stars(self, all_guide_stars=False):
+    def _add_guide_stars(self, plot_filename=None,
+                         lifu_num_stars_request=1, mifu_num_stars_request=8,
+                         mifu_num_central_stars=1,
+                         mifu_min_cut=0.9, mifu_max_cut=1.0):
 
         actual_pa, guides_table = self._get_guide_stars(
-            all_guide_stars=all_guide_stars)
+            plot_filename=plot_filename,
+            lifu_num_stars_request=lifu_num_stars_request,
+            mifu_num_stars_request=mifu_num_stars_request,
+            mifu_num_central_stars=mifu_num_central_stars,
+            mifu_min_cut=mifu_min_cut, mifu_max_cut=mifu_max_cut)
 
         self._set_guide_stars(actual_pa, guides_table)
 
                         
-    def _get_calib_stars(self, mifu_num_calibs=2, all_calib_stars=False):
+    def _get_calib_stars(self, plot_filename=None, num_stars_request=2,
+                         num_central_stars=0, min_cut=0.2, max_cut=0.4):
 
         obsmode = self._get_obsmode()
 
         central_ra, central_dec = self._get_central_ra_dec(obsmode)
-        pa = self._get_pa()
 
-        calib_stars = _CalibStars(central_ra, central_dec, pa, obsmode)
+        calib_stars = _CalibStars(central_ra, central_dec, obsmode)
 
-        full_calibs_table = calib_stars.get_table()
-
-        if all_calib_stars is False:
-            calibs_table = full_calibs_table[0:mifu_num_calibs]
-        else:
-            calibs_table = full_calibs_table
+        calibs_table = calib_stars.get_table(
+            verbose=True, plot_filename=plot_filename,
+            num_stars_request=num_stars_request,
+            num_central_stars=num_central_stars,
+            min_cut=min_cut, max_cut=max_cut)
 
         return calibs_table
 
@@ -807,7 +819,8 @@ class OBXML:
         self._add_table_as_targets(calibs_table, assert_targuse='C')
 
 
-    def _add_calib_stars(self, mifu_num_calibs=2, all_calib_stars=False):
+    def _add_calib_stars(self, plot_filename=None, num_stars_request=2,
+                         num_central_stars=0, min_cut=0.2, max_cut=0.4):
 
         obsmode = self._get_obsmode()
 
@@ -815,16 +828,36 @@ class OBXML:
             # No calibration stars needed!
             return
 
-        calibs_table = self._get_calib_stars(mifu_num_calibs=mifu_num_calibs,
-                                             all_calib_stars=all_calib_stars)
+        calibs_table = self._get_calib_stars(
+            plot_filename=plot_filename, num_stars_request=num_stars_request,
+            num_central_stars=num_central_stars,
+            min_cut=min_cut, max_cut=max_cut)
 
         self._set_calib_stars(calibs_table)
 
         
-    def add_guide_and_calib_stars(self, mifu_num_calibs=2,
-                                  all_guide_stars=False, all_calib_stars=False):
+    def add_guide_and_calib_stars(self,
+                                  guide_plot_filename=None,
+                                  lifu_num_guide_stars_request=1,
+                                  mifu_num_guide_stars_request=8,
+                                  mifu_num_central_guide_stars=1,
+                                  mifu_min_guide_cut=0.9,
+                                  mifu_max_guide_cut=1.0,
+                                  calib_plot_filename=None,
+                                  num_calib_stars_request=2,
+                                  num_central_calib_stars=0,
+                                  min_calib_cut=0.2,
+                                  max_calib_cut=0.4):
 
-        self._add_guide_stars(all_guide_stars=all_guide_stars)
-        self._add_calib_stars(mifu_num_calibs=mifu_num_calibs,
-                              all_calib_stars=all_calib_stars)
+        self._add_guide_stars(plot_filename=guide_plot_filename,
+                              lifu_num_stars_request=lifu_num_guide_stars_request,
+                              mifu_num_stars_request=mifu_num_guide_stars_request,
+                              mifu_num_central_stars=mifu_num_central_guide_stars,
+                              mifu_min_cut=mifu_min_guide_cut,
+                              mifu_max_cut=mifu_max_guide_cut)
+        self._add_calib_stars(plot_filename=calib_plot_filename,
+                              num_stars_request=num_calib_stars_request,
+                              num_central_stars=num_central_calib_stars,
+                              min_cut=min_calib_cut,
+                              max_cut=max_calib_cut)
 
