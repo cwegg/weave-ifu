@@ -28,7 +28,13 @@ import numpy as np
 from astropy.io import fits
 
 from workflow.utils import check_equal_headers
-from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
+from workflow.utils.get_obstemp_info import (get_obstemp_info,
+                                             get_obstemp_dict)
+from workflow.utils.get_progtemp_info import (get_progtemp_dict,
+                                              get_progtemp_info,
+                                              get_obsmode_from_progtemp)
+from workflow.utils.get_resources import (get_progtemp_file,
+                                          get_obstemp_file)
 
 
 def _check_versus_template(cat_filename, template):
@@ -96,7 +102,7 @@ def _check_ccreport(ccreport):
     return result
 
 
-def _check_targsrvy(array):
+def _check_targsrvy(array, trimester, cat_filename):
 
     icd_030_targsrvy_set = [
         'GA-LRDISC', 'GA-LRHIGHLAT', 'GA-HR', 'GA-OC', 'GA-CALIB', 'STEPS',
@@ -104,20 +110,53 @@ def _check_targsrvy(array):
         'WL-DEEP', 'WQ', 'ASTRO-CALIB', 'WD', 'GS', 'ING-SYSCAT'
     ]
 
+    sv_ot_regex = '^W[SV]([0-9]{4}[AB][12])-[0-9]{3}$'
+
     result = True
 
     targsrvy_set = set(array)
 
-    for value in targsrvy_set:
-        if value not in icd_030_targsrvy_set:
-            logging.error('unexpected TARGSRVY value: {}'.format(value))
-            result = False
+    for targsrvy_value in targsrvy_set:
+        if targsrvy_value not in icd_030_targsrvy_set:
+
+            if not re.match(sv_ot_regex, value):
+                logging.error('unexpected TARGSRVY value: {}'.format(
+                    targsrvy_value))
+                result = False
+            else:
+                match = re.match(sv_ot_regex, targsrvy_value)
+
+                trimester_in_sv_ot, = match.groups()
+
+                if trimester_in_sv_ot != trimester:
+                    logging.error(
+                        'unexpected TARGSRVY value for TRIMESTER {}: {}'.format(
+                            trimester, targsrvy_value))
+                    result = False
 
     if len(targsrvy_set) > 1:
-        logging.warning(
-            'there is more than one TARGSRV value in the catalogue, ' +
-            'are you sure?'
-        )
+        logging.error(
+            'there is more than one TARGSRV value in the catalogue')
+        result = False
+
+    if result == True:
+
+        targsrvy = list(targsrvy_set)[0]
+        
+        if re.match(sv_ot_regex, targsrvy_value):
+
+            expected_filename = '{}-ifu_driver_cat.fits'.format(targsrvy)
+
+        else:
+
+            expected_filename = '{}_{}-ifu_driver_cat.fits'.format(
+                targsrvy, trimester)
+
+        if expected_filename != os.path.basename(cat_filename):
+            logging.error(
+                'unexpected filename for TARGSRVY/TRIMESTE {}/{}: {}'.format(
+                    targsrvy, trimester, expected_filename))
+        
 
     return result
 
@@ -166,7 +205,7 @@ def _check_non_null_value(array):
     return result
 
 
-def _get_td(hdu, colname, minmax):
+def _get_tl(hdu, colname, minmax):
 
     assert minmax in ['min', 'max']
 
@@ -187,20 +226,20 @@ def _get_td(hdu, colname, minmax):
     return value
 
 
-def _check_in_td_range(hdu, colname):
+def _check_in_tl_range(hdu, colname):
 
     result = True
 
-    min_value = _get_td(hdu, colname, 'min')
-    max_value = _get_td(hdu, colname, 'max')
+    min_value = _get_tl(hdu, colname, 'min')
+    max_value = _get_tl(hdu, colname, 'max')
     
     if min_value is None:
         logging.warning(
-            'TDMIN value is not available for column {}'.format(colname))
+            'TLMIN value is not available for column {}'.format(colname))
     
     if max_value is None:
         logging.warning(
-            'TDMAX value is not available for column {}'.format(colname))
+            'TLMAX value is not available for column {}'.format(colname))
 
     for value in hdu.data[colname]:
 
@@ -219,7 +258,7 @@ def _check_in_td_range(hdu, colname):
     return result
 
 
-def _check_targprio(hdu):
+def _check_targprio(hdu, progtemp_dict):
 
     result = True
 
@@ -229,65 +268,62 @@ def _check_targprio(hdu):
         logging.error('TARGPRIO values contain NaN')
         result = False
 
-    range_result = _check_in_td_range(hdu, 'TARGPRIO')
+    range_result = _check_in_tl_range(hdu, 'TARGPRIO')
 
     if range_result is False:
         logging.error('TARGPRIO values out of range')
         result = False
 
+    for targprio, progtemp in zip(hdu.data['TARGPRIO'], hdu.data['PROGTEMP']):
+
+        obsmode = get_obsmode_from_progtemp(progtemp,
+                                            progtemp_dict=progtemp_dict)
+
+        if obsmode == 'LIFU':
+            if targprio != 10.0:
+                logging.error('TARGPRIO value must be 10.0 for LIFU mode')
+                result = False
+
     return result
 
 
-def _check_progtemp(array):
-
-    progtemp_regex = '^[4-9][01239][0-9][0-9][12349](\.[0-9]+\+?)?$'
+def _check_progtemp(array, progtemp_dict, forbidden_dict):
 
     result = True
 
     progtemp_set = set(array)
 
-    for value in progtemp_set:
-
-        value_result = True
-
-        if not re.match(progtemp_regex, value):
-            value_result = False
+    for progtemp_value in progtemp_set:
 
         try:
-            o_char = value[1]
-
-            r_char = value[2]
-            b_char = value[3]
-
-            if o_char == '0':
-                assert r_char not in '12357'
-                assert b_char not in '12357'
-            elif o_char == '1':
-                assert r_char not in '1'
-                assert b_char not in '1'
-            elif o_char == '2':
-                assert r_char not in '15'
-                assert b_char not in '15'
+            spectrograph_dict = get_progtemp_info(progtemp_value,
+                                                  progtemp_dict=progtemp_dict)
         except:
-            value_result = False
-
-        if value_result is False:
             logging.error('unexpected PROGTEMP value: {}'.format(value))
             result = False
+
+        for survey_type in forbidden_dict.keys():
+            for regex in forbidden_dict[survey_type]:
+                if re.match(regex, progtemp_value):
+                    logging.warning(
+                        'PROGTEMP value forbidden for {} surveys: {}'.format(
+                            survey_type.upper(), progtemp_value))
 
     return result
 
 
-def _check_obstemp(array):
-
-    obstemp_regex = '^[A-X][A-E][A-F][A-E][A-F]$'
+def _check_obstemp(array, obstemp_dict):
 
     result = True
 
     obstemp_set = set(array)
 
-    for value in obstemp_set:
-        if not re.match(obstemp_regex, value):
+    for obstemp_value in obstemp_set:
+
+        try:
+            obsconstraints_dict = get_obstemp_info(obstemp_value,
+                                                   obstemp_dict=obstemp_dict)
+        except:
             logging.error('unexpected OBSTEMP value: {}'.format(value))
             result = False
 
@@ -304,7 +340,7 @@ def _check_gaia_ra(hdu):
         logging.error('GAIA_RA values contain NaN')
         result = False
 
-    range_result = _check_in_td_range(hdu, 'GAIA_RA')
+    range_result = _check_in_tl_range(hdu, 'GAIA_RA')
 
     if range_result is False:
         logging.error('GAIA_RA values out of range')
@@ -323,7 +359,7 @@ def _check_gaia_dec(hdu):
         logging.error('GAIA_DEC values contain NaN')
         result = False
 
-    range_result = _check_in_td_range(hdu, 'GAIA_DEC')
+    range_result = _check_in_tl_range(hdu, 'GAIA_DEC')
 
     if range_result is False:
         logging.error('GAIA_DEC values out of range')
@@ -334,7 +370,7 @@ def _check_gaia_dec(hdu):
 
 def _check_gaia_epoch(hdu):
 
-    result = _check_in_td_range(hdu, 'GAIA_EPOCH')
+    result = _check_in_tl_range(hdu, 'GAIA_EPOCH')
 
     if result is False:
         logging.error('GAIA_EPOCH values out of range')
@@ -384,11 +420,11 @@ def _check_gaia_paral(hdu):
     return result
 
 
-def _check_ifu_pa_request(hdu):
+def _check_ifu_pa_request(hdu, progtemp_dict):
 
     result = True
 
-    range_result = _check_in_td_range(hdu, 'IFU_PA_REQUEST')
+    range_result = _check_in_tl_range(hdu, 'IFU_PA_REQUEST')
 
     if range_result is False:
         logging.error('IFU_PA_REQUEST values out of range')
@@ -402,7 +438,7 @@ def _check_ifu_pa_request(hdu):
 
         if (not np.isnan(ifu_pa_request)):
 
-            obsmode = get_obsmode_from_progtemp(progtemp)
+            obsmode = get_obsmode_from_progtemp(progtemp, progtemp_dict)
 
             if obsmode != 'LIFU':
 
@@ -414,11 +450,11 @@ def _check_ifu_pa_request(hdu):
     return result
 
 
-def _check_ifu_dither(hdu):
+def _check_ifu_dither(hdu, progtemp_dict):
 
     result = True
 
-    range_result = _check_in_td_range(hdu, 'IFU_DITHER')
+    range_result = _check_in_tl_range(hdu, 'IFU_DITHER')
 
     if range_result is False:
         logging.error('IFU_DITHER values out of range')
@@ -431,16 +467,16 @@ def _check_ifu_dither(hdu):
             zip(ifu_dither_array, progtemp_array)):
 
 
-        obsmode = get_obsmode_from_progtemp(progtemp)
+        obsmode = get_obsmode_from_progtemp(progtemp, progtemp_dict)
 
         if (obsmode == 'LIFU'):
-            if (ifu_dither not in [-1, 0, 3, 5]):
+            if (ifu_dither not in [-1, 0, -3, 3, 4, 5, 6]):
                 logging.error(
                     'unexpected IFU_DITHER for LIFU PROGTEMP in row {}'.format(
                         i + 1))
                 result = False
         elif (obsmode == 'mIFU'):
-            if (ifu_dither not in [0, 3, 5]):
+            if (ifu_dither not in [0, -3, 3, 4, 5, 6]):
                 logging.error(
                     'unexpected IFU_DITHER for mIFU PROGTEMP in row {}'.format(
                         i + 1))
@@ -571,36 +607,7 @@ def _check_repeated_objects(hdu, offset_tol_arcsec=10.0):
     return result
 
 
-def _progtemp_to_num_exp(progtemp):
-
-    o_char = progtemp[1]
-    r_char = progtemp[2]
-    b_char = progtemp[3]
-
-    convert_dict = {
-        '0': {'0': 1, '1': None, '2': None, '3': None, '4': 2,
-              '5': None, '6': 3, '7': None, '8': 4, '9': 5},
-        '1': {'0': 1, '1': None, '2': 2, '3': 3, '4': 4,
-              '5': 5, '6': 6, '7': 7, '8': 8, '9': 9},
-        '2': {'0': 1, '1': None, '2': 3, '3': 5, '4': 6,
-              '5': None, '6': 9, '7': 10, '8': 12, '9': 15},
-        '3': {'0': 1, '1': 2, '2': 4, '3': 6, '4': 8,
-              '5': 10, '6': 12, '7': 14, '8': 16, '9': 20}
-    }
-
-    if o_char in convert_dict.keys():
-        num_exp_r = convert_dict[o_char][r_char]
-        num_exp_b = convert_dict[o_char][b_char]
-    else:
-        num_exp_r = None
-        num_exp_b = None
-
-    result = (num_exp_r, num_exp_b)
-
-    return result
-
-
-def _check_progtemp_ifu_dither_compatibility(hdu):
+def _check_progtemp_ifu_dither_compatibility(hdu, progtemp_dict):
 
     result = True
 
@@ -612,13 +619,25 @@ def _check_progtemp_ifu_dither_compatibility(hdu):
     for i, (progtemp, ifu_dither) in enumerate(
             zip(progtemp_array, ifu_dither_array)):
 
-        if ifu_dither > 1:
+        if np.abs(ifu_dither) != 1:
 
-            num_dither = ifu_dither
-            num_exp_r, num_exp_b = _progtemp_to_num_exp(progtemp)
+            num_dither = np.abs(ifu_dither)
+
+            spectrograph_dict = get_progtemp_info(progtemp,
+                                                  progtemp_dict=progtemp_dict)
+
+            num_exp_r = spectrograph_dict['red_num_exposures']
+            num_exp_b = spectrograph_dict['blue_num_exposures']
  
             if ((num_exp_r % num_dither != 0) or 
                 (num_exp_b % num_dither != 0)):
+                logging.error(
+                    'PROGTEMP and IFU_DITHER are not compatible in row {}'.format(
+                        i + 1))
+                result = False
+ 
+            if not ((num_exp_r % num_exp_b == 0) or
+                    (num_exp_b % num_exp_r == 0)):
                 logging.error(
                     'PROGTEMP and IFU_DITHER are not compatible in row {}'.format(
                         i + 1))
@@ -650,10 +669,23 @@ def _check_progtemp_ifu_dither_compatibility(hdu):
         targname, targid, progtemp, obstemp = key
 
         num_dither = custom_dict[key]
-        num_exp_r, num_exp_b = _progtemp_to_num_exp(progtemp)
+
+        spectrograph_dict = get_progtemp_info(progtemp,
+                                              progtemp_dict=progtemp_dict)
+
+        num_exp_r = spectrograph_dict['red_num_exposures']
+        num_exp_b = spectrograph_dict['blue_num_exposures']
 
         if ((num_exp_r % num_dither != 0) or 
             (num_exp_b % num_dither != 0)):
+            logging.error(
+                'PROGTEMP and custom dither {}:{}:{}:{} are not compatible'.format(
+                    targname, targid, progtemp, obstemp)
+            )
+            result = False
+ 
+        if not ((num_exp_r % num_exp_b == 0) or
+                (num_exp_b % num_exp_r == 0)):
             logging.error(
                 'PROGTEMP and custom dither {}:{}:{}:{} are not compatible'.format(
                     targname, targid, progtemp, obstemp)
@@ -663,7 +695,8 @@ def _check_progtemp_ifu_dither_compatibility(hdu):
     return result
 
 
-def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
+def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True,
+                         progtemp_file=None, obstemp_file=None):
     """
     Check the contents of an IFU driver catalogue.
 
@@ -676,6 +709,10 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
     check_vs_template: bool, optional
         An option to indicate whether the file should be checked against a
         template or not.
+    progtemp_file : str, optional
+        A progtemp.dat file with the definition of PROGTEMP.
+    obstemp_file : str, optional
+        A obstemp.dat file with the definition of OBSTEMP.
 
     Returns
     ----------
@@ -684,6 +721,15 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
     """
     
     result = True
+
+    # Get the dictionaries to interpret PROGTEMP and OBSTEMP, and their
+    # DATAMVER values
+
+    progtemp_datamver, progtemp_dict, forbidden_dict = get_progtemp_dict(
+        filename=progtemp_file, assert_orb=True)
+
+    obstemp_datamver, obstemp_dict = get_obstemp_dict(
+        filename=obstemp_file)
 
     # Check the file versus a template (if requested)
     
@@ -705,6 +751,25 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
     # Open the catalogue file
 
     with fits.open(cat_filename) as hdu_list:
+
+        # Check DATAMVER of the IFU driver cat, PROGTEMP file and OBSTEMP file
+        # are consistent
+
+        datamver = hdu_list[0].header['DATAMVER']
+
+        if datamver != progtemp_datamver:
+            logging.critical(
+                'DATAMVER mismatch ({} != {}) for PROGTEMP file: '.format(
+                    datamver, progtemp_datamver) +
+                'Stop unless you are sure!')
+            raise SystemExit(2)
+
+        if datamver != obstemp_datamver:
+            logging.critical(
+                'DATAMVER mismatch ({} != {}) for OBSTEMP file: '.format(
+                    datamver, obstemp_datamver) +
+                'Stop unless you are sure!')
+            raise SystemExit(2)
 
         # Check the values of its primary header
 
@@ -739,7 +804,7 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
         hdu1 = hdu_list[1]
         data = hdu_list[1].data
 
-        if not _check_targsrvy(data['TARGSRVY']):
+        if not _check_targsrvy(data['TARGSRVY'], trimester, cat_filename):
             result = False
 
         # Nothing to check in TARGPROG
@@ -750,13 +815,13 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
         if not _check_targname(data['TARGNAME']):
             result = False
 
-        if not _check_targprio(hdu1):
+        if not _check_targprio(hdu1, progtemp_dict):
             result = False
 
-        if not _check_progtemp(data['PROGTEMP']):
+        if not _check_progtemp(data['PROGTEMP'], progtemp_dict, forbidden_dict):
             result = False
 
-        if not _check_obstemp(data['OBSTEMP']):
+        if not _check_obstemp(data['OBSTEMP'], obstemp_dict):
             result = False
 
         if not _check_gaia_ra(hdu1):
@@ -774,17 +839,24 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True):
         if not _check_gaia_paral(hdu1):
             result = False
 
-        if not _check_ifu_pa_request(hdu1):
+        if not _check_ifu_pa_request(hdu1, progtemp_dict):
             result = False
 
-        if not _check_ifu_dither(hdu1):
+        if not _check_ifu_dither(hdu1, progtemp_dict):
             result = False
 
         if not _check_repeated_objects(hdu1):
             result = False
 
-        if not _check_progtemp_ifu_dither_compatibility(hdu1):
+        if not _check_progtemp_ifu_dither_compatibility(hdu1, progtemp_dict):
             result = False
+
+    # Write a message
+
+    if result == True:
+        logging.info('{} has passed the checks'.format(cat_filename))
+    else:
+        logging.error('{} has NOT passed the checks'.format(cat_filename))
 
     return result
 
@@ -805,6 +877,17 @@ if __name__ == '__main__':
                         action='store_false',
                         help=
                         'skip the check of the catalogue versus the template')
+
+    parser.add_argument('--progtemp_file', dest='progtemp_file',
+                        default=os.path.join('aux', 'progtemp.dat'),
+                        help="""a progtemp.dat file with the definition of
+                        PROGTEMP""")
+
+
+    parser.add_argument('--obstemp_file', dest='obstemp_file',
+                        default=os.path.join('aux', 'obstemp.dat'),
+                        help="""a obstemp.dat file with the definition of
+                        OBSTEMP""")
     
     parser.add_argument('--log_level', default='info',
                         choices=['debug', 'info', 'warning', 'error'],
@@ -816,7 +899,17 @@ if __name__ == '__main__':
                   'warning': logging.WARNING, 'error': logging.ERROR}
     
     logging.basicConfig(level=level_dict[args.log_level])
+
+    if not os.path.exists(args.progtemp_file):
+        logging.info('Downloading the progtemp file')
+        get_progtemp_file(file_path=args.progtemp_file)
+
+    if not os.path.exists(args.obstemp_file):
+        logging.info('Downloading the obstemp file')
+        get_obstemp_file(file_path=args.obstemp_file)
     
     check_ifu_driver_cat(args.catalogue, template=args.template,
-                         check_vs_template=args.check_vs_template)
+                         check_vs_template=args.check_vs_template,
+                         progtemp_file=args.progtemp_file,
+                         obstemp_file=args.obstemp_file)
 
