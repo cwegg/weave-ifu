@@ -1,6 +1,36 @@
 Tutorial for IFU workflow
 =========================
 
+Installation
+------------
+
+The core code of this workflow has been written in Python 3 using the following
+non-standard packages:
+
+- numpy
+- matplotlib
+- astropy
+- astropy_healpix
+
+Additionally, for the plotting tool of stage 1 a Java Runtime Environment is
+needed.
+
+In Ubuntu 20.04, these dependencies can be solved installing the following
+packages:
+
+- `python3-numpy`
+- `python3-matplotlib`
+- `python3-astropy` and `astropy-utils`
+- `python3-astropy-healpix`
+- `openjdk-11-jre`
+
+Once you have the dependencies installed, you simple have to add the directory
+which contains the `workflow` folder to the Python path:
+
+```
+export PYTHONPATH=`pwd`
+```
+
 Stage 1: Creation of IFU driver catalogue
 -----------------------------------------
 
