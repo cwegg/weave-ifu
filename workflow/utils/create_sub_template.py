@@ -106,7 +106,7 @@ def create_sub_template(catalogue_template, output_filename, col_list,
     # template
 
     basic_kwd_type_list = ['TTYPE', 'TFORM', 'TDISP', 'TUNIT', 'TNULL']
-    extra_kwd_type_list = ['TDMIN', 'TDMAX', 'TUCD', 'TPROP']
+    extra_kwd_type_list = ['TLMIN', 'TLMAX', 'TUCD', 'TPROP']
 
     # Read the catalogue template
 
