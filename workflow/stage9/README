@@ -1,0 +1,21 @@
+Stage 9
+=======
+
+**Contributors:** David Murphy, Clare Worley
+
+Input and output
+----------------
+
+* **Input:**
+
+  + A validated and CNAME'd FITS catalogue by WASP.
+
+  + A set of configured IFU XML files of one specific survey or PI proposal
+    (i.e. the input files for stage 5).
+
+* **Output:**
+
+  + A set of configured IFU XML files of one specific survey or PI proposal
+    with CNAMEs and the additional information updated/added at stage 6, and
+    the remaining %%% properly populated.
+

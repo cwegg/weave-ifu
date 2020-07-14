@@ -1,0 +1,16 @@
+Stage 8
+=======
+
+**Contributors:** David Murphy, Clare Worley
+
+Input and output
+----------------
+
+* **Input:**
+
+  + A combo FITS catalogue.
+
+* **Output:**
+
+  + A validated and CNAME'd FITS catalogue by WASP.
+
