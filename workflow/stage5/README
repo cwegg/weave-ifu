@@ -3,14 +3,14 @@ Stage 5
 
 **Contributors:** David Murphy, Luis Peralta
 
-Input, auxiliar file(s) and output
-----------------------------------
+Input, auxiliar files and output
+--------------------------------
 
 * **Input:**
 
   + A set of configured IFU XML files of one specific survey or PI proposal.
 
-* **Auxiliar file(s):**
+* **Auxiliar files:**
 
   + *aux/&ast;_CatalogueTemplate.fits*:
     A template with the structure of the FITS catalogue of one specific survey
