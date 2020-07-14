@@ -21,6 +21,8 @@ workflow/stage10/output/
 
 # Stage-1 files:
 workflow/stage1/aux/Master_CatalogueTemplate.fits
+workflow/stage1/aux/obstemp.dat
+workflow/stage1/aux/progtemp.dat
 workflow/stage1/aux/Aladin.jar
 
 # Stage-2 files:
