@@ -572,7 +572,7 @@ class _IFUDriverCat:
             filename=obstemp_file)
 
         # Check DATAMVER of the IFU driver cat, the XML template, PROGTEMP file
-        # and OBSTEMP file are consistend
+        # and OBSTEMP file are consistent
 
         if self.datamver != xml_datamver:
             logging.critical(
