@@ -427,7 +427,7 @@ class _IFUDriverCat:
 
                 
     def _generate_mifu_xmls(self, mifu_entry_list, xml_template, progtemp_dict,
-                            obstemp_dict, mifu_mode='aufbau', mifu_num_calibs=2,
+                            obstemp_dict, mifu_mode='all', mifu_num_calibs=2,
                             mifu_num_extra=0, output_dir='', prefix='',
                             suffix='-t'):
 
@@ -444,7 +444,7 @@ class _IFUDriverCat:
         #                            (with remainder added to a final OB)
         #                  i.e. 5 OBs x 17 bundles + 1 OB x 15 bundles
 
-        assert mifu_mode in ['aufbau', 'equipartition', 'all']
+        assert mifu_mode in ['all', 'aufbau', 'equipartition']
         assert (mifu_num_calibs >= 0) and (mifu_num_calibs < 20)
         
         output_file_list = []
@@ -553,7 +553,7 @@ class _IFUDriverCat:
 
                     
     def generate_xmls(self, xml_template, progtemp_file=None,
-                      obstemp_file=None, mifu_mode='aufbau', mifu_num_calibs=2,
+                      obstemp_file=None, mifu_mode='all', mifu_num_calibs=2,
                       mifu_num_extra=0, output_dir='', prefix='', suffix='-t',
                       pass_datamver=False):
 
@@ -647,7 +647,7 @@ class _IFUDriverCat:
 
 def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
                      progtemp_file=None, obstemp_file=None,
-                     mifu_mode='aufbau', mifu_num_calibs=2, mifu_num_extra=0,
+                     mifu_mode='all', mifu_num_calibs=2, mifu_num_extra=0,
                      prefix=None, suffix='-t', pass_datamver=False,
                      overwrite=False):
     """
@@ -665,7 +665,7 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
         A progtemp.dat file with the definition of PROGTEMP.
     obstemp_file : str, optional
         A obstemp.dat file with the definition of OBSTEMP.
-    mifu_mode : {'aufbau', 'equipartition', 'all'}, optional
+    mifu_mode : {'all', 'aufbau', 'equipartition'}, optional
         Grouping mode for mIFU targets.
     mifu_num_calibs : int, optional
         Number of mIFU calibration stars and sky bundles to be considered in
@@ -738,11 +738,11 @@ if __name__ == '__main__':
                         help="""a obstemp.dat file with the definition of
                         OBSTEMP""")
 
-    parser.add_argument('--mifu_mode', dest='mifu_mode', default='aufbau',
-                        choices=['aufbau', 'equipartition', 'all'],
-                        help="""grouping mode for mIFU targets: 'aufbau'
-                        follows the aufbau principle, 'equipartition' divides up
-                        the bundles equally, 'all' includes all""")
+    parser.add_argument('--mifu_mode', dest='mifu_mode', default='all',
+                        choices=['all', 'aufbau', 'equipartition', 'all'],
+                        help="""grouping mode for mIFU targets: 'all' includes
+                        all, 'aufbau' follows the aufbau principle,
+                        'equipartition' divides up the bundles equally""")
 
     parser.add_argument('--mifu_num_calibs', dest='mifu_num_calibs', default=2,
                         choices=range(20), type=int,
