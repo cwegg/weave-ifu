@@ -376,7 +376,7 @@ def get_author_from_xmls(input_xmls):
         xml_filename_list = [input_xmls]
     
     author_list = [_get_attribute_in_simple_element_of_xml_file(
-                       xml_file, 'root', 'author')
+                       xml_file, 'weave', 'author')
                    for xml_file in xml_filename_list]
     
     author = _get_single_value_from_list(author_list)
@@ -405,7 +405,7 @@ def get_cc_report_from_xmls(input_xmls):
         xml_filename_list = [input_xmls]
     
     cc_report_list = [_get_attribute_in_simple_element_of_xml_file(xml_file,
-                          'root', 'cc_report')
+                          'weave', 'cc_report')
                       for xml_file in xml_filename_list]
     
     cc_report = _get_single_value_from_list(cc_report_list)
@@ -434,7 +434,7 @@ def get_report_verbosity_from_xmls(input_xmls):
         xml_filename_list = [input_xmls]
     
     report_verbosity_list = [_get_attribute_in_simple_element_of_xml_file(
-                                 xml_file, 'root', 'report_verbosity')
+                                 xml_file, 'weave', 'report_verbosity')
                       for xml_file in xml_filename_list]
     
     report_verbosity = _get_single_value_from_list(report_verbosity_list)
