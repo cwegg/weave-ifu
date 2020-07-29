@@ -78,7 +78,7 @@ def get_data_dict():
            'CLUSTER1', 'CLUSTER1', 'CLUSTER1']
     
     data_dict['TARGPRIO'] = \
-        [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+        [10.0, 10.0, 10.0, 10.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
          1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
          1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
          1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -133,16 +133,16 @@ def get_data_dict():
            -4.2647, -4.4497, -4.5789]
     
     data_dict['GAIA_EPOCH'] = \
-        [2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
-           2015.5, 2015.5, 2015.5]
+        [np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan]
     
     data_dict['GAIA_PMRA'] = \
         [np.nan, np.nan, np.nan, np.nan, np.nan,
@@ -169,11 +169,16 @@ def get_data_dict():
            np.nan, np.nan, np.nan]
     
     data_dict['GAIA_PARAL'] = \
-        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        [np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan, np.nan, np.nan,
+         np.nan, np.nan, np.nan, np.nan, np.nan,
+           np.nan, np.nan, np.nan]
     
     data_dict['IFU_PA_REQUEST'] = \
         [0.0, 0.0, 0.0, 0.0, np.nan,
@@ -202,10 +207,10 @@ if __name__ == '__main__':
     ############################################################################
     # Set the location of the template and the output file and directory
     
-    ifu_driver_template = './aux/ifu_driver_template.fits'
+    ifu_driver_template = os.path.join('aux', 'ifu_driver_template.fits')
     
-    output_dir = './output/'
-    output_filename = output_dir + 'WC_2020A1-ifu_driver_cat.fits'
+    output_dir = 'output'
+    output_filename = os.path.join(output_dir, 'WC_2020A1-ifu_driver_cat.fits')
     
     ############################################################################
     # Create the output directory if it does not exist

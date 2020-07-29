@@ -18,9 +18,9 @@
 #
 
 
-import xml.dom.minidom
+import xml.dom.minidom as _minidom
 
-import numpy as np
+import numpy as _np
 
 
 def _get_lookup(post_configure=True):
@@ -116,7 +116,7 @@ def _get_xml_data(xml_filename):
 
     xml_data = {}
 
-    dom = xml.dom.minidom.parse(xml_filename)
+    dom = _minidom.parse(xml_filename)
 
     observation = dom.getElementsByTagName('observation')[0]
     dithering = dom.getElementsByTagName('dithering')[0]
@@ -157,7 +157,7 @@ def _get_value_from_xml_data(xml_data, target, key, formats):
             
             assert (formats[key] == float)
             
-            formatted_value = np.nan
+            formatted_value = _np.nan
             
             return formatted_value
         
@@ -175,9 +175,9 @@ def _get_value_from_xml_data(xml_data, target, key, formats):
         if raw_value not in ['', '%%%']:
             formatted_value = format_func(raw_value)
         elif (raw_value == '') and (format_func == float):
-            formatted_value = np.nan
+            formatted_value = _np.nan
         elif (raw_value == '%%%') and (format_func == float):
-            formatted_value = np.nan
+            formatted_value = _np.nan
         else:
             raise ValueError(
                       'raw value {}, format {}'.format(raw_value, format_func))
@@ -305,7 +305,7 @@ def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list,
 def _get_attribute_in_simple_element_of_xml_file(xml_file, element_name,
                                                  attribute_name):
     
-    dom = xml.dom.minidom.parse(xml_file)
+    dom = _minidom.parse(xml_file)
     
     element = dom.getElementsByTagName(element_name)[0]
     
@@ -376,7 +376,7 @@ def get_author_from_xmls(input_xmls):
         xml_filename_list = [input_xmls]
     
     author_list = [_get_attribute_in_simple_element_of_xml_file(
-                       xml_file, 'root', 'author')
+                       xml_file, 'weave', 'author')
                    for xml_file in xml_filename_list]
     
     author = _get_single_value_from_list(author_list)
@@ -405,7 +405,7 @@ def get_cc_report_from_xmls(input_xmls):
         xml_filename_list = [input_xmls]
     
     cc_report_list = [_get_attribute_in_simple_element_of_xml_file(xml_file,
-                          'root', 'cc_report')
+                          'weave', 'cc_report')
                       for xml_file in xml_filename_list]
     
     cc_report = _get_single_value_from_list(cc_report_list)
@@ -434,7 +434,7 @@ def get_report_verbosity_from_xmls(input_xmls):
         xml_filename_list = [input_xmls]
     
     report_verbosity_list = [_get_attribute_in_simple_element_of_xml_file(
-                                 xml_file, 'root', 'report_verbosity')
+                                 xml_file, 'weave', 'report_verbosity')
                       for xml_file in xml_filename_list]
     
     report_verbosity = _get_single_value_from_list(report_verbosity_list)

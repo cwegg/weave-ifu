@@ -69,15 +69,16 @@ if __name__ == '__main__':
     ############################################################################
     # Set the filename pattern of the XMLs used for cheating
     
-    xml_files_pattern = '../stage4/input/*.xml'
+    xml_files_pattern = os.path.join('..', 'stage4', 'input', '*.xml')
     
     ############################################################################
     # Set the location of the template and the output file and directory
     
-    ifu_driver_template = './aux/ifu_driver_template.fits'
+    ifu_driver_template = os.path.join('aux', 'ifu_driver_template.fits')
     
-    output_dir = './output/'
-    output_filename = output_dir + 'WC_2020A1-ifu_driver_cat-cheating.fits'
+    output_dir = 'output'
+    output_filename = os.path.join(output_dir,
+                                   'WC_2020A1-ifu_driver_cat-cheating.fits')
     
     ############################################################################
     # Create the output directory if it does not exist

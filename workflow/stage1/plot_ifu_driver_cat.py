@@ -45,7 +45,7 @@ def _send_command(cmd, p, option='write', encoding='utf-8'):
     send_func('{}\n'.format(cmd).encode(encoding))
 
 
-def plot_ifu_driver_cat(cat_filename, output_dir='output/',
+def plot_ifu_driver_cat(cat_filename, output_dir='output',
                         aladin_jar='Aladin.jar'):
     """
     Plot targets contained in an IFU driver catalogue with Aladin.
@@ -107,9 +107,10 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output/',
             cat_basename_wo_ext = os.path.splitext(
                                       os.path.basename(cat_filename))[0]
 
-            img_filename = (output_dir + cat_basename_wo_ext + '-' +
-                            num_digits_fmt.format(i + 1) + '-' +
-                            targname + '-' + targid + '.png')
+            img_filename = (cat_basename_wo_ext + '-' +
+                            num_digits_fmt.format(i + 1) + '-' + targname +
+                            '-' + targid + '.png')
+            img_path = os.path.join(output_dir, img_filename)
 
             # Create a the string with the coordinates which will be used in the
             # Aladin commands
@@ -177,13 +178,13 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output/',
 
             # Save the image
 
-            cmd_list.append('save {}'.format(os.path.abspath(img_filename)))
+            cmd_list.append('save {}'.format(os.path.abspath(img_path)))
 
             # Repeat some commands from above due to a bug in Aladin
 
             cmd_list.append(coord_str)
             cmd_list.append('zoom {}'.format(zoom_size_str))
-            cmd_list.append('save {}'.format(os.path.abspath(img_filename)))
+            cmd_list.append('save {}'.format(os.path.abspath(img_path)))
 
             # Join the commands for this target and send them to Aladin
 
@@ -205,13 +206,13 @@ if __name__ == '__main__':
     parser.add_argument('catalogue',
                         help='a FITS file with an IFU driver catalogue')
 
-    parser.add_argument('--dir', default='output/', help=
+    parser.add_argument('--dir', default='output', help=
                         """
                         the directory which will contain the plots generated
                         with Aladin
                         """)
 
-    parser.add_argument('--aladin', default='aux/Aladin.jar',
+    parser.add_argument('--aladin', default=os.path.join('aux', 'Aladin.jar'),
                         help='the location of the Java JAR file of Aladin')
 
     parser.add_argument('--log_level', default='info',

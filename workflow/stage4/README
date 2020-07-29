@@ -1,0 +1,17 @@
+Stage 4
+=======
+
+**Contributors:** David Terrett
+
+Input and output
+----------------
+
+* **Input:**
+
+  + A set of IFU XML files with the targets to be used as central fibres
+    included, plus their corresponding guide and calib stars.
+
+* **Output:**
+
+  + A set of configured IFU XML files.
+

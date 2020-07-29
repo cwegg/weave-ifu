@@ -53,7 +53,7 @@ the XML files.
 Stage 2: Creation of the XML files with the targets
 ---------------------------------------------------
 
-**Contributors:** David Murphy
+**Contributors:** David Murphy, Luis Peralta
 
 **Contributors: DM**
 
@@ -71,7 +71,7 @@ the user.
 Stage 3: Adding guide and calibration stars to the XML files
 ------------------------------------------------------------
 
-**Contributors:** David Murphy
+**Contributors:** David Murphy, Luis Peralta
 
 Each XML file is further developed by injecting the non-science target
 information. This includes addition of the guidestar(s) for the LIFU
@@ -129,14 +129,16 @@ Stage 6: Improving the IFU FITS catalogue (optional, but recommended)
 This code collection takes the stage 5 FITS catalogue and populates
 all relevant missing columns. These fall into 3 categories:
 
-* Photometric data - using valid input imaging, this module calculates
-  the expected magnitude through the fibre.
+* Photometric data: MAG_*, MAG_*_ERR, GAIA_MAG_* and GAIA_MAG_*_ERR.
+  Using valid input imaging, this module calculates the expected
+  magnitude through the fibre.
 
-* Additional fibre information - linked to the previous module, users
-  may set specific priors on specific fibres. Examples include
-  designating additional fibres within the LIFU array as "Sky",
-  assigning TARGCLASS values to fibres, and adjusting the APS analysis
-  parameters for sources observed with particular fibres.
+* Additional fibre information: TARGUSE, TARGCLASS and APS_*.
+  Linked to the previous module, users may set specific priors on
+  specific fibres. Examples include designating additional fibres
+  within the LIFU array as sky (TARGUSE=S), assigning TARGCLASS
+  values to fibres, and adjusting the APS analysis parameters for
+  sources observed with particular fibres.
 
 * The inclusion of survey-specific ancillary data. We provide a
   framework code here that end-users will need to adapt to include

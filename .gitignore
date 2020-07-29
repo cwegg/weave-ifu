@@ -7,15 +7,30 @@ log.txt
 # Testing files:
 workflow_test/.cache/
 
+# Output files
+workflow/stage1/output/
+workflow/stage2/output/
+workflow/stage3/output/
+workflow/stage4/output/
+workflow/stage5/output/
+workflow/stage6/output/
+workflow/stage7/output/
+workflow/stage8/output/
+workflow/stage9/output/
+workflow/stage10/output/
+
 # Stage-1 files:
 workflow/stage1/aux/Master_CatalogueTemplate.fits
+workflow/stage1/aux/obstemp.dat
 workflow/stage1/aux/progtemp.dat
 workflow/stage1/aux/Aladin.jar
-workflow/stage1/output/
 
-# Stage-5 files:
-workflow/stage5/output/
+# Stage-2 files:
+workflow/stage2/aux/BlankXMLTemplate.xml
+workflow/stage2/aux/obstemp.dat
+workflow/stage2/aux/progtemp.dat
 
-# Stage-7 files:
-workflow/stage7/output/
+# Stage-3 files:
+workflow/stage3/aux/Guides_*.fits
+workflow/stage3/aux/WD_*.fits
 

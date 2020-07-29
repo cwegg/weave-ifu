@@ -19,14 +19,14 @@
 
 
 import logging
-import re
+import re as _re
 
-from astropy.io import fits
+from astropy.io import fits as _fits
 
 
 def _get_num_ext_in_fits_file(filename):
     
-    with fits.open(filename) as hdu_list:
+    with _fits.open(filename) as hdu_list:
         num_ext = len(hdu_list)
     
     return num_ext
@@ -37,7 +37,7 @@ def _match_in_regex_list(string, regex_list):
     result = False
     
     for regex in regex_list:
-        if re.match(regex, string):
+        if _re.match(regex, string):
             result = True
             break
     
@@ -64,8 +64,8 @@ def _check_equal_one_header(fits_filename1, fits_filename2, ext_i,
 
     # Get the headers of each file in the requested extension
 
-    hdr1 = fits.getheader(fits_filename1, ext_i)
-    hdr2 = fits.getheader(fits_filename2, ext_i)
+    hdr1 = _fits.getheader(fits_filename1, ext_i)
+    hdr2 = _fits.getheader(fits_filename2, ext_i)
     
     # Get the list of keywords in the headers of the requested extension
     

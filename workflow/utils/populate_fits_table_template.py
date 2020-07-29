@@ -18,9 +18,9 @@
 #
 
 
-import datetime
+import datetime as _datetime
 
-from astropy.io import fits
+from astropy.io import fits as _fits
 
 
 def populate_fits_table_template(fits_template, data_dict, output_filename,
@@ -52,7 +52,7 @@ def populate_fits_table_template(fits_template, data_dict, output_filename,
     
     # Read the FITS template
     
-    template_hdulist = fits.open(fits_template)
+    template_hdulist = _fits.open(fits_template)
     template_primary_hdu = template_hdulist[0]
     template_hdu = template_hdulist[1]
     
@@ -70,7 +70,7 @@ def populate_fits_table_template(fits_template, data_dict, output_filename,
     
     for col in template_hdu.columns:
         
-        column = fits.Column(name=col.name, format=col.format,
+        column = _fits.Column(name=col.name, format=col.format,
                              disp=col.disp, unit=col.unit, null=col.null,
                              array=data_dict[col.name])
         
@@ -78,8 +78,8 @@ def populate_fits_table_template(fits_template, data_dict, output_filename,
     
     # Create a HDU from the column list
     
-    coldefs = fits.ColDefs(column_list)
-    hdu = fits.BinTableHDU.from_columns(coldefs)
+    coldefs = _fits.ColDefs(column_list)
+    hdu = _fits.BinTableHDU.from_columns(coldefs)
     
     # Copy the header from the template
     
@@ -95,13 +95,13 @@ def populate_fits_table_template(fits_template, data_dict, output_filename,
     # Update the keyword DATETIME if requested (and it exists)
     
     if (update_datetime is True) and ('DATETIME' in primary_hdu.header.keys()):
-        datetime_str = datetime.datetime.utcnow().strftime(
+        datetime_str = _datetime.datetime.utcnow().strftime(
                            '%Y-%m-%d %H:%M:%S.%f')
         primary_hdu.header['DATETIME'] = datetime_str
     
     # Create a HDU list and save it to a file
     
-    hdulist = fits.HDUList([primary_hdu, hdu])
+    hdulist = _fits.HDUList([primary_hdu, hdu])
     
     hdulist.writeto(output_filename, checksum=checksum, overwrite=overwrite)
 
