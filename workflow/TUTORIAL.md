@@ -64,16 +64,24 @@ Stage 3: Adding guide and calibration stars to the XML files
 ------------------------------------------------------------
 
 ```
-stage3/add_guide_and_calib_stars.py output/WC_2020A1-*-t.xml
+stage3/add_guide_and_calib_stars.py --mifu_num_guide_stars_request None output/WC_2020A1-*-t.xml
 ```
 
 Stage 4: Configuring the XML files
 ----------------------------------
 
-**TBW**
-
 ```
-cp stage5/input/WC_2020A1-*-tgcs.xml output/
+lifu_configure --epoch 2020 -i output/WC_2020A1-lifu_01-tgc.xml -o output/WC_2020A1-lifu_01-tgcs-tmp.xml
+dither -i output/WC_2020A1-lifu_01-tgcs-tmp.xml -o output/WC_2020A1-lifu_01-tgcs.xml
+
+lifu_configure --epoch 2020 -i output/WC_2020A1-lifu_02-tgc.xml -o output/WC_2020A1-lifu_02-tgcs-tmp.xml
+dither -i output/WC_2020A1-lifu_02-tgcs-tmp.xml -o output/WC_2020A1-lifu_02-tgcs.xml
+
+configure --epoch 2020 -f output/WC_2020A1-mifu_01-tgc.xml
+dither -i output/WC_2020A1-mifu_01-tgcs-tmp.xml -o output/WC_2020A1-mifu_01-tgcs.xml
+
+configure --epoch 2020 -f WC_2020A1-mifu_02-tgc.xml
+dither -i output/WC_2020A1-mifu_02-tgcs-tmp.xml -o output/WC_2020A1-mifu_02-tgcs.xml
 ```
 
 Stage 5: Creation the IFU FITS catalogue
