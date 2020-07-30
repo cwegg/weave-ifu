@@ -8,7 +8,8 @@ Input, auxiliar files and output
 
 * **Input:**
 
-  + A set of configured IFU XML files of one specific survey or PI proposal.
+  + A set of configured (and dithered) IFU XML files of one specific survey or
+    PI proposal.
 
 * **Auxiliar files:**
 

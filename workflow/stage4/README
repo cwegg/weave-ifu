@@ -3,15 +3,40 @@ Stage 4
 
 **Contributors:** David Terrett
 
-Input and output
-----------------
+Input, auxiliar files and output
+--------------------------------
 
 * **Input:**
 
   + A set of IFU XML files with the targets to be used as central fibres
     included, plus their corresponding guide and calib stars.
 
+* **Auxiliar files:**
+
+  Several auxiliar files are used in this stage. They are described in the
+  documentation of the configure tools.
+
 * **Output:**
 
-  + A set of configured IFU XML files.
+  + A set of configured (and dithered) IFU XML files.
+
+
+Software
+--------
+
+The following software should be obtained from David Terrett, as these tools are
+not distributed in the IFU repository:
+
+* *configure*:
+
+  The main configure tool, which is used for configuring MOS and mIFU fields for
+  WEAVE observations.
+
+* *lifu_configure*:
+
+  A configure tool used for "configuring" LIFU fields for WEAVE observations.
+
+* *dither*:
+
+  A configure tool used for dithering IFU configured fields.
 
