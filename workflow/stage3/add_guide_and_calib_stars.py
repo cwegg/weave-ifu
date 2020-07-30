@@ -200,14 +200,12 @@ if __name__ == '__main__':
         os.mkdir(args.output_dir)
     
     if args.lifu_num_guide_stars_request != 'None':
-        lifu_num_guide_stars_request = args.lifu_num_guide_stars_request
-        assert type(lifu_num_guide_stars_request) == int
+        lifu_num_guide_stars_request = int(args.lifu_num_guide_stars_request)
     else:
         lifu_num_guide_stars_request = None
     
     if args.mifu_num_guide_stars_request != 'None':
-        mifu_num_guide_stars_request = args.mifu_num_guide_stars_request
-        assert type(mifu_num_guide_stars_request) == int
+        mifu_num_guide_stars_request = int(args.mifu_num_guide_stars_request)
     else:
         mifu_num_guide_stars_request = None
     
