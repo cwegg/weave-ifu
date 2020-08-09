@@ -187,9 +187,9 @@ def _get_value_from_xml_data(xml_data, target, key, formats):
     return formatted_value
 
 
-def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'],
+def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S', 'R'],
                                replace_triple_percent=True,
-                               post_configure=True):
+                               post_configure=True, only_allocated=False):
 
     # Get dictionaries with the lookup information and the formats
 
@@ -213,10 +213,17 @@ def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'],
 
         for target in xml_data['target']:
 
-            # Skip the target if it is a guide or sky fibre
+            # Skip the target if it is not in the targuse list
 
             if str(target.getAttribute('targuse')) not in targuse_list:
                 continue
+            
+            # If we want to skip the non-allocated targets, skip the target if
+            # it is the case
+            
+            if only_allocated == True:
+                if 'fibreid' not in target.attributes.keys():
+                    continue
 
             # For each key in the lookup dictionary
             
@@ -242,7 +249,8 @@ def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'],
 
 def get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
                                             replace_triple_percent=True,
-                                            post_configure=True):
+                                            post_configure=True,
+                                            only_allocated=False):
     """
     Get SPA data of the target fibres contained in a list of XML files.
 
@@ -255,6 +263,8 @@ def get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
     post_configure : bool, optional
         An option to indicate whether the input XMLs has been processed by
         configure or not.
+    only_allocated : bool, optional
+        It will include only information from allocated fibres.
 
     Returns
     -------
@@ -266,14 +276,15 @@ def get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
     data_dict = \
         _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T'],
                                   replace_triple_percent=replace_triple_percent,
-                                  post_configure=post_configure)
+                                  post_configure=post_configure,
+                                  only_allocated=only_allocated)
 
     return data_dict
 
 
-def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list,
-                                                   replace_triple_percent=True,
-                                                   post_configure=True):
+def get_spa_data_of_target_random_and_sky_fibres_from_xmls(
+        xml_filename_list, replace_triple_percent=True, post_configure=True,
+        only_allocated=True):
     """
     Get SPA data of the target and sky fibres contained in a list of XML files.
 
@@ -286,6 +297,8 @@ def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list,
     post_configure : bool, optional
         An option to indicate whether the input XMLs has been processed by
         configure or not.
+    only_allocated : bool, optional
+        It will include only information from allocated fibres.
 
     Returns
     -------
@@ -295,9 +308,10 @@ def get_spa_data_of_target_and_sky_fibres_from_xmls(xml_filename_list,
         its values are lists containing these data.
     """
     data_dict = \
-        _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S'],
-                                  replace_triple_percent=replace_triple_percent,
-                                  post_configure=post_configure)
+        _get_spa_data_from_targuse(
+            xml_filename_list, targuse_list=['T', 'S', 'R'],
+            replace_triple_percent=replace_triple_percent,
+            post_configure=post_configure, only_allocated=only_allocated)
 
     return data_dict
 
