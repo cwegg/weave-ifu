@@ -106,17 +106,17 @@ class _AuxStars:
 
             # Set the position of the guide camera
 
-            self.cam_x_offset = 27.7 / 60.0
-            self.cam_y_offset =  0.0 / 60.0
+            self.cam_x_offset =   0.0 / 60.0
+            self.cam_y_offset = -27.7 / 60.0
 
             cam_offset_dist = _np.hypot(self.cam_x_offset, self.cam_y_offset)
 
             # Set the effective radious of the field of view of the guide camera
             
-            cam_x_width = 3.75 / 60.0
-            cam_y_width =  4.0 / 60.0
+            cam_width  =  4.0 / 60.0
+            cam_height = 3.75 / 60.0
             
-            self.fov_radious = (min(cam_x_width, cam_y_width) / 2 -
+            self.fov_radious = (min(cam_width, cam_height) / 2 -
                                 2 * self.dither_size_arcsec / 3600)
 
             # Set the limits for looking for stars
