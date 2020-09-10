@@ -1042,23 +1042,38 @@ if __name__ == '__main__':
     else:
         num_calib_stars_request = None
 
+    # Set the logging level
+    
+    logging.basicConfig(level=logging.INFO)
+    
+    # Choose a filename for the output plot
+    
+    if (args.obsmode == 'LIFU') and (pa_request is not None):
+    
+        if pa_request is not None:
+            pa_request_str = '{:.3f}'.format(pa_request)
+        else:
+            pa_request_str = 'none'
+    
+        plot_filename = '{}s_lifu_{:.5f}_{:.5f}_{}.png'.format(
+            args.type_stars, args.central_ra, args.central_dec, pa_request_str)
+    else:
+        plot_filename = '{}s_{:.5f}_{:.5f}.png'.format(
+            args.type_stars, args.central_ra, args.central_dec)
+
     # Get the requested typo of stars
 
     if args.type_stars == 'guide':
 
         if args.obsmode == 'LIFU':
             num_stars_request = args.lifu_num_guide_stars_request
-            plot_filename = 'guides_lifu_{}_{}_{}.png'.format(
-                args.central_ra, args.central_dec, args.pa_request)
         else:
             num_stars_request = args.mifu_num_guide_stars_request
-            plot_filename = 'guides_{}_{}.png'.format(
-                args.central_ra, args.central_dec)
     
         guide_stars = GuideStars(args.central_ra, args.central_dec,
                                  args.obsmode)
 
-        actual_pa, guides_table = guide_stars.get_table(
+        actual_pa, stars_table = guide_stars.get_table(
             verbose=args.verbose, plot_filename=plot_filename,
             pa_request=pa_request, num_stars_request=num_stars_request,
             num_central_stars=args.mifu_num_central_guide_stars,
@@ -1068,19 +1083,26 @@ if __name__ == '__main__':
 
         assert obsmode != 'LIFU'
 
-        plot_filename = 'calibs_{}_{}.png'.format(
-            args.central_ra, args.central_dec)
-
         calib_stars = CalibStars(args.central_ra, args.central_dec,
                                  args.obsmode)
 
-        calibs_table = calib_stars.get_table(
+        stars_table = calib_stars.get_table(
             verbose=args.verbose, plot_filename=plot_filename,
             num_stars_request=args.num_calib_stars_request,
             num_central_stars=args.num_central_calib_stars,
             min_cut=args.min_calib_cut, max_cut=args.max_calib_cut)
+        
+        logging.info(calibs_table)
 
     else:
 
         raise ValueError
+    
+    # Print the most interesting columns of the returned table
+    
+    stars_table.keep_columns(
+        ['CNAME', 'GAIA_RA', 'GAIA_DEC', 'DISTANCE', 'ANGLE'])
+    
+    for line in str(stars_table).split('\n'):
+        logging.info(line)
 
