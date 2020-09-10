@@ -230,7 +230,8 @@ class _AuxStars:
                                               unit='deg')
 
             distance_list.append(centre_coord.separation(row_coord).deg)
-            angle_list.append(centre_coord.position_angle(row_coord).deg)
+            angle_list.append(centre_coord.position_angle(row_coord).wrap_at(
+                _coordinates.Angle(360, unit='deg')).deg)
 
         distance_column = _Column(distance_list, name='DISTANCE')
         angle_column = _Column(angle_list, name='ANGLE')
@@ -306,18 +307,18 @@ class _AuxStars:
 
 
     def _get_index_of_nearest_angle(self, ref_angle, angle_array,
-                                    selected_indices):
+                                    selected_indices=None):
 
         index = None
 
         wrapped_angle_list = [
             _coordinates.Angle(angle , unit='deg').wrap_at(
-                _coordinates.Angle(ref_angle + 360, unit='deg')).deg
+                _coordinates.Angle(ref_angle + 180, unit='deg')).deg
             for angle in angle_array]
 
         for i, angle_i in enumerate(wrapped_angle_list):
 
-            if i not in selected_indices:
+            if (selected_indices is None) or (i not in selected_indices):
 
                 angle_diff = _np.abs(angle_i - ref_angle)
 
@@ -351,9 +352,9 @@ class _AuxStars:
 
                 angle = i * 360 / num_stars
 
-                index = self._get_index_of_nearest_angle(angle,
-                                                         ring_table['ANGLE'],
-                                                         selected_indices)
+                index = self._get_index_of_nearest_angle(
+                    angle, ring_table['ANGLE'],
+                    selected_indices=selected_indices)
 
                 if index is not None:
 
@@ -437,17 +438,22 @@ class _AuxStars:
                                                  num_stars_request):
 
         if len(table) > 0:
-            cam_pa = _coordinates.Angle(
+            
+            cam_pa_at_request = _coordinates.Angle(
                 _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) +
-                pa_request + 90, unit='deg').wrap_at(
+                pa_request - 90, unit='deg').wrap_at(
                     _coordinates.Angle(360, unit='deg')).deg
 
-            abs_angle_diff = _np.abs(table['ANGLE'] - cam_pa)
-
-            argmin = _np.argmin(abs_angle_diff)
+            argmin = self._get_index_of_nearest_angle(cam_pa_at_request,
+                                                      table['ANGLE'])
+            
+            cam_pa_at_zero = _coordinates.Angle(
+                _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) -
+                90, unit='deg').wrap_at(
+                    _coordinates.Angle(360, unit='deg')).deg
 
             selected_pa = _coordinates.Angle(
-                table['ANGLE'][argmin] - cam_pa, unit='deg').wrap_at(
+                table['ANGLE'][argmin] - cam_pa_at_zero, unit='deg').wrap_at(
                     _coordinates.Angle(360, unit='deg')).deg
 
             selected_table = self._select_stars_in_guide_cam(table, selected_pa,
@@ -1091,8 +1097,6 @@ if __name__ == '__main__':
             num_stars_request=args.num_calib_stars_request,
             num_central_stars=args.num_central_calib_stars,
             min_cut=args.min_calib_cut, max_cut=args.max_calib_cut)
-        
-        logging.info(calibs_table)
 
     else:
 
@@ -1105,4 +1109,8 @@ if __name__ == '__main__':
     
     for line in str(stars_table).split('\n'):
         logging.info(line)
+    
+    # Report the plot file created
+    
+    logging.info('Plot available at file {}'.format(plot_filename))
 
