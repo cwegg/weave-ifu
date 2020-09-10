@@ -965,3 +965,122 @@ class CalibStars(_AuxStars):
 
         return table
 
+
+if __name__ == '__main__':
+
+    # Get a parser
+
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description='Get WEAVE guide and calib stars')
+
+    parser.add_argument('type_stars', choices=['guide', 'calib'],
+                        help='type of stars to be searched')
+    parser.add_argument('obsmode', choices=['MOS', 'LIFU', 'mIFU'],
+                        help='obsmode to be considered in the search')
+    parser.add_argument('central_ra', type=float,
+                        help='RA in degrees of the centre of the FoV')
+    parser.add_argument('central_dec', type=float,
+                        help='Dec in degrees of the centre of the FoV')
+    parser.add_argument('--pa_request', default='None',
+                        help="""Requested PA in degress for LIFU observations;
+                        None means no limit""")
+    parser.add_argument('--lifu_num_guide_stars_request', default=1,
+                        help="""maximum number of LIFU guide stars in the
+                        output; None means no limit""")
+    parser.add_argument('--mifu_num_guide_stars_request', default=8,
+                        help="""maximum number of mIFU guide stars in the
+                        output; None means no limit""")
+    parser.add_argument('--mifu_num_central_guide_stars', default=1, type=int,
+                        help="""number of mIFU guide stars near to centre to be
+                        selected""")
+    parser.add_argument('--mifu_min_guide_cut', default=0.9, type=float,
+                        help="""minimum cut factor to be used for the
+                        non-central mIFU guide stars""")
+    parser.add_argument('--mifu_max_guide_cut', default=1.0, type=float,
+                        help="""maximum cut factor to be used for the
+                        non-central mIFU guide stars""")
+    parser.add_argument('--num_calib_stars_request', default=2,
+                        help="""maximum number of calib stars in the output;
+                        None means no limit""")
+    parser.add_argument('--num_central_calib_stars', default=0, type=int,
+                        help="""number of calib stars near to centre to be
+                        selected""")
+    parser.add_argument('--min_calib_cut', default=0.2, type=float,
+                        help="""minimum cut factor to be used for the
+                        non-central calib stars""")
+    parser.add_argument('--max_calib_cut', default=0.4, type=float,
+                        help="""maximum cut factor to be used for the
+                        non-central calib stars""")
+    parser.add_argument('--no_verbose', dest='verbose', action='store_false',
+                        help='deactivate verbose output')
+
+    # Get the arguments from the parser
+
+    args = parser.parse_args()
+
+    # In arguments which accept None value, do casting or transform None values
+    
+    if args.pa_request != 'None':
+        pa_request = float(args.pa_request)
+    else:
+        pa_request = None
+
+    if args.lifu_num_guide_stars_request != 'None':
+        lifu_num_guide_stars_request = int(args.lifu_num_guide_stars_request)
+    else:
+        lifu_num_guide_stars_request = None
+    
+    if args.mifu_num_guide_stars_request != 'None':
+        mifu_num_guide_stars_request = int(args.mifu_num_guide_stars_request)
+    else:
+        mifu_num_guide_stars_request = None
+    
+    if args.num_calib_stars_request != 'None':
+        num_calib_stars_request = int(args.num_calib_stars_request)
+    else:
+        num_calib_stars_request = None
+
+    # Get the requested typo of stars
+
+    if args.type_stars == 'guide':
+
+        if args.obsmode == 'LIFU':
+            num_stars_request = args.lifu_num_guide_stars_request
+            plot_filename = 'guides_lifu_{}_{}_{}.png'.format(
+                args.central_ra, args.central_dec, args.pa_request)
+        else:
+            num_stars_request = args.mifu_num_guide_stars_request
+            plot_filename = 'guides_{}_{}.png'.format(
+                args.central_ra, args.central_dec)
+    
+        guide_stars = GuideStars(args.central_ra, args.central_dec,
+                                 args.obsmode)
+
+        actual_pa, guides_table = guide_stars.get_table(
+            verbose=args.verbose, plot_filename=plot_filename,
+            pa_request=pa_request, num_stars_request=num_stars_request,
+            num_central_stars=args.mifu_num_central_guide_stars,
+            min_cut=args.mifu_min_guide_cut, max_cut=args.mifu_max_guide_cut)
+
+    elif args.type_stars == 'calib':
+
+        assert obsmode != 'LIFU'
+
+        plot_filename = 'calibs_{}_{}.png'.format(
+            args.central_ra, args.central_dec)
+
+        calib_stars = CalibStars(args.central_ra, args.central_dec,
+                                 args.obsmode)
+
+        calibs_table = calib_stars.get_table(
+            verbose=args.verbose, plot_filename=plot_filename,
+            num_stars_request=args.num_calib_stars_request,
+            num_central_stars=args.num_central_calib_stars,
+            min_cut=args.min_calib_cut, max_cut=args.max_calib_cut)
+
+    else:
+
+        raise ValueError
+
