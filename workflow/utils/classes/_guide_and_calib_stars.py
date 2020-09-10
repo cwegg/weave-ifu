@@ -377,7 +377,7 @@ class _AuxStars:
             _np.hypot(self.cam_x_offset, self.cam_y_offset), unit='deg')
         cam_pa_angle = _coordinates.Angle(
             _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) +
-            pa + 90, unit='deg')
+            pa - 90, unit='deg')
 
         centre_coord = _coordinates.SkyCoord(self.ra, self.dec, unit='deg')
         cam_coord = centre_coord.directional_offset_by(cam_pa_angle,
