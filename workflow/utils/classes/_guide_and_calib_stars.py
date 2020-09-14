@@ -103,6 +103,11 @@ class _AuxStars:
         # NB: The dither size is substracted twice to avoid edge issues
 
         if (self.obsmode == 'LIFU'):
+            
+            logging.critical(
+                'Do not trust on the output of this code by now: ' +
+                'This software is great, but the assumed position of the LIFU '
+                'guide camera must to be confirmed')
 
             # Set the position of the guide camera
 
