@@ -28,7 +28,7 @@ from astropy.io import fits
 
 from workflow.utils import populate_fits_table_template
 from workflow.utils.get_data_from_xmls import get_trimester_from_xmls
-from workflow.utils.get_data_from_xmls import get_spa_data_of_target_and_sky_fibres_from_xmls
+from workflow.utils.get_data_from_xmls import get_spa_data_of_target_random_and_sky_fibres_from_xmls
 
 
 def _get_col_null_dict_of_template(fits_template):
@@ -177,8 +177,8 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
     
     # Get a dictionary with the SPA data from targets and skies in the XML files
     
-    spa_data_dict = get_spa_data_of_target_and_sky_fibres_from_xmls(
-                         xml_filename_list)
+    spa_data_dict = get_spa_data_of_target_random_and_sky_fibres_from_xmls(
+                        xml_filename_list)
     
     # Add missing columns of the template to the dictionary
     

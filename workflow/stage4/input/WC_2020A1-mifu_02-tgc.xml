@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<weave author="a@domain.com" cc_report="b@domain.com,c@domain.com" datamver="8.00" report_verbosity="1">
+<weave author="a@domain.com" cc_report="b@domain.com,c@domain.com" datamver="dev" report_verbosity="1">
   <!--
       Detailed documentation for this file is available in:
         - WEAVE-ICD-025 "Configure XML Definition"
@@ -310,26 +310,278 @@
         <target cname="WVE_21045333-0447079" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.7855341" targepoch="2015.5" targid="6912230107445870720" targname="guide_12278_219" targparal="1.236" targpmdec="-0.666" targpmra="-4.752" targprio="10" targprog="" targra="316.2221941" targsrvy="GUIDES" targuse="G">
           <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.44" emag_gg="0.0" mag_bp="15.976" emag_bp="0.003" mag_rp="14.759" emag_rp="0.002"/>
         </target>
+        <target cname="WVE_21014175-0512040" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.2011092" targepoch="2015.5" targid="6910698586532920192" targname="guide_12275_476" targparal="1.459" targpmdec="-3.91" targpmra="1.334" targprio="10" targprog="" targra="315.4239708" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.193" emag_gg="0.0" mag_bp="15.749" emag_bp="0.003" mag_rp="14.505" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21015256-0515317" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.2587955" targepoch="2015.5" targid="6910696907200805504" targname="guide_12275_486" targparal="1.114" targpmdec="2.545" targpmra="8.663" targprio="10" targprog="" targra="315.4690101" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.696" emag_gg="0.0" mag_bp="15.045" emag_bp="0.001" mag_rp="14.185" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21015277-0513125" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.220144" targepoch="2015.5" targid="6910697590100465920" targname="guide_12275_488" targparal="0.586" targpmdec="1.006" targpmra="4.67" targprio="10" targprog="" targra="315.4698553" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.256" emag_gg="0.0" mag_bp="15.599" emag_bp="0.002" mag_rp="14.731" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21021821-0523003" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.3834065" targepoch="2015.5" targid="6910680277087426176" targname="guide_12275_514" targparal="0.55" targpmdec="-3.154" targpmra="-6.061" targprio="10" targprog="" targra="315.5758654" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.779" emag_gg="0.0" mag_bp="15.222" emag_bp="0.002" mag_rp="14.186" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21021914-0523440" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.3955579" targepoch="2015.5" targid="6910680208367948800" targname="guide_12275_516" targparal="0.851" targpmdec="-9.25" targpmra="-1.369" targprio="10" targprog="" targra="315.5797485" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.919" emag_gg="0.0" mag_bp="15.259" emag_bp="0.001" mag_rp="14.418" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21021951-0527535" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.4648667" targepoch="2015.5" targid="6910677455292455552" targname="guide_12275_517" targparal="0.803" targpmdec="-5.066" targpmra="-3.349" targprio="10" targprog="" targra="315.5813084" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.295" emag_gg="0.0" mag_bp="15.672" emag_bp="0.002" mag_rp="14.758" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21023966-0533540" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.5649908" targepoch="2015.5" targid="6910485354291156224" targname="guide_12275_529" targparal="0.587" targpmdec="-6.605" targpmra="-6.907" targprio="10" targprog="" targra="315.6652598" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.354" emag_gg="0.0" mag_bp="15.701" emag_bp="0.002" mag_rp="14.836" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21024961-0529007" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.4835411" targepoch="2015.5" targid="6910490370812958080" targname="guide_12275_539" targparal="2.052" targpmdec="5.316" targpmra="7.474" targprio="10" targprog="" targra="315.7067129" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.648" emag_gg="0.0" mag_bp="15.349" emag_bp="0.002" mag_rp="13.843" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21025294-0532132" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.537011" targepoch="2015.5" targid="6910486934839118976" targname="guide_12275_542" targparal="0.641" targpmdec="-5.377" targpmra="-2.38" targprio="10" targprog="" targra="315.7205863" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.081" emag_gg="0.0" mag_bp="15.415" emag_bp="0.002" mag_rp="14.59" emag_rp="0.001"/>
+        </target>
         <target cname="WVE_21030977-0536461" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.6127921" targepoch="2015.5" targid="6910472327655429376" targname="guide_12275_550" targparal="1.081" targpmdec="-2.828" targpmra="-2.663" targprio="10" targprog="" targra="315.7907031" targsrvy="GUIDES" targuse="G">
           <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.357" emag_gg="0.0" mag_bp="15.832" emag_bp="0.005" mag_rp="14.735" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21042353-0543259" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.7238515" targepoch="2015.5" targid="6910420654903789696" targname="guide_12275_594" targparal="0.405" targpmdec="0.694" targpmra="7.813" targprio="10" targprog="" targra="316.0980267" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.767" emag_gg="0.0" mag_bp="15.273" emag_bp="0.003" mag_rp="14.11" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21011142-0437501" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.6305786" targepoch="2015.5" targid="6912283021443126016" targname="guide_12278_11" targparal="0.597" targpmdec="-5.112" targpmra="4.643" targprio="10" targprog="" targra="315.2975764" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.901" emag_gg="0.0" mag_bp="15.289" emag_bp="0.002" mag_rp="14.36" emag_rp="0.001"/>
         </target>
         <target cname="WVE_21011218-0451546" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.8651684" targepoch="2015.5" targid="6912259175784673152" targname="guide_12278_12" targparal="0.973" targpmdec="-6.752" targpmra="-1.698" targprio="10" targprog="" targra="315.3007708" targsrvy="GUIDES" targuse="G">
           <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.15" emag_gg="0.0" mag_bp="15.575" emag_bp="0.003" mag_rp="14.575" emag_rp="0.002"/>
         </target>
+        <target cname="WVE_21012418-0459295" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.9915144" targepoch="2015.5" targid="6912253025391624704" targname="guide_12278_13" targparal="0.606" targpmdec="1.615" targpmra="3.84" targprio="10" targprog="" targra="315.3507702" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.208" emag_gg="0.0" mag_bp="15.537" emag_bp="0.003" mag_rp="14.72" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21012445-0447007" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.7835269" targepoch="2015.5" targid="6912260137857347840" targname="guide_12278_14" targparal="2.069" targpmdec="-5.44" targpmra="4.229" targprio="10" targprog="" targra="315.3518559" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.631" emag_gg="0.0" mag_bp="15.246" emag_bp="0.002" mag_rp="13.893" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21012558-0438385" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.6440215" targepoch="2015.5" targid="6912279924770880128" targname="guide_12278_15" targparal="0.998" targpmdec="2.912" targpmra="1.015" targprio="10" targprog="" targra="315.3565899" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.616" emag_gg="0.0" mag_bp="15.011" emag_bp="0.003" mag_rp="14.074" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21012825-0501175" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.021514" targepoch="2015.5" targid="6912251822800766592" targname="guide_12278_16" targparal="1.149" targpmdec="-6.561" targpmra="-6.688" targprio="10" targprog="" targra="315.3677201" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.267" emag_gg="0.0" mag_bp="15.677" emag_bp="0.003" mag_rp="14.697" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21012917-0446264" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.7740027" targepoch="2015.5" targid="6912266043437163520" targname="guide_12278_17" targparal="0.729" targpmdec="-8.901" targpmra="-2.708" targprio="10" targprog="" targra="315.3715213" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.152" emag_gg="0.0" mag_bp="15.57" emag_bp="0.002" mag_rp="14.577" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21013037-0501263" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.0239844" targepoch="2015.5" targid="6912251994599458688" targname="guide_12278_18" targparal="0.977" targpmdec="-1.31" targpmra="-2.583" targprio="10" targprog="" targra="315.3765315" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.104" emag_gg="0.0" mag_bp="15.466" emag_bp="0.002" mag_rp="14.582" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21013311-0433049" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.5513745" targepoch="2015.5" targid="6912285216171688192" targname="guide_12278_19" targparal="0.617" targpmdec="-3.575" targpmra="7.375" targprio="10" targprog="" targra="315.3879615" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.421" emag_gg="0.0" mag_bp="15.813" emag_bp="0.003" mag_rp="14.869" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21013841-0506276" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.1076671" targepoch="2015.5" targid="6912203375569679360" targname="guide_12278_21" targparal="1.761" targpmdec="0.639" targpmra="-2.969" targprio="10" targprog="" targra="315.4100571" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.513" emag_gg="0.001" mag_bp="14.757" emag_bp="0.001" mag_rp="14.064" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21042106-0540538" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.6816099" targepoch="2015.5" targid="6911922931384726528" targname="guide_12278_176" targparal="0.475" targpmdec="-3.822" targpmra="6.089" targprio="10" targprog="" targra="316.0877315" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.062" emag_gg="0.0" mag_bp="15.561" emag_bp="0.002" mag_rp="14.412" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21042606-0542166" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.7046115" targepoch="2015.5" targid="6911922656506818688" targname="guide_12278_183" targparal="1.044" targpmdec="-2.808" targpmra="1.538" targprio="10" targprog="" targra="316.1085759" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.71" emag_gg="0.0" mag_bp="15.177" emag_bp="0.004" mag_rp="14.086" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21043676-0543200" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.7222347" targepoch="2015.5" targid="6911921728793881856" targname="guide_12278_194" targparal="0.742" targpmdec="1.307" targpmra="-6.339" targprio="10" targprog="" targra="316.1531481" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.76" emag_gg="0.0" mag_bp="15.164" emag_bp="0.002" mag_rp="14.203" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21044501-0351550" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.8652829" targepoch="2015.5" targid="6912450250289463168" targname="guide_12278_207" targparal="1.542" targpmdec="2.808" targpmra="-2.36" targprio="10" targprog="" targra="316.1875534" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.598" emag_gg="0.0" mag_bp="15.055" emag_bp="0.001" mag_rp="13.994" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21044886-0540505" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.6807012" targepoch="2015.5" targid="6911922278549882496" targname="guide_12278_210" targparal="0.823" targpmdec="-5.35" targpmra="1.196" targprio="10" targprog="" targra="316.203565" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.463" emag_gg="0.001" mag_bp="15.899" emag_bp="0.002" mag_rp="14.877" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21045032-0546060" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.7683415" targepoch="2015.5" targid="6911918357243529088" targname="guide_12278_214" targparal="0.863" targpmdec="-0.604" targpmra="-1.084" targprio="10" targprog="" targra="316.2096585" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.636" emag_gg="0.0" mag_bp="14.956" emag_bp="0.002" mag_rp="14.151" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21045769-0544432" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.7453433" targepoch="2015.5" targid="6911918773856563584" targname="guide_12278_229" targparal="0.646" targpmdec="-0.549" targpmra="-2.718" targprio="10" targprog="" targra="316.2403548" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.841" emag_gg="0.0" mag_bp="15.155" emag_bp="0.003" mag_rp="14.329" emag_rp="0.003"/>
+        </target>
         <target cname="WVE_21051004-0351351" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.8597365" targepoch="2015.5" targid="6912449009044435712" targname="guide_12278_246" targparal="1.326" targpmdec="-9.27" targpmra="0.225" targprio="10" targprog="" targra="316.2918362" targsrvy="GUIDES" targuse="G">
           <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.444" emag_gg="0.001" mag_bp="15.979" emag_bp="0.003" mag_rp="14.735" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21051058-0350387" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.8440826" targepoch="2015.5" targid="6912449082058343040" targname="guide_12278_247" targparal="1.519" targpmdec="-2.057" targpmra="-2.338" targprio="10" targprog="" targra="316.2941039" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.26" emag_gg="0.001" mag_bp="15.739" emag_bp="0.003" mag_rp="14.625" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21051565-0545569" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.7657982" targepoch="2015.5" targid="6911906095113106688" targname="guide_12278_252" targparal="0.638" targpmdec="-7.816" targpmra="-4.582" targprio="10" targprog="" targra="316.3151928" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.755" emag_gg="0.001" mag_bp="15.124" emag_bp="0.005" mag_rp="14.225" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21052627-0542538" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.7149528" targepoch="2015.5" targid="6911919491114892160" targname="guide_12278_267" targparal="0.518" targpmdec="-2.274" targpmra="7.799" targprio="10" targprog="" targra="316.3594729" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.791" emag_gg="0.001" mag_bp="15.122" emag_bp="0.002" mag_rp="14.299" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21053373-0352365" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.8768109" targepoch="2015.5" targid="6912447879467482240" targname="guide_12278_280" targparal="1.548" targpmdec="-5.96" targpmra="4.416" targprio="10" targprog="" targra="316.3905491" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.121" emag_gg="0.0" mag_bp="15.634" emag_bp="0.002" mag_rp="14.465" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21054758-0349096" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.8193453" targepoch="2015.5" targid="6912454339098291200" targname="guide_12278_300" targparal="1.736" targpmdec="-4.406" targpmra="-5.952" targprio="10" targprog="" targra="316.4482347" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.628" emag_gg="0.001" mag_bp="15.144" emag_bp="0.004" mag_rp="13.923" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21054971-0348150" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.8041577" targepoch="2015.5" targid="6912454442177506432" targname="guide_12278_301" targparal="0.985" targpmdec="1.033" targpmra="0.802" targprio="10" targprog="" targra="316.4571377" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.086" emag_gg="0.001" mag_bp="15.484" emag_bp="0.004" mag_rp="14.537" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21055356-0541029" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.6841456" targepoch="2015.5" targid="6911913963493060480" targname="guide_12278_305" targparal="1.009" targpmdec="-5.844" targpmra="-4.637" targprio="10" targprog="" targra="316.4731794" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.519" emag_gg="0.0" mag_bp="14.853" emag_bp="0.003" mag_rp="14.023" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21055870-0352281" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.8744759" targepoch="2015.5" targid="6912442141391156224" targname="guide_12278_314" targparal="0.745" targpmdec="-4.272" targpmra="0.254" targprio="10" targprog="" targra="316.4945781" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.494" emag_gg="0.001" mag_bp="15.92" emag_bp="0.004" mag_rp="14.912" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21061080-0543114" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.7198281" targepoch="2015.5" targid="6911910321360780288" targname="guide_12278_331" targparal="1.12" targpmdec="-0.625" targpmra="4.362" targprio="10" targprog="" targra="316.5450147" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.312" emag_gg="0.001" mag_bp="15.88" emag_bp="0.003" mag_rp="14.605" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21062130-0540336" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.6760076" targepoch="2015.5" targid="6911911970628218240" targname="guide_12278_341" targparal="0.754" targpmdec="-0.349" targpmra="2.744" targprio="10" targprog="" targra="316.5887563" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.796" emag_gg="0.0" mag_bp="15.23" emag_bp="0.003" mag_rp="14.201" emag_rp="0.004"/>
+        </target>
+        <target cname="WVE_21063026-0355323" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.9256362" targepoch="2015.5" targid="6912437159229061888" targname="guide_12278_349" targparal="0.588" targpmdec="1.769" targpmra="7.208" targprio="10" targprog="" targra="316.6260868" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.456" emag_gg="0.001" mag_bp="15.849" emag_bp="0.002" mag_rp="14.896" emag_rp="0.002"/>
         </target>
         <target cname="WVE_21063497-0541534" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.6981716" targepoch="2015.5" targid="6911911661390563456" targname="guide_12278_352" targparal="1.55" targpmdec="-4.103" targpmra="-0.758" targprio="10" targprog="" targra="316.645727" targsrvy="GUIDES" targuse="G">
           <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.828" emag_gg="0.0" mag_bp="15.381" emag_bp="0.003" mag_rp="14.141" emag_rp="0.002"/>
         </target>
+        <target cname="WVE_21064714-0358592" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.9831232" targepoch="2015.5" targid="6912389605351144576" targname="guide_12278_369" targparal="0.614" targpmdec="3.445" targpmra="-6.837" targprio="10" targprog="" targra="316.6964225" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.875" emag_gg="0.0" mag_bp="15.303" emag_bp="0.002" mag_rp="14.289" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21065608-0539276" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.6576797" targepoch="2015.5" targid="6911934991652907520" targname="guide_12278_378" targparal="0.884" targpmdec="-0.503" targpmra="3.535" targprio="10" targprog="" targra="316.7336803" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.97" emag_gg="0.0" mag_bp="15.348" emag_bp="0.003" mag_rp="14.433" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21065717-0533413" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.56148" targepoch="2015.5" targid="6911936743999571456" targname="guide_12278_382" targparal="1.237" targpmdec="-1.772" targpmra="3.423" targprio="10" targprog="" targra="316.7382137" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.687" emag_gg="0.0" mag_bp="15.131" emag_bp="0.003" mag_rp="14.089" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21065805-0356019" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.9338662" targepoch="2015.5" targid="6912391632575705728" targname="guide_12278_383" targparal="0.731" targpmdec="-1.264" targpmra="4.525" targprio="10" targprog="" targra="316.7418902" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.408" emag_gg="0.001" mag_bp="15.837" emag_bp="0.003" mag_rp="14.822" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21065809-0533506" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.5640626" targepoch="2015.5" targid="6911936675280093696" targname="guide_12278_384" targparal="0.638" targpmdec="-4.327" targpmra="5.534" targprio="10" targprog="" targra="316.7420428" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.657" emag_gg="0.0" mag_bp="15.214" emag_bp="0.003" mag_rp="13.969" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21065911-0359318" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.9921684" targepoch="2015.5" targid="6912390219531241344" targname="guide_12278_387" targparal="0.945" targpmdec="-8.855" targpmra="0.332" targprio="10" targprog="" targra="316.746301" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.374" emag_gg="0.001" mag_bp="15.871" emag_bp="0.004" mag_rp="14.733" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21070358-0537524" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.6312339" targepoch="2015.5" targid="6911935129091858816" targname="guide_12278_395" targparal="0.736" targpmdec="-1.266" targpmra="1.624" targprio="10" targprog="" targra="316.764905" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.459" emag_gg="0.001" mag_bp="15.863" emag_bp="0.004" mag_rp="14.862" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21070529-0537150" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.6208279" targepoch="2015.5" targid="6911935163451597056" targname="guide_12278_397" targparal="0.903" targpmdec="-8.244" targpmra="-0.352" targprio="10" targprog="" targra="316.7720421" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.997" emag_gg="0.0" mag_bp="15.36" emag_bp="0.002" mag_rp="14.463" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21071395-0357251" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.9569762" targepoch="2015.5" targid="6912390670503019520" targname="guide_12278_405" targparal="1.232" targpmdec="-0.069" targpmra="8.274" targprio="10" targprog="" targra="316.8081455" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.294" emag_gg="0.0" mag_bp="15.73" emag_bp="0.004" mag_rp="14.699" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21072293-0402490" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.0469319" targepoch="2015.5" targid="6912386031938328576" targname="guide_12278_412" targparal="2.362" targpmdec="-8.849" targpmra="0.571" targprio="10" targprog="" targra="316.845527" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.718" emag_gg="0.001" mag_bp="15.33" emag_bp="0.004" mag_rp="13.982" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21072494-0531100" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.5194377" targepoch="2015.5" targid="6911938565065694336" targname="guide_12278_415" targparal="0.877" targpmdec="-3.362" targpmra="4.589" targprio="10" targprog="" targra="316.8539209" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.528" emag_gg="0.0" mag_bp="14.924" emag_bp="0.002" mag_rp="13.963" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21072998-0401581" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.0328127" targepoch="2015.5" targid="6912386375535708160" targname="guide_12278_419" targparal="1.231" targpmdec="-4.685" targpmra="-7.45" targprio="10" targprog="" targra="316.8749337" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.624" emag_gg="0.0" mag_bp="15.073" emag_bp="0.004" mag_rp="14.02" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21073270-0359549" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.9985924" targepoch="2015.5" targid="6912386581694140032" targname="guide_12278_421" targparal="0.641" targpmdec="-4.705" targpmra="2.718" targprio="10" targprog="" targra="316.8862642" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.135" emag_gg="0.0" mag_bp="15.509" emag_bp="0.003" mag_rp="14.6" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21073581-0528031" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.4675252" targepoch="2015.5" targid="6911944642444727168" targname="guide_12278_427" targparal="0.492" targpmdec="-4.595" targpmra="5.901" targprio="10" targprog="" targra="316.899216" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.24" emag_gg="0.0" mag_bp="15.635" emag_bp="0.002" mag_rp="14.679" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21074725-0402514" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.0476045" targepoch="2015.5" targid="6912374418346742272" targname="guide_12278_435" targparal="0.556" targpmdec="0.166" targpmra="3.666" targprio="10" targprog="" targra="316.9468945" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.091" emag_gg="0.0" mag_bp="15.448" emag_bp="0.002" mag_rp="14.565" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21080402-0520523" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.3478657" targepoch="2015.5" targid="6911947464237926912" targname="guide_12278_446" targparal="0.713" targpmdec="-1.976" targpmra="-0.372" targprio="10" targprog="" targra="317.0167389" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.541" emag_gg="0.0" mag_bp="14.889" emag_bp="0.004" mag_rp="14.028" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21081157-0518271" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.3075198" targepoch="2015.5" targid="6912041678640403328" targname="guide_12278_450" targparal="1.042" targpmdec="-3.385" targpmra="-2.334" targprio="10" targprog="" targra="317.0481949" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.532" emag_gg="0.0" mag_bp="14.913" emag_bp="0.002" mag_rp="13.983" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21082167-0513591" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.2330912" targepoch="2015.5" targid="6912045355132417920" targname="guide_12278_459" targparal="0.822" targpmdec="-6.853" targpmra="-5.079" targprio="10" targprog="" targra="317.0902742" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.334" emag_gg="0.001" mag_bp="15.696" emag_bp="0.007" mag_rp="14.786" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21082374-0511294" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.191513" targepoch="2015.5" targid="6912047176198552704" targname="guide_12278_460" targparal="0.667" targpmdec="-0.796" targpmra="6.331" targprio="10" targprog="" targra="317.0989098" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.249" emag_gg="0.001" mag_bp="15.636" emag_bp="0.005" mag_rp="14.699" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21083122-0513404" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.2278915" targepoch="2015.5" targid="6912043946383143552" targname="guide_12278_463" targparal="0.614" targpmdec="-0.744" targpmra="-3.402" targprio="10" targprog="" targra="317.130074" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.033" emag_gg="0.0" mag_bp="15.429" emag_bp="0.004" mag_rp="14.47" emag_rp="0.002"/>
+        </target>
         <target cname="WVE_21083598-0501495" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.0304277" targepoch="2015.5" targid="6912067207926225408" targname="guide_12278_464" targparal="0.735" targpmdec="-4.482" targpmra="5.508" targprio="10" targprog="" targra="317.1499258" targsrvy="GUIDES" targuse="G">
           <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.412" emag_gg="0.001" mag_bp="15.781" emag_bp="0.004" mag_rp="14.873" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21083795-0432109" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.5363678" targepoch="2015.5" targid="6912153416509713792" targname="guide_12278_466" targparal="0.56" targpmdec="-3.543" targpmra="7.004" targprio="10" targprog="" targra="317.1581316" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.135" emag_gg="0.0" mag_bp="15.536" emag_bp="0.002" mag_rp="14.571" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21084084-0432481" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.5466916" targepoch="2015.5" targid="6912153210351279616" targname="guide_12278_468" targparal="0.449" targpmdec="-8.904" targpmra="-2.099" targprio="10" targprog="" targra="317.1701788" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.652" emag_gg="0.0" mag_bp="15.152" emag_bp="0.002" mag_rp="14.005" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21084084-0451297" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.8582408" targepoch="2015.5" targid="6912074011154317056" targname="guide_12278_469" targparal="0.869" targpmdec="-5.097" targpmra="6.753" targprio="10" targprog="" targra="317.1701794" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.08" emag_gg="0.0" mag_bp="15.488" emag_bp="0.003" mag_rp="14.501" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21084302-0437559" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.6321831" targepoch="2015.5" targid="6912149289046765952" targname="guide_12278_470" targparal="0.537" targpmdec="-3.429" targpmra="5.072" targprio="10" targprog="" targra="317.1792425" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.361" emag_gg="0.0" mag_bp="15.769" emag_bp="0.003" mag_rp="14.773" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21084313-0432207" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.5390766" targepoch="2015.5" targid="6912159085866539776" targname="guide_12278_471" targparal="1.195" targpmdec="-4.461" targpmra="-3.557" targprio="10" targprog="" targra="317.1797033" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.946" emag_gg="0.0" mag_bp="15.398" emag_bp="0.004" mag_rp="14.347" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21084346-0428557" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.4821292" targepoch="2015.5" targid="6912160288457388800" targname="guide_12278_472" targparal="0.991" targpmdec="-0.156" targpmra="-9.226" targprio="10" targprog="" targra="317.181094" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.273" emag_gg="0.001" mag_bp="15.698" emag_bp="0.003" mag_rp="14.688" emag_rp="0.004"/>
+        </target>
+        <target cname="WVE_21084467-0444012" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.7336545" targepoch="2015.5" targid="6912099403000977920" targname="guide_12278_473" targparal="1.223" targpmdec="0.22" targpmra="-0.912" targprio="10" targprog="" targra="317.186115" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.468" emag_gg="0.001" mag_bp="15.983" emag_bp="0.005" mag_rp="14.803" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21084652-0430386" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.5107238" targepoch="2015.5" targid="6912159429463924096" targname="guide_12278_476" targparal="0.731" targpmdec="-5.292" targpmra="3.39" targprio="10" targprog="" targra="317.1938367" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.75" emag_gg="0.0" mag_bp="15.203" emag_bp="0.002" mag_rp="14.157" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21084917-0443095" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.7193026" targepoch="2015.5" targid="6912099540439930368" targname="guide_12278_477" targparal="0.538" targpmdec="-5.906" targpmra="6.069" targprio="10" targprog="" targra="317.2048932" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.429" emag_gg="0.001" mag_bp="15.873" emag_bp="0.004" mag_rp="14.825" emag_rp="0.002"/>
         </target>
         <target cname="WVE_21085038-0426599" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.4499776" targepoch="2015.5" targid="6912160872572940288" targname="guide_12278_478" targparal="0.848" targpmdec="-6.092" targpmra="-6.398" targprio="10" targprog="" targra="317.2099286" targsrvy="GUIDES" targuse="G">
           <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.891" emag_gg="0.0" mag_bp="15.309" emag_bp="0.003" mag_rp="14.312" emag_rp="0.002"/>
         </target>
+        <target cname="WVE_21085497-0440078" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.6688305" targepoch="2015.5" targid="6912148193829460352" targname="guide_12278_480" targparal="0.759" targpmdec="1.763" targpmra="-0.866" targprio="10" targprog="" targra="317.2290428" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.148" emag_gg="0.0" mag_bp="15.54" emag_bp="0.003" mag_rp="14.582" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21090119-0451088" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.8524407" targepoch="2015.5" targid="6912094352119421824" targname="guide_12278_482" targparal="0.782" targpmdec="-9.578" targpmra="2.24" targprio="10" targprog="" targra="317.2549752" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.979" emag_gg="0.0" mag_bp="15.392" emag_bp="0.003" mag_rp="14.399" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21013420-0425566" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.4323873" targepoch="2015.5" targid="6915312961955681536" targname="guide_12284_445" targparal="1.284" targpmdec="-5.341" targpmra="6.562" targprio="10" targprog="" targra="315.3925071" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.209" emag_gg="0.0" mag_bp="15.726" emag_bp="0.008" mag_rp="14.552" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21013710-0420010" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.333623" targepoch="2015.5" targid="6915315921188985088" targname="guide_12284_448" targparal="0.727" targpmdec="-7.611" targpmra="6.17" targprio="10" targprog="" targra="315.404582" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.768" emag_gg="0.0" mag_bp="15.19" emag_bp="0.002" mag_rp="14.201" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21013762-0421515" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.3643166" targepoch="2015.5" targid="6915314959116308736" targname="guide_12284_449" targparal="0.951" targpmdec="-0.067" targpmra="-3.66" targprio="10" targprog="" targra="315.4067393" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.341" emag_gg="0.0" mag_bp="15.745" emag_bp="0.005" mag_rp="14.768" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21014181-0415262" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.2572849" targepoch="2015.5" targid="6915319735119946624" targname="guide_12284_458" targparal="0.505" targpmdec="-2.195" targpmra="4.946" targprio="10" targprog="" targra="315.4241881" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.104" emag_gg="0.001" mag_bp="15.419" emag_bp="0.005" mag_rp="14.619" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21014276-0421007" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.3501991" targepoch="2015.5" targid="6915315096555261184" targname="guide_12284_459" targparal="0.582" targpmdec="-2.526" targpmra="0.055" targprio="10" targprog="" targra="315.4281487" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.321" emag_gg="0.001" mag_bp="15.71" emag_bp="0.005" mag_rp="14.77" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21015008-0419248" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.3235607" targepoch="2015.5" targid="6915315543231858944" targname="guide_12284_466" targparal="0.652" targpmdec="-1.559" targpmra="-3.216" targprio="10" targprog="" targra="315.4586736" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.69" emag_gg="0.0" mag_bp="15.025" emag_bp="0.002" mag_rp="14.196" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21015493-0415259" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.2572019" targepoch="2015.5" targid="6915322621337964544" targname="guide_12284_470" targparal="0.718" targpmdec="0.031" targpmra="-1.513" targprio="10" targprog="" targra="315.4788782" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.753" emag_gg="0.001" mag_bp="15.079" emag_bp="0.004" mag_rp="14.266" emag_rp="0.004"/>
+        </target>
+        <target cname="WVE_21020231-0410377" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.1771489" targepoch="2015.5" targid="6915326400909414144" targname="guide_12284_477" targparal="0.832" targpmdec="-2.82" targpmra="-4.714" targprio="10" targprog="" targra="315.509645" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.037" emag_gg="0.001" mag_bp="15.4" emag_bp="0.012" mag_rp="14.495" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21020318-0416186" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.2718364" targepoch="2015.5" targid="6915321693625255552" targname="guide_12284_482" targparal="0.665" targpmdec="-7.29" targpmra="-0.336" targprio="10" targprog="" targra="315.5132626" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.129" emag_gg="0.001" mag_bp="15.538" emag_bp="0.002" mag_rp="14.567" emag_rp="0.004"/>
+        </target>
+        <target cname="WVE_21020650-0415151" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.2541811" targepoch="2015.5" targid="6915322861856359936" targname="guide_12284_487" targparal="0.833" targpmdec="-1.941" targpmra="-0.604" targprio="10" targprog="" targra="315.5270988" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.02" emag_gg="0.001" mag_bp="15.381" emag_bp="0.004" mag_rp="14.493" emag_rp="0.001"/>
+        </target>
+        <target cname="WVE_21021756-0406179" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.1049774" targepoch="2015.5" targid="6915328771731440384" targname="guide_12284_497" targparal="0.903" targpmdec="-5.768" targpmra="-0.857" targprio="10" targprog="" targra="315.5731727" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.781" emag_gg="0.0" mag_bp="15.149" emag_bp="0.003" mag_rp="14.247" emag_rp="0.001"/>
+        </target>
         <target cname="WVE_21021953-0410317" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.1754692" targepoch="2015.5" targid="6915324712986875776" targname="guide_12284_500" targparal="1.032" targpmdec="-0.283" targpmra="0.375" targprio="10" targprog="" targra="315.5813841" targsrvy="GUIDES" targuse="G">
           <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="15.343" emag_gg="0.001" mag_bp="15.808" emag_bp="0.006" mag_rp="14.733" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21025325-0402364" targcat="Guides_S4.fits" targclass="STAR" targdec="-4.0434307" targepoch="2015.5" targid="6915421543024772352" targname="guide_12284_527" targparal="2.404" targpmdec="-2.012" targpmra="-1.336" targprio="10" targprog="" targra="315.7218647" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.998" emag_gg="0.001" mag_bp="15.698" emag_bp="0.003" mag_rp="14.195" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21030047-0359180" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.988346" targepoch="2015.5" targid="6915425116437353728" targname="guide_12284_531" targparal="0.554" targpmdec="0.409" targpmra="-1.078" targprio="10" targprog="" targra="315.7519442" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.681" emag_gg="0.0" mag_bp="14.986" emag_bp="0.003" mag_rp="14.207" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21030716-0357052" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.9514453" targepoch="2015.5" targid="6915425288236044416" targname="guide_12284_538" targparal="0.784" targpmdec="1.136" targpmra="-1.085" targprio="10" targprog="" targra="315.7798383" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.767" emag_gg="0.0" mag_bp="15.134" emag_bp="0.003" mag_rp="14.242" emag_rp="0.003"/>
+        </target>
+        <target cname="WVE_21033328-0357570" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.9658255" targepoch="2015.5" targid="6915427281100847360" targname="guide_12284_555" targparal="0.946" targpmdec="-6.814" targpmra="-4.531" targprio="10" targprog="" targra="315.888676" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.989" emag_gg="0.0" mag_bp="15.412" emag_bp="0.002" mag_rp="14.421" emag_rp="0.002"/>
+        </target>
+        <target cname="WVE_21042254-0349156" targcat="Guides_S4.fits" targclass="STAR" targdec="-3.82101" targepoch="2015.5" targid="6915453806818851968" targname="guide_12284_574" targparal="0.847" targpmdec="0.464" targpmra="-1.945" targprio="10" targprog="" targra="316.0939228" targsrvy="GUIDES" targuse="G">
+          <photometry mag_g="" emag_g="" mag_r="" emag_r="" mag_i="" emag_i="" mag_gg="14.509" emag_gg="0.0" mag_bp="14.842" emag_bp="0.002" mag_rp="14.013" emag_rp="0.001"/>
         </target>
         <target cname="WVE_21042502-0507030" targcat="WD_S4" targclass="STAR" targdec="-5.1175044" targepoch="2015.5" targid="WD339556" targname="da012400_800.dat" targparal="4.468" targpmdec="-17.8" targpmra="-2.725" targprio="5" targprog="" targra="316.1042577" targsrvy="WD" targuse="C">
           <photometry mag_g="18.307" emag_g="0.018" mag_r="18.497" emag_r="0.018" mag_i="18.718" emag_i="0.002" mag_gg="18.401" emag_gg="0.002" mag_bp="18.359" emag_bp="0.002" mag_rp="18.424" emag_rp="0.002"/>

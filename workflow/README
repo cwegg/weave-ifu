@@ -93,9 +93,9 @@ Stage 4: Configuring the XML files
 
 **Contributors:** David Terrett
 
-End-users are required to have a copy of Configure installed and
+End-users are required to have a copy of Configure tools installed and
 running for this stage. XML files are passed to the Configure
-tool. For LIFU observations, this serves solely to populate the XML
+tools. For LIFU observations, this serves solely to populate the XML
 with the LIFU array, including correct positions for the fibres. For
 the mIFU, this involves a more interactive method of dropping mIFU
 bundles onto input targets. The location of the sky mIFU bundles is
