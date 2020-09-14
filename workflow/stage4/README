@@ -24,8 +24,7 @@ Input, auxiliar files and output
 Software
 --------
 
-The following software should be obtained from David Terrett, as these tools are
-not distributed in the IFU repository:
+The following software is not distributed in the IFU repository:
 
 * *configure*:
 
@@ -39,4 +38,9 @@ not distributed in the IFU repository:
 * *dither*:
 
   A configure tool used for dithering IFU configured fields.
+
+The sources of this software are avalaible in *pos* repo at ING Bitbucket
+( https://ingbitbucket.ing.iac.es/projects/WVPOS/repos/pos/browse ), while
+compiled files are distributed using a page at ING Confluence
+( https://ingconfluence.ing.iac.es:8444/confluence/x/woZM ).
 

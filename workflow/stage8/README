@@ -14,3 +14,9 @@ Input and output
 
   + A validated and CNAME'd FITS catalogue by WASP.
 
+Software
+--------
+
+The interaction with this software is made via the WEAVE Automated Submission
+Platform (WASP, http://wasp.ast.cam.ac.uk/ ).
+
