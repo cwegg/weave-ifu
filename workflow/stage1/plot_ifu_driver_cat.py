@@ -46,7 +46,8 @@ def _send_command(cmd, p, option='write', encoding='utf-8'):
 
 
 def plot_ifu_driver_cat(cat_filename, output_dir='output',
-                        aladin_jar='Aladin.jar'):
+                        aladin_jar='Aladin.jar', progtemp_file=None,
+                        pass_datamver=False):
     """
     Plot targets contained in an IFU driver catalogue with Aladin.
 
@@ -58,11 +59,21 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output',
         The directory which will contain the plots generated with Aladin.
     aladin_jar : str, optional
         The location of the Java JAR file of Aladin.
+    progtemp_file : str, optional
+        A progtemp.dat file with the definition of PROGTEMP. If None, it will be
+        retrieved from Internet.
+    pass_datamver : bool, optional
+        Continue even if DATAMVER mismatch is detected.
     """
 
     logging.info(
         'This plotting tool needs time. If you want to monitor its progress, '
         'see the directory which will contain its ouput images.')
+
+    # Get the dictionary to interpret PROGTEMP and its DATAMVER value
+
+    progtemp_datamver, progtemp_dict, forbidden_dict = get_progtemp_dict(
+        filename=progtemp_file, assert_orb=True)
 
     # Open Aladin
     
@@ -80,6 +91,19 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output',
     # Open the catalogue
 
     with fits.open(cat_filename) as hdu_list:
+    
+        # Check DATAMVER of the IFU driver cat and PROGTEMP file are consistent
+        
+        datamver = hdu_list[0].header['DATAMVER']
+
+        if datamver != progtemp_datamver:
+            logging.critical(
+                'DATAMVER mismatch ({} != {}) for PROGTEMP file: '.format(
+                    datamver, progtemp_datamver) +
+                'Stop unless you are sure!')
+            
+            if pass_datamver == False:
+                raise SystemExit(2)
 
         # Get the data from the catalogue
 
@@ -119,7 +143,8 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output',
 
             # Guess the obsmode and set some parameters acording to it
 
-            obsmode = get_obsmode_from_progtemp(progtemp)
+            obsmode = get_obsmode_from_progtemp(progtemp,
+                                                progtemp_dict=progtemp_dict)
 
             if obsmode == 'LIFU':
                 zoom_size_str = '30arcmin'
@@ -215,6 +240,14 @@ if __name__ == '__main__':
     parser.add_argument('--aladin', default=os.path.join('aux', 'Aladin.jar'),
                         help='the location of the Java JAR file of Aladin')
 
+    parser.add_argument('--progtemp_file', default=None,
+                        help="""a progtemp.dat file with the definition of
+                        PROGTEMP. If it is not provided, the latest version will
+                        be retrieved from Internet""")
+
+    parser.add_argument('--pass_datamver', action='store_true',
+                        help='continue even if DATAMVER mismatch is detected')
+
     parser.add_argument('--log_level', default='info',
                         choices=['debug', 'info', 'warning', 'error'],
                         help='the level for the logging messages')
@@ -231,5 +264,7 @@ if __name__ == '__main__':
         get_aladin_jar(file_path=args.aladin)
     
     plot_ifu_driver_cat(args.catalogue, output_dir=args.dir,
-                        aladin_jar=args.aladin)
+                        aladin_jar=args.aladin,
+                        progtemp_file=args.progtemp_file,
+                        pass_datamver=args.pass_datamver)
 
