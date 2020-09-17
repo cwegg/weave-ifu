@@ -19,7 +19,7 @@
 
 
 import os as _os
-from urllib.request import urlretrieve as _urlretrieve
+import urllib as _urllib
 
 
 def get_master_cat(file_path='Master_CatalogueTemplate.fits',
@@ -41,7 +41,7 @@ def get_master_cat(file_path='Master_CatalogueTemplate.fits',
         The path used to save the downloaded file.
     """
     
-    _urlretrieve(url, file_path)
+    _urllib.request.urlretrieve(url, file_path)
     
     return file_path
 
@@ -64,7 +64,7 @@ def get_aladin_jar(file_path='Aladin.jar',
         The path used to save the downloaded file.
     """
     
-    _urlretrieve(url, file_path)
+    _urllib.request.urlretrieve(url, file_path)
     
     return file_path
 
@@ -88,7 +88,7 @@ def get_blank_xml_template(file_path='BlankXMLTemplate.xml',
         The path used to save the downloaded file.
     """
     
-    _urlretrieve(url, file_path)
+    _urllib.request.urlretrieve(url, file_path)
     
     return file_path
 
@@ -112,7 +112,7 @@ def get_progtemp_file(file_path='progtemp.dat',
         The path used to save the downloaded file.
     """
     
-    _urlretrieve(url, file_path)
+    _urllib.request.urlretrieve(url, file_path)
     
     return file_path
 
@@ -136,14 +136,50 @@ def get_obstemp_file(file_path='obstemp.dat',
         The path used to save the downloaded file.
     """
     
-    _urlretrieve(url, file_path)
+    _urllib.request.urlretrieve(url, file_path)
     
     return file_path
 
 
-def get_guide_cat(healpix_index, directory='',
-                  url_template=('http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/' +
-                                'resources/guides/Guides_S4_{}.fits')):
+def _get_srvy_cat(survey, healpix_index, directory='',
+                  url_template='http://hornet.ast.cam.ac.uk/{}/getHPID'):
+    """
+    Download a catalogue of stars for the requested survey and HEALPix index.
+
+    Parameters
+    ----------
+    survey : {'WD', 'WG'}
+        The survey to be considered.
+    healpix_index : int
+        The desired HEALPix index.
+    directory : str, optional
+        The directory used to save the downloaded file.
+    url_template : str, optional
+        The URL with the location ot the catalogue in Internet.
+
+    Returns
+    -------
+    file_path : str
+        The path used to save the downloaded file.
+    """
+
+    assert survey in ['WD', 'WG']
+
+    filename = '{}_{}.fits'.format(survey, healpix_index)
+    file_path = _os.path.join(directory, filename)
+
+    url = url_template.format(survey.lower())
+    data = _urllib.parse.urlencode({'id': healpix_index}).encode('ascii')
+
+    with open(file_path, 'wb') as f:
+        response = _urllib.request.urlopen(url, data=data)
+        contents = response.read()
+        f.write(contents)
+    
+    return file_path
+
+
+def get_guide_cat(healpix_index, directory=''):
     """
     Download a catalogue of guide stars for the requested HEALPix index.
 
@@ -153,8 +189,6 @@ def get_guide_cat(healpix_index, directory='',
         The desired HEALPix index.
     directory : str, optional
         The directory used to save the downloaded file.
-    url_template : str, optional
-        The URL with the location ot the guide catalogues in Internet.
 
     Returns
     -------
@@ -162,17 +196,12 @@ def get_guide_cat(healpix_index, directory='',
         The path used to save the downloaded file.
     """
     
-    url = url_template.format(healpix_index)
-    file_path = _os.path.join(directory, _os.path.basename(url))
-    
-    _urlretrieve(url, file_path)
+    file_path = _get_srvy_cat('WG', healpix_index, directory=directory)
     
     return file_path
 
 
-def get_calib_cat(healpix_index, directory='',
-                  url_template=('http://casu.ast.cam.ac.uk/~dmurphy/opr3/swg/'
-                                'resources/calibs/WD_S4_{}.fits')):
+def get_calib_cat(healpix_index, directory=''):
     """
     Download a catalogue of calib stars for the requested HEALPix index.
 
@@ -182,8 +211,6 @@ def get_calib_cat(healpix_index, directory='',
         The desired HEALPix index.
     directory : str, optional
         The directory used to save the downloaded file.
-    url_template : str, optional
-        The URL with the location ot the calib catalogues in Internet.
 
     Returns
     -------
@@ -191,11 +218,7 @@ def get_calib_cat(healpix_index, directory='',
         The path used to save the downloaded file.
     """
     
-    url = url_template.format(healpix_index)
-    file_path = _os.path.join(directory, _os.path.basename(url))
-    
-    _urlretrieve(url, file_path)
+    file_path = _get_srvy_cat('WD', healpix_index, directory=directory)
     
     return file_path
-
 
