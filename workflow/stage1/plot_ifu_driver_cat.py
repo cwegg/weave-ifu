@@ -150,7 +150,7 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output',
                 zoom_size_str = '30arcmin'
                 get_radius_str = zoom_size_str
             elif obsmode == 'mIFU':
-                zoom_size_str = '60arcsec'
+                zoom_size_str = '30arcsec'
                 get_radius_str = zoom_size_str
             else:
                 logging.warning(
@@ -187,14 +187,18 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output',
             # - For mIFU, draw a circle for each bundle
 
             if obsmode == 'LIFU':
-                cmd_list.append('draw yellow circle({} 1.51arcmin)'.format(
+                cmd_list.append('draw yellow circle({} 45.097arcsec)'.format(
                     coord_str))
-                cmd_list.append('draw green circle({} 8.6arcmin)'.format(
+                cmd_list.append('draw green circle({} 249.203arcsec)'.format(
                     coord_str))
-                cmd_list.append('draw green circle({} 8.28arcmin)'.format(
+                cmd_list.append('draw green circle({} 258.169arcsec)'.format(
+                    coord_str))
+                cmd_list.append('draw blue circle({} 25.825arcmin)'.format(
+                    coord_str))
+                cmd_list.append('draw blue circle({} 29.575arcmin)'.format(
                     coord_str))
             elif obsmode == 'mIFU':
-                cmd_list.append('draw red circle({} 8.7arcsec)'.format(
+                cmd_list.append('draw red circle({} 6.088arcsec)'.format(
                     coord_str))
 
             # Set the desired zoom
