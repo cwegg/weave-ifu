@@ -258,10 +258,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     
-    level_dict = {'debug': logging.DEBUG, 'info': logging.INFO,
-                  'warning': logging.WARNING, 'error': logging.ERROR}
-    
-    logging.basicConfig(level=level_dict[args.log_level])
+    logging.basicConfig(level=getattr(logging, args.log_level.upper()))
 
     if not os.path.exists(args.aladin):
         logging.info('Downloading the Java JAR file of Aladin')
