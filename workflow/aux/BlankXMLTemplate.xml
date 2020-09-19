@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<weave author="%%%" cc_report="%%%" datamver="dev" report_verbosity="%%%">
+<weave author="%%%" cc_report="%%%" datamver="8.00" report_verbosity="%%%">
   <!--
       Detailed documentation for this file is available in:
         - WEAVE-ICD-025 "Configure XML Definition"
@@ -49,8 +49,8 @@
         this OB.
     -->
     <spectrograph>
-      <red_Arm binning_X="1" binning_Y="%%%" resolution="%%%" speed="slow" VPH="%%%"/>
-      <blue_Arm binning_X="1" binning_Y="%%%" resolution="%%%" speed="slow" VPH="%%%"/>
+      <red_Arm VPH="%%%" binning_X="%%%" binning_Y="%%%" resolution="%%%" speed="slow"/>
+      <blue_Arm VPH="%%%" binning_X="%%%" binning_Y="%%%" resolution="%%%" speed="slow"/>
       <!--
           <spectrograph> defines the configuration for both arms of the
           spectrograph (both arms and all attributes are mandatory):
@@ -235,7 +235,7 @@
             chain is completed.
       -->
   </programme>
-  <observation casuid="-1" chained="%%%" coordinate_system="ICRS" linkedgroup="%%%" name="%%%" ob_class="science" ob_priority="1.0" obsgroup="%%%" obsgroup_validity="%%%" obstemp="%%%" obs_mode="%%%" pa="%%%" progtemp="%%%" tac_alloc="%%%" tac_id="%%%" trimester="%%%">
+  <observation casuid="-1" chained="%%%" coordinate_system="ICRS" linkedgroup="%%%" name="%%%" ob_class="science" ob_priority="1.0" obs_mode="%%%" obsgroup="%%%" obsgroup_validity="%%%" obstemp="%%%" pa="%%%" progtemp="%%%" tac_alloc="%%%" tac_id="%%%" trimester="%%%">
     <configure configure_version="%%%" max_calibration="25" max_guide="8" max_sky="100" num_sky_fibres="%%%" plate="%%%" seed="%%%">
       <conditions epoch="%%%" ha="%%%" pressure="%%%" relative_humidity="%%%" temperature="%%%" tlr="%%%"/>
       <hour_angle_limits earliest="%%%" latest="%%%"/>
@@ -291,9 +291,9 @@
         data entered into the <fields> element.
     -->
     <dithering apply_dither="%%%"/>
-    <offsets offset_step_ra="%%%" offset_step_dec="%%%"/>
+    <offsets offset_step_dec="%%%" offset_step_ra="%%%"/>
     <surveys>
-      <survey name="%%%" priority="%%%" max_fibres="%%%"/>
+      <survey max_fibres="%%%" name="%%%" priority="%%%"/>
       <!--
           The priority in <survey> elements refers to the inter-survey
           priority in cases where this field is shared.
@@ -309,22 +309,22 @@
         type="science" attribute.
     -->
     <fields>
-      <field RA_d="%%%" Dec_d="%%%" order="%%%"> <!-- [[Decimal degrees]] -->
+      <field Dec_d="%%%" RA_d="%%%" order="%%%"> <!-- [[Decimal degrees]] -->
         <!-- Guide targets: -->
         <target automatic="%%%" cname="%%%" configid="%%%" fibreid="%%%" ifu_pa="" ifu_spaxel="" targcat="%%%" targclass="STAR" targdec="%%%" targepoch="%%%" targid="%%%" targname="%%%" targparal="%%%" targpmdec="%%%" targpmra="%%%" targprio="%%%" targprog="%%%" targra="%%%" targsrvy="%%%" targuse="G" targx="%%%" targy="%%%">
-          <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+          <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
         <!-- ... -->
         <!-- ... -->
         <!-- Science targets: -->
         <target automatic="%%%" cname="%%%" configid="%%%" fibreid="%%%" ifu_pa="%%%" ifu_spaxel="%%%" targcat="%%%" targclass="%%%" targdec="%%%" targepoch="%%%" targid="%%%" targname="%%%" targparal="%%%" targpmdec="%%%" targpmra="%%%" targprio="%%%" targprog="%%%" targra="%%%" targsrvy="%%%" targuse="T" targx="%%%" targy="%%%">
-          <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+          <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
         <!-- ... -->
         <!-- ... -->
         <!-- Calibration targets: -->
         <target automatic="%%%" cname="%%%" configid="%%%" fibreid="%%%" ifu_pa="%%%" ifu_spaxel="%%%" targcat="%%%" targclass="%%%" targdec="%%%" targepoch="%%%" targid="%%%" targname="%%%" targparal="%%%" targpmdec="%%%" targpmra="%%%" targprio="%%%" targprog="%%%" targra="%%%" targsrvy="%%%" targuse="C" targx="%%%" targy="%%%">
-          <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+          <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
         <!-- ... -->
         <!-- ... -->
@@ -341,7 +341,7 @@
         <!-- A group of targets: -->
         <group>
           <target automatic="%%%" cname="%%%" configid="%%%" fibreid="%%%" ifu_pa="%%%" ifu_spaxel="%%%" targcat="%%%" targclass="%%%" targdec="%%%" targepoch="%%%" targid="%%%" targname="%%%" targparal="%%%" targpmdec="%%%" targpmra="%%%" targprio="%%%" targprog="%%%" targra="%%%" targsrvy="%%%" targuse="T" targx="%%%" targy="%%%">
-            <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+            <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
           </target>
           <!-- ... -->
           <!-- ... -->
