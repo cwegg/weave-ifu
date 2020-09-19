@@ -26,7 +26,8 @@ import subprocess
 from astropy.io import fits
 
 from workflow.utils.get_resources import get_aladin_jar
-from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
+from workflow.utils.get_progtemp_info import (get_progtemp_dict,
+                                              get_obsmode_from_progtemp)
 
 
 def _send_command(cmd, p, option='write', encoding='utf-8'):
@@ -147,7 +148,7 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output',
                                                 progtemp_dict=progtemp_dict)
 
             if obsmode == 'LIFU':
-                zoom_size_str = '30arcmin'
+                zoom_size_str = '10arcmin'
                 get_radius_str = zoom_size_str
             elif obsmode == 'mIFU':
                 zoom_size_str = '30arcsec'
@@ -192,10 +193,6 @@ def plot_ifu_driver_cat(cat_filename, output_dir='output',
                 cmd_list.append('draw green circle({} 249.203arcsec)'.format(
                     coord_str))
                 cmd_list.append('draw green circle({} 258.169arcsec)'.format(
-                    coord_str))
-                cmd_list.append('draw blue circle({} 25.825arcmin)'.format(
-                    coord_str))
-                cmd_list.append('draw blue circle({} 29.575arcmin)'.format(
                     coord_str))
             elif obsmode == 'mIFU':
                 cmd_list.append('draw red circle({} 6.088arcsec)'.format(
