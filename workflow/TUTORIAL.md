@@ -77,10 +77,10 @@ dither -i output/WC_2020A1-lifu_01-tgcs-tmp.xml -o output/WC_2020A1-lifu_01-tgcs
 lifu_configure --epoch 2020 -i output/WC_2020A1-lifu_02-tgc.xml -o output/WC_2020A1-lifu_02-tgcs-tmp.xml
 dither -i output/WC_2020A1-lifu_02-tgcs-tmp.xml -o output/WC_2020A1-lifu_02-tgcs.xml
 
-configure --epoch 2020 -f output/WC_2020A1-mifu_01-tgc.xml
+configure --epoch 2020 -f output/WC_2020A1-mifu_01-tgc.xml -o output/WC_2020A1-mifu_01-tgcs-tmp.xml
 dither -i output/WC_2020A1-mifu_01-tgcs-tmp.xml -o output/WC_2020A1-mifu_01-tgcs.xml
 
-configure --epoch 2020 -f WC_2020A1-mifu_02-tgc.xml
+configure --epoch 2020 -f output/WC_2020A1-mifu_02-tgc.xml -o output/WC_2020A1-mifu_02-tgcs-tmp.xml
 dither -i output/WC_2020A1-mifu_02-tgcs-tmp.xml -o output/WC_2020A1-mifu_02-tgcs.xml
 ```
 
