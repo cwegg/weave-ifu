@@ -107,7 +107,7 @@ class _AuxStars:
             logging.critical(
                 'Do not trust on the output of this code by now: ' +
                 'This software is great, but the assumed position of the LIFU '
-                'guide camera must to be confirmed')
+                'guide camera must be confirmed')
 
             # Set the position of the guide camera
 
