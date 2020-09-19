@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<weave author="%%%" cc_report="%%%" datamver="8.00" report_verbosity="%%%">
+<weave author="%%%" cc_report="%%%" datamver="dev" report_verbosity="%%%">
   <!--
       Detailed documentation for this file is available in:
         - WEAVE-ICD-025 "Configure XML Definition"
