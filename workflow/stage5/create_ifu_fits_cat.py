@@ -164,7 +164,7 @@ def _add_sim_extension(filename):
 
         sim_col_list.append(
             fits.Column(name='SIM_MAG', format='D', unit='mag',
-                        array=np.zeros(num_rows)))
+                        array=[np.nan for i in range(num_rows)]))
         sim_ucd_list.append('phot.mag')
 
         sim_col_list.append(
@@ -174,17 +174,17 @@ def _add_sim_extension(filename):
 
         sim_col_list.append(
             fits.Column(name='SIM_FWHM', format='D', unit='arcsec',
-                        array=np.zeros(num_rows)))
+                        array=[np.nan for i in range(num_rows)]))
         sim_ucd_list.append('instr.obsty.seeing')
 
         sim_col_list.append(
             fits.Column(name='SIM_VELOCITY', format='D', unit='km/s',
-                        array=np.zeros(num_rows)))
+                        array=[np.nan for i in range(num_rows)]))
         sim_ucd_list.append('phys.veloc')
 
         sim_col_list.append(
             fits.Column(name='SIM_REDSHIFT', format='D',
-                        array=np.zeros(num_rows)))
+                        array=[np.nan for i in range(num_rows)]))
         sim_ucd_list.append('src.redshift')
 
         # Create an HDU from the column definitions
