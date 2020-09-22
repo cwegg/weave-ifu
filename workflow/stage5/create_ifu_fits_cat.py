@@ -142,8 +142,83 @@ def _add_missing_cols_of_template(data_dict, fits_template):
     return out_data_dict
 
 
+def _add_sim_extension(filename):
+
+    # Open the FITS file in append mode
+
+    with fits.open(filename, mode='append') as hdu_list:
+
+        # Get the number of rows in the first extension
+
+        num_rows = len(hdu_list[1].data)
+
+        # Create the column defitions and its corresponding list of UCDs
+
+        sim_col_list = []
+        sim_ucd_list = []
+
+        sim_col_list.append(
+            fits.Column(name='SIM_TEMPLATE', format='30A',
+                        array=['' for i in range(num_rows)]))
+        sim_ucd_list.append('phot.flux.density;meta.file')
+
+        sim_col_list.append(
+            fits.Column(name='SIM_MAG', format='D', unit='mag',
+                        array=np.zeros(num_rows)))
+        sim_ucd_list.append('phot.mag')
+
+        sim_col_list.append(
+            fits.Column(name='SIM_FILTERID', format='10A',
+                        array=['' for i in range(num_rows)]))
+        sim_ucd_list.append('instr.filter')
+
+        sim_col_list.append(
+            fits.Column(name='SIM_FWHM', format='D', unit='arcsec',
+                        array=np.zeros(num_rows)))
+        sim_ucd_list.append('instr.obsty.seeing')
+
+        sim_col_list.append(
+            fits.Column(name='SIM_VELOCITY', format='D', unit='km/s',
+                        array=np.zeros(num_rows)))
+        sim_ucd_list.append('phys.veloc')
+
+        sim_col_list.append(
+            fits.Column(name='SIM_REDSHIFT', format='D',
+                        array=np.zeros(num_rows)))
+        sim_ucd_list.append('src.redshift')
+
+        # Create an HDU from the column definitions
+
+        sim_hdu = fits.BinTableHDU.from_columns(sim_col_list)
+
+        # Add TUCD keywords to the HDU in nice positions
+
+        for i, ucd in enumerate(sim_ucd_list):
+
+            ucd_kwd = 'TUCD{}'.format(i + 1)
+
+            unit_kwd = 'TUNIT{}'.format(i + 1)
+            form_kwd = 'TFORM{}'.format(i + 1)
+
+            if unit_kwd in sim_hdu.header:
+                after_kwd = unit_kwd
+            else:
+                after_kwd = form_kwd
+
+            sim_hdu.header.set(ucd_kwd, ucd, after=after_kwd)
+
+        # Add an extension name to the HDU
+
+        sim_hdu.name = 'SIM'
+
+        # Append the sim HDU
+
+        hdu_list.append(sim_hdu)
+
+
 def create_ifu_fits_cat(xml_files, fits_template, output_filename,
-                        cat_nme1='', cat_nme2='', overwrite=False):
+                        cat_nme1='', cat_nme2='', sim_ext=False,
+                        overwrite=False):
     """
     Create an IFU FITS catalogue.
     
@@ -160,6 +235,9 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
         Value for populating CAT_NME1 keyword of the output file.
     cat_nme2 : str, optional
         Value for populating CAT_NME2 keyword of the output file.
+    sim_ext : bool, optional
+        Add an extra extension to the output file for the information needed to
+        generate the simulations.
     overwrite : bool, optional
         Overwrite the output FITS file.
     """
@@ -217,6 +295,11 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
                                  primary_kwds=primary_kwds,
                                  update_datetime=True, overwrite=overwrite)
 
+    # Add an extra extension for the simulations if requested
+
+    if sim_ext == True:
+        _add_sim_extension(output_filename)
+
 
 if __name__ == '__main__':
 
@@ -241,7 +324,11 @@ if __name__ == '__main__':
                         help="""value for populating CAT_NME1 keyword of the
                         output file""")
 
-    parser.add_argument('--overwrite', dest='overwrite', action='store_true',
+    parser.add_argument('--sim_ext',  action='store_true',
+                        help="""add an extra extension to the output file for
+                        the information needed to generate the simulations""")
+
+    parser.add_argument('--overwrite', action='store_true',
                         help='overwrite the output file')
 
     parser.add_argument('--log_level', default='info',
@@ -261,5 +348,5 @@ if __name__ == '__main__':
 
     create_ifu_fits_cat(args.xml_file, args.template, args.output_filename,
                         cat_nme1=args.cat_nme1, cat_nme2=args.cat_nme2,
-                        overwrite=args.overwrite)
+                        sim_ext=args.sim_ext, overwrite=args.overwrite)
 
