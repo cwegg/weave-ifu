@@ -27,9 +27,10 @@ import numpy as np
 from astropy.io import fits
 
 from workflow.utils import populate_fits_table_template
-from workflow.utils.get_data_from_xmls import get_trimester_from_xmls
-from workflow.utils.get_data_from_xmls import get_spa_data_of_target_random_and_sky_fibres_from_xmls
-
+from workflow.utils.get_data_from_xmls import (
+    get_datamver_from_xmls,
+    get_author_from_xmls, get_cc_report_from_xmls, get_trimester_from_xmls,
+    get_spa_data_of_target_random_and_sky_fibres_from_xmls)
 
 def _get_col_null_dict_of_template(fits_template):
     
@@ -141,7 +142,82 @@ def _add_missing_cols_of_template(data_dict, fits_template):
     return out_data_dict
 
 
+def _add_sim_extension(filename):
+
+    # Open the FITS file in append mode
+
+    with fits.open(filename, mode='append') as hdu_list:
+
+        # Get the number of rows in the first extension
+
+        num_rows = len(hdu_list[1].data)
+
+        # Create the column defitions and its corresponding list of UCDs
+
+        sim_col_list = []
+        sim_ucd_list = []
+
+        sim_col_list.append(
+            fits.Column(name='SIM_TEMPLATE', format='30A',
+                        array=['' for i in range(num_rows)]))
+        sim_ucd_list.append('phot.flux.density;meta.file')
+
+        sim_col_list.append(
+            fits.Column(name='SIM_MAG', format='D', unit='mag',
+                        array=[np.nan for i in range(num_rows)]))
+        sim_ucd_list.append('phot.mag')
+
+        sim_col_list.append(
+            fits.Column(name='SIM_FILTERID', format='10A',
+                        array=['' for i in range(num_rows)]))
+        sim_ucd_list.append('instr.filter')
+
+        sim_col_list.append(
+            fits.Column(name='SIM_FWHM', format='D', unit='arcsec',
+                        array=[np.nan for i in range(num_rows)]))
+        sim_ucd_list.append('instr.obsty.seeing')
+
+        sim_col_list.append(
+            fits.Column(name='SIM_VELOCITY', format='D', unit='km/s',
+                        array=[np.nan for i in range(num_rows)]))
+        sim_ucd_list.append('phys.veloc')
+
+        sim_col_list.append(
+            fits.Column(name='SIM_REDSHIFT', format='D',
+                        array=[np.nan for i in range(num_rows)]))
+        sim_ucd_list.append('src.redshift')
+
+        # Create an HDU from the column definitions
+
+        sim_hdu = fits.BinTableHDU.from_columns(sim_col_list)
+
+        # Add TUCD keywords to the HDU in nice positions
+
+        for i, ucd in enumerate(sim_ucd_list):
+
+            ucd_kwd = 'TUCD{}'.format(i + 1)
+
+            unit_kwd = 'TUNIT{}'.format(i + 1)
+            form_kwd = 'TFORM{}'.format(i + 1)
+
+            if unit_kwd in sim_hdu.header:
+                after_kwd = unit_kwd
+            else:
+                after_kwd = form_kwd
+
+            sim_hdu.header.set(ucd_kwd, ucd, after=after_kwd)
+
+        # Add an extension name to the HDU
+
+        sim_hdu.name = 'SIM'
+
+        # Append the sim HDU
+
+        hdu_list.append(sim_hdu)
+
+
 def create_ifu_fits_cat(xml_files, fits_template, output_filename,
+                        cat_nme1='', cat_nme2='', sim_ext=False,
                         overwrite=False):
     """
     Create an IFU FITS catalogue.
@@ -151,10 +227,17 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
     xml_files : str or list of str
         A string with a pattern of the input XML files or list of strings with
         the filenames of the XML files.
-    fits_template : list of str
+    fits_template : str
         A FITS template with a primary HDU and a first extension with a table.
     output_filename : str
         The name of the output file which will be created.
+    cat_nme1 : str, optional
+        Value for populating CAT_NME1 keyword of the output file.
+    cat_nme2 : str, optional
+        Value for populating CAT_NME2 keyword of the output file.
+    sim_ext : bool, optional
+        Add an extra extension to the output file for the information needed to
+        generate the simulations.
     overwrite : bool, optional
         Overwrite the output FITS file.
     """
@@ -168,17 +251,39 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
         xml_filename_list.sort()
     else:
         raise TypeError
+
+    # Check that DATAMVER is consistent bewteen the XML files and the template
+
+    xml_datamver = get_datamver_from_xmls(xml_filename_list)
+    template_datamver = fits.getval(fits_template, 'DATAMVER')
+
+    if template_datamver != xml_datamver:
+        logging.critical(
+            'DATAMVER mismatch ({} != {}) '.format(
+                xml_datamver, template_datamver) +
+            'between XML files and FITS template: ' +
+            'Stop unless you are sure!')
+        raise SystemExit(2)
     
-    # Get the trimester of the files (which should be the same for all them)
+    # Get the trimester, author and cc_report of the files (which should be the
+    # same for all them)
     
+    author = get_author_from_xmls(xml_filename_list)
+    cc_report = get_cc_report_from_xmls(xml_filename_list)
     trimester = get_trimester_from_xmls(xml_filename_list)
     
-    primary_kwds = {'TRIMESTE': trimester}
+    primary_kwds = {
+        'CAT_NME1': cat_nme1,
+        'CAT_NME2': cat_nme2,
+        'CAT_MAIL': author,
+        'CAT_CC': cc_report,
+        'TRIMESTE': trimester
+    }
     
     # Get a dictionary with the SPA data from targets and skies in the XML files
     
     spa_data_dict = get_spa_data_of_target_random_and_sky_fibres_from_xmls(
-                        xml_filename_list)
+                        xml_filename_list, sort_targets=True)
     
     # Add missing columns of the template to the dictionary
     
@@ -189,6 +294,11 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
     populate_fits_table_template(fits_template, data_dict, output_filename,
                                  primary_kwds=primary_kwds,
                                  update_datetime=True, overwrite=overwrite)
+
+    # Add an extra extension for the simulations if requested
+
+    if sim_ext == True:
+        _add_sim_extension(output_filename)
 
 
 if __name__ == '__main__':
@@ -206,7 +316,19 @@ if __name__ == '__main__':
                         help="""name for the output file which will contain the
                         IFU FITS catalogue""")
 
-    parser.add_argument('--overwrite', dest='overwrite', action='store_true',
+    parser.add_argument('--cat_nme1', default='',
+                        help="""value for populating CAT_NME1 keyword of the
+                        output file""")
+
+    parser.add_argument('--cat_nme2', default='',
+                        help="""value for populating CAT_NME1 keyword of the
+                        output file""")
+
+    parser.add_argument('--sim_ext',  action='store_true',
+                        help="""add an extra extension to the output file for
+                        the information needed to generate the simulations""")
+
+    parser.add_argument('--overwrite', action='store_true',
                         help='overwrite the output file')
 
     parser.add_argument('--log_level', default='info',
@@ -225,5 +347,6 @@ if __name__ == '__main__':
         os.mkdir(os.path.dirname(args.output_filename))
 
     create_ifu_fits_cat(args.xml_file, args.template, args.output_filename,
-                        overwrite=args.overwrite)
+                        cat_nme1=args.cat_nme1, cat_nme2=args.cat_nme2,
+                        sim_ext=args.sim_ext, overwrite=args.overwrite)
 
