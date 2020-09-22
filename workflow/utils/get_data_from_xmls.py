@@ -18,6 +18,7 @@
 #
 
 
+from collections import OrderedDict
 import xml.dom.minidom as _minidom
 
 import numpy as _np
@@ -120,10 +121,12 @@ def _get_xml_data(xml_filename):
 
     observation = dom.getElementsByTagName('observation')[0]
     dithering = dom.getElementsByTagName('dithering')[0]
+    field = dom.getElementsByTagName('field')
     target = dom.getElementsByTagName('target')
 
     xml_data['observation'] = observation
     xml_data['dithering'] = dithering
+    xml_data['field'] = field
     xml_data['target'] = target
 
     return xml_data
@@ -189,7 +192,8 @@ def _get_value_from_xml_data(xml_data, target, key, formats):
 
 def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S', 'R'],
                                replace_triple_percent=True,
-                               post_configure=True, only_allocated=False):
+                               post_configure=True, only_allocated=False,
+                               sort_targets=False):
 
     # Get dictionaries with the lookup information and the formats
 
@@ -208,49 +212,101 @@ def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S', 'R'],
         # Get the data from the XML file
 
         xml_data = _get_xml_data(xml_filename)
-
-        # For each target in the XML
-
-        for target in xml_data['target']:
-
-            # Skip the target if it is not in the targuse list
-
-            if str(target.getAttribute('targuse')) not in targuse_list:
-                continue
+        
+        # For each field in the XML
+        
+        for field in xml_data['field']:
             
-            # If we want to skip the non-allocated targets, skip the target if
-            # it is the case
+            # Get an ordered dictionary with the targets
+            # It will be useful if key decide to sort the result or not
             
-            if only_allocated == True:
-                if 'fibreid' not in target.attributes.keys():
+            target_ord_dict = OrderedDict()
+            
+            for i, target in enumerate(field.getElementsByTagName('target')):
+            
+                # The key will have 4 components:
+                #  - ifu_bundle: 'L' (for LIFU) or 'm01' ... 'm20' (for mIFU)
+                #  - automatic: 0 or 1
+                #  - ifu_spaxel
+                #  - i (the number of target, to prevent duplicities in the key)
+                
+                # This will allow us to short the fibres by bundles, having the
+                # first one the central fibre
+            
+                if 'ifu_spaxel' in target.attributes.keys():
+                    ifu_spaxel = str(target.getAttribute('ifu_spaxel'))
+                    
+                    if len(ifu_spaxel) == 3:
+                        ifu_bundle = 'L'
+                    elif len(ifu_spaxel) == 6:
+                        ifu_bundle = ifu_spaxel[:3]
+                    else:
+                        ifu_bundle = ifu_spaxel
+                else:
+                    ifu_spaxel = ''
+                    ifu_bundle = ''
+                
+                if 'automatic' in target.attributes.keys():
+                    automatic = int(target.getAttribute('automatic'))
+                else:
+                    automatic = 0
+                
+                target_key = (ifu_bundle, automatic, ifu_spaxel, i)
+                
+                target_ord_dict[target_key] = target
+            
+            # Get the list of keywords of the ordered dict, and sort them if
+            # requested
+            
+            target_key_list = list(target_ord_dict.keys())
+            
+            if sort_targets == True:
+                target_key_list.sort()
+
+            # For each target in the XML
+
+            for target_key in target_key_list:
+            
+                target = target_ord_dict[target_key]
+
+                # Skip the target if it is not in the targuse list
+
+                if str(target.getAttribute('targuse')) not in targuse_list:
                     continue
+                
+                # If we want to skip the non-allocated targets, skip the target
+                # if it is the case
+                
+                if only_allocated == True:
+                    if 'fibreid' not in target.attributes.keys():
+                        continue
 
-            # For each key in the lookup dictionary
-            
-            for key in lookup.keys():
+                # For each key in the lookup dictionary
                 
-                # Get its column name and its value and save them
-                
-                col_name = lookup[key]
-                
-                value = _get_value_from_xml_data(xml_data, target, key, formats)
-                
-                # Replace the triple percent if requested
-                
-                if (replace_triple_percent is True) and (value == '%%%'):
-                    value = ''
+                for key in lookup.keys():
+                    
+                    # Get its column name and its value and save them
+                    
+                    col_name = lookup[key]
+                    
+                    value = _get_value_from_xml_data(
+                                xml_data, target, key, formats)
+                    
+                    # Replace the triple percent if requested
+                    
+                    if (replace_triple_percent is True) and (value == '%%%'):
+                        value = ''
 
-                # Save the value in the corresponding column
-                
-                data_dict[col_name].append(value)
+                    # Save the value in the corresponding column
+                    
+                    data_dict[col_name].append(value)
 
     return data_dict
 
 
-def get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
-                                            replace_triple_percent=True,
-                                            post_configure=True,
-                                            only_allocated=False):
+def get_spa_data_of_target_fibres_from_xmls(
+        xml_filename_list, replace_triple_percent=True, post_configure=True,
+        only_allocated=False, sort_targets=False):
     """
     Get SPA data of the target fibres contained in a list of XML files.
 
@@ -265,6 +321,8 @@ def get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
         configure or not.
     only_allocated : bool, optional
         It will include only information from allocated fibres.
+    sort_targets : bool, optional
+        Sort the data inside each field grouping by IFU bundle.
 
     Returns
     -------
@@ -274,17 +332,18 @@ def get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
         its values are lists containing these data.
     """
     data_dict = \
-        _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T'],
-                                  replace_triple_percent=replace_triple_percent,
-                                  post_configure=post_configure,
-                                  only_allocated=only_allocated)
+        _get_spa_data_from_targuse(
+            xml_filename_list, targuse_list=['T'],
+            replace_triple_percent=replace_triple_percent,
+            post_configure=post_configure, only_allocated=only_allocated,
+            sort_targets=sort_targets)
 
     return data_dict
 
 
 def get_spa_data_of_target_random_and_sky_fibres_from_xmls(
         xml_filename_list, replace_triple_percent=True, post_configure=True,
-        only_allocated=True):
+        only_allocated=True, sort_targets=False):
     """
     Get SPA data of the target and sky fibres contained in a list of XML files.
 
@@ -299,6 +358,8 @@ def get_spa_data_of_target_random_and_sky_fibres_from_xmls(
         configure or not.
     only_allocated : bool, optional
         It will include only information from allocated fibres.
+    sort_targets : bool, optional
+        Sort the data inside each field grouping by IFU bundle.
 
     Returns
     -------
@@ -311,7 +372,8 @@ def get_spa_data_of_target_random_and_sky_fibres_from_xmls(
         _get_spa_data_from_targuse(
             xml_filename_list, targuse_list=['T', 'S', 'R'],
             replace_triple_percent=replace_triple_percent,
-            post_configure=post_configure, only_allocated=only_allocated)
+            post_configure=post_configure, only_allocated=only_allocated,
+            sort_targets=sort_targets)
 
     return data_dict
 

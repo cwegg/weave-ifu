@@ -283,7 +283,7 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
     # Get a dictionary with the SPA data from targets and skies in the XML files
     
     spa_data_dict = get_spa_data_of_target_random_and_sky_fibres_from_xmls(
-                        xml_filename_list)
+                        xml_filename_list, sort_targets=True)
     
     # Add missing columns of the template to the dictionary
     
