@@ -49,8 +49,8 @@
         this OB.
     -->
     <spectrograph>
-      <red_Arm binning_X="1" binning_Y="1" resolution="low" speed="slow" VPH="VPH1"/>
-      <blue_Arm binning_X="1" binning_Y="1" resolution="low" speed="slow" VPH="VPH1"/>
+      <red_Arm VPH="VPH1" binning_X="%%%" binning_Y="1" resolution="low" speed="slow"/>
+      <blue_Arm VPH="VPH1" binning_X="%%%" binning_Y="1" resolution="low" speed="slow"/>
       <!--
           <spectrograph> defines the configuration for both arms of the
           spectrograph (both arms and all attributes are mandatory):
@@ -237,7 +237,7 @@
             chain is completed.
       -->
   </programme>
-  <observation casuid="-1" chained="False" coordinate_system="ICRS" linkedgroup="%%%" name="PSZ1_125A-PSZ1_125A" ob_class="science" ob_priority="1.0" obsgroup="%%%" obsgroup_validity="%%%" obstemp="IAEEB" obs_mode="LIFU" pa="0.0" progtemp="41331" tac_alloc="%%%" tac_id="%%%" trimester="2020A1">
+  <observation casuid="-1" chained="False" coordinate_system="ICRS" linkedgroup="%%%" name="PSZ1_125A-PSZ1_125A" ob_class="science" ob_priority="1.0" obs_mode="LIFU" obsgroup="%%%" obsgroup_validity="%%%" obstemp="IAEEB" pa="0.0" progtemp="41331" tac_alloc="%%%" tac_id="%%%" trimester="2020A1">
     <configure max_calibration="547" max_guide="1" max_sky="56" num_sky_fibres="603" plate="LIFU">
       <conditions epoch="%%%" ha="%%%" pressure="%%%" relative_humidity="%%%" temperature="%%%" tlr="%%%"/>
     </configure>
@@ -288,7 +288,7 @@
     -->
     <dithering apply_dither="3"/>
     <surveys>
-      <survey name="WC" priority="1.0" max_fibres="603"/>
+      <survey max_fibres="603" name="WC" priority="1.0"/>
       <!--
           The priority in <survey> elements refers to the inter-survey
           priority in cases where this field is shared.
@@ -304,9 +304,9 @@
         type="science" attribute.
     -->
     <fields>
-      <field RA_d="%%%" Dec_d="%%%" order="3">
+      <field Dec_d="%%%" RA_d="%%%" order="3">
         <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.71060356792" targepoch="" targid="PSZ1_125A" targname="PSZ1_125A" targparal="" targpmdec="" targpmra="" targprio="10.0" targprog="LR" targra="316.369609537" targsrvy="WC" targuse="T">
-          <photometry mag_g="%%%" emag_g="%%%" mag_r="%%%" emag_r="%%%" mag_i="%%%" emag_i="%%%" mag_gg="%%%" emag_gg="%%%" mag_bp="%%%" emag_bp="%%%" mag_rp="%%%" emag_rp="%%%"/>
+          <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
       </field>
     </fields>

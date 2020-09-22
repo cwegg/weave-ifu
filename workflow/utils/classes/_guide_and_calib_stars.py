@@ -103,20 +103,25 @@ class _AuxStars:
         # NB: The dither size is substracted twice to avoid edge issues
 
         if (self.obsmode == 'LIFU'):
+            
+            logging.critical(
+                'Do not trust on the output of this code by now: ' +
+                'This software is great, but the assumed position of the LIFU '
+                'guide camera must be confirmed')
 
             # Set the position of the guide camera
 
-            self.cam_x_offset = 27.7 / 60.0
-            self.cam_y_offset =  0.0 / 60.0
+            self.cam_x_offset =   0.0 / 60.0
+            self.cam_y_offset = -27.7 / 60.0
 
             cam_offset_dist = _np.hypot(self.cam_x_offset, self.cam_y_offset)
 
             # Set the effective radious of the field of view of the guide camera
             
-            cam_x_width = 3.75 / 60.0
-            cam_y_width =  4.0 / 60.0
+            cam_width  =  4.0 / 60.0
+            cam_height = 3.75 / 60.0
             
-            self.fov_radious = (min(cam_x_width, cam_y_width) / 2 -
+            self.fov_radious = (min(cam_width, cam_height) / 2 -
                                 2 * self.dither_size_arcsec / 3600)
 
             # Set the limits for looking for stars
@@ -230,7 +235,8 @@ class _AuxStars:
                                               unit='deg')
 
             distance_list.append(centre_coord.separation(row_coord).deg)
-            angle_list.append(centre_coord.position_angle(row_coord).deg)
+            angle_list.append(centre_coord.position_angle(row_coord).wrap_at(
+                _coordinates.Angle(360, unit='deg')).deg)
 
         distance_column = _Column(distance_list, name='DISTANCE')
         angle_column = _Column(angle_list, name='ANGLE')
@@ -306,18 +312,18 @@ class _AuxStars:
 
 
     def _get_index_of_nearest_angle(self, ref_angle, angle_array,
-                                    selected_indices):
+                                    selected_indices=None):
 
         index = None
 
         wrapped_angle_list = [
             _coordinates.Angle(angle , unit='deg').wrap_at(
-                _coordinates.Angle(ref_angle + 360, unit='deg')).deg
+                _coordinates.Angle(ref_angle + 180, unit='deg')).deg
             for angle in angle_array]
 
         for i, angle_i in enumerate(wrapped_angle_list):
 
-            if i not in selected_indices:
+            if (selected_indices is None) or (i not in selected_indices):
 
                 angle_diff = _np.abs(angle_i - ref_angle)
 
@@ -351,9 +357,9 @@ class _AuxStars:
 
                 angle = i * 360 / num_stars
 
-                index = self._get_index_of_nearest_angle(angle,
-                                                         ring_table['ANGLE'],
-                                                         selected_indices)
+                index = self._get_index_of_nearest_angle(
+                    angle, ring_table['ANGLE'],
+                    selected_indices=selected_indices)
 
                 if index is not None:
 
@@ -377,7 +383,7 @@ class _AuxStars:
             _np.hypot(self.cam_x_offset, self.cam_y_offset), unit='deg')
         cam_pa_angle = _coordinates.Angle(
             _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) +
-            pa + 90, unit='deg')
+            pa - 90, unit='deg')
 
         centre_coord = _coordinates.SkyCoord(self.ra, self.dec, unit='deg')
         cam_coord = centre_coord.directional_offset_by(cam_pa_angle,
@@ -437,17 +443,22 @@ class _AuxStars:
                                                  num_stars_request):
 
         if len(table) > 0:
-            cam_pa = _coordinates.Angle(
+            
+            cam_pa_at_request = _coordinates.Angle(
                 _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) +
-                pa_request + 90, unit='deg').wrap_at(
+                pa_request - 90, unit='deg').wrap_at(
                     _coordinates.Angle(360, unit='deg')).deg
 
-            abs_angle_diff = _np.abs(table['ANGLE'] - cam_pa)
-
-            argmin = _np.argmin(abs_angle_diff)
+            argmin = self._get_index_of_nearest_angle(cam_pa_at_request,
+                                                      table['ANGLE'])
+            
+            cam_pa_at_zero = _coordinates.Angle(
+                _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) -
+                90, unit='deg').wrap_at(
+                    _coordinates.Angle(360, unit='deg')).deg
 
             selected_pa = _coordinates.Angle(
-                table['ANGLE'][argmin] - cam_pa, unit='deg').wrap_at(
+                table['ANGLE'][argmin] - cam_pa_at_zero, unit='deg').wrap_at(
                     _coordinates.Angle(360, unit='deg')).deg
 
             selected_table = self._select_stars_in_guide_cam(table, selected_pa,
@@ -964,4 +975,147 @@ class CalibStars(_AuxStars):
                                       min_cut=min_cut, max_cut=max_cut)
 
         return table
+
+
+if __name__ == '__main__':
+
+    # Get a parser
+
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description='Get WEAVE guide and calib stars')
+
+    parser.add_argument('type_stars', choices=['guide', 'calib'],
+                        help='type of stars to be searched')
+    parser.add_argument('obsmode', choices=['MOS', 'LIFU', 'mIFU'],
+                        help='obsmode to be considered in the search')
+    parser.add_argument('central_ra', type=float,
+                        help='RA in degrees of the centre of the FoV')
+    parser.add_argument('central_dec', type=float,
+                        help='Dec in degrees of the centre of the FoV')
+    parser.add_argument('--pa_request', default='None',
+                        help="""Requested PA in degress for LIFU observations;
+                        None means no limit""")
+    parser.add_argument('--lifu_num_guide_stars_request', default=1,
+                        help="""maximum number of LIFU guide stars in the
+                        output; None means no limit""")
+    parser.add_argument('--mifu_num_guide_stars_request', default=8,
+                        help="""maximum number of mIFU guide stars in the
+                        output; None means no limit""")
+    parser.add_argument('--mifu_num_central_guide_stars', default=1, type=int,
+                        help="""number of mIFU guide stars near to centre to be
+                        selected""")
+    parser.add_argument('--mifu_min_guide_cut', default=0.9, type=float,
+                        help="""minimum cut factor to be used for the
+                        non-central mIFU guide stars""")
+    parser.add_argument('--mifu_max_guide_cut', default=1.0, type=float,
+                        help="""maximum cut factor to be used for the
+                        non-central mIFU guide stars""")
+    parser.add_argument('--num_calib_stars_request', default=2,
+                        help="""maximum number of calib stars in the output;
+                        None means no limit""")
+    parser.add_argument('--num_central_calib_stars', default=0, type=int,
+                        help="""number of calib stars near to centre to be
+                        selected""")
+    parser.add_argument('--min_calib_cut', default=0.2, type=float,
+                        help="""minimum cut factor to be used for the
+                        non-central calib stars""")
+    parser.add_argument('--max_calib_cut', default=0.4, type=float,
+                        help="""maximum cut factor to be used for the
+                        non-central calib stars""")
+    parser.add_argument('--no_verbose', dest='verbose', action='store_false',
+                        help='deactivate verbose output')
+
+    # Get the arguments from the parser
+
+    args = parser.parse_args()
+
+    # In arguments which accept None value, do casting or transform None values
+    
+    if args.pa_request != 'None':
+        pa_request = float(args.pa_request)
+    else:
+        pa_request = None
+
+    if args.lifu_num_guide_stars_request != 'None':
+        lifu_num_guide_stars_request = int(args.lifu_num_guide_stars_request)
+    else:
+        lifu_num_guide_stars_request = None
+    
+    if args.mifu_num_guide_stars_request != 'None':
+        mifu_num_guide_stars_request = int(args.mifu_num_guide_stars_request)
+    else:
+        mifu_num_guide_stars_request = None
+    
+    if args.num_calib_stars_request != 'None':
+        num_calib_stars_request = int(args.num_calib_stars_request)
+    else:
+        num_calib_stars_request = None
+
+    # Set the logging level
+    
+    logging.basicConfig(level=logging.INFO)
+    
+    # Choose a filename for the output plot
+    
+    if (args.obsmode == 'LIFU') and (pa_request is not None):
+    
+        if pa_request is not None:
+            pa_request_str = '{:.3f}'.format(pa_request)
+        else:
+            pa_request_str = 'none'
+    
+        plot_filename = '{}s_lifu_{:.5f}_{:.5f}_{}.png'.format(
+            args.type_stars, args.central_ra, args.central_dec, pa_request_str)
+    else:
+        plot_filename = '{}s_{:.5f}_{:.5f}.png'.format(
+            args.type_stars, args.central_ra, args.central_dec)
+
+    # Get the requested typo of stars
+
+    if args.type_stars == 'guide':
+
+        if args.obsmode == 'LIFU':
+            num_stars_request = args.lifu_num_guide_stars_request
+        else:
+            num_stars_request = args.mifu_num_guide_stars_request
+    
+        guide_stars = GuideStars(args.central_ra, args.central_dec,
+                                 args.obsmode)
+
+        actual_pa, stars_table = guide_stars.get_table(
+            verbose=args.verbose, plot_filename=plot_filename,
+            pa_request=pa_request, num_stars_request=num_stars_request,
+            num_central_stars=args.mifu_num_central_guide_stars,
+            min_cut=args.mifu_min_guide_cut, max_cut=args.mifu_max_guide_cut)
+
+    elif args.type_stars == 'calib':
+
+        assert obsmode != 'LIFU'
+
+        calib_stars = CalibStars(args.central_ra, args.central_dec,
+                                 args.obsmode)
+
+        stars_table = calib_stars.get_table(
+            verbose=args.verbose, plot_filename=plot_filename,
+            num_stars_request=args.num_calib_stars_request,
+            num_central_stars=args.num_central_calib_stars,
+            min_cut=args.min_calib_cut, max_cut=args.max_calib_cut)
+
+    else:
+
+        raise ValueError
+    
+    # Print the most interesting columns of the returned table
+    
+    stars_table.keep_columns(
+        ['CNAME', 'GAIA_RA', 'GAIA_DEC', 'DISTANCE', 'ANGLE'])
+    
+    for line in str(stars_table).split('\n'):
+        logging.info(line)
+    
+    # Report the plot file created
+    
+    logging.info('Plot available at file {}'.format(plot_filename))
 
