@@ -27,9 +27,9 @@ import numpy as np
 from astropy.io import fits
 
 from workflow.utils import populate_fits_table_template
-from workflow.utils.get_data_from_xmls import get_trimester_from_xmls
-from workflow.utils.get_data_from_xmls import get_spa_data_of_target_random_and_sky_fibres_from_xmls
-
+from workflow.utils.get_data_from_xmls import (
+    get_author_from_xmls, get_cc_report_from_xmls, get_trimester_from_xmls,
+    get_spa_data_of_target_random_and_sky_fibres_from_xmls)
 
 def _get_col_null_dict_of_template(fits_template):
     
@@ -151,7 +151,7 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
     xml_files : str or list of str
         A string with a pattern of the input XML files or list of strings with
         the filenames of the XML files.
-    fits_template : list of str
+    fits_template : str
         A FITS template with a primary HDU and a first extension with a table.
     output_filename : str
         The name of the output file which will be created.
@@ -169,11 +169,18 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
     else:
         raise TypeError
     
-    # Get the trimester of the files (which should be the same for all them)
+    # Get the trimester, author and cc_report of the files (which should be the
+    # same for all them)
     
+    author = get_author_from_xmls(xml_filename_list)
+    cc_report = get_cc_report_from_xmls(xml_filename_list)
     trimester = get_trimester_from_xmls(xml_filename_list)
     
-    primary_kwds = {'TRIMESTE': trimester}
+    primary_kwds = {
+        'CAT_MAIL': author,
+        'CAT_CC': cc_report,
+        'TRIMESTE': trimester
+    }
     
     # Get a dictionary with the SPA data from targets and skies in the XML files
     
