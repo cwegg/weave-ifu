@@ -142,7 +142,7 @@ def _add_missing_cols_of_template(data_dict, fits_template):
 
 
 def create_ifu_fits_cat(xml_files, fits_template, output_filename,
-                        overwrite=False):
+                        cat_nme1='', cat_nme2='', overwrite=False):
     """
     Create an IFU FITS catalogue.
     
@@ -155,6 +155,10 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
         A FITS template with a primary HDU and a first extension with a table.
     output_filename : str
         The name of the output file which will be created.
+    cat_nme1 : str, optional
+        Value for populating CAT_NME1 keyword of the output file.
+    cat_nme2 : str, optional
+        Value for populating CAT_NME2 keyword of the output file.
     overwrite : bool, optional
         Overwrite the output FITS file.
     """
@@ -177,6 +181,8 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
     trimester = get_trimester_from_xmls(xml_filename_list)
     
     primary_kwds = {
+        'CAT_NME1': cat_nme1,
+        'CAT_NME2': cat_nme2,
         'CAT_MAIL': author,
         'CAT_CC': cc_report,
         'TRIMESTE': trimester
@@ -213,6 +219,14 @@ if __name__ == '__main__':
                         help="""name for the output file which will contain the
                         IFU FITS catalogue""")
 
+    parser.add_argument('--cat_nme1', default='',
+                        help="""value for populating CAT_NME1 keyword of the
+                        output file""")
+
+    parser.add_argument('--cat_nme2', default='',
+                        help="""value for populating CAT_NME1 keyword of the
+                        output file""")
+
     parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                         help='overwrite the output file')
 
@@ -232,5 +246,6 @@ if __name__ == '__main__':
         os.mkdir(os.path.dirname(args.output_filename))
 
     create_ifu_fits_cat(args.xml_file, args.template, args.output_filename,
+                        cat_nme1=args.cat_nme1, cat_nme2=args.cat_nme2,
                         overwrite=args.overwrite)
 

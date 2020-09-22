@@ -104,7 +104,7 @@ Stage 5: Creation the IFU FITS catalogue
 ----------------------------------------
 
 ```
-stage5/create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits output/WC_2020A1-*-tgcs.xml --out output/WC_2020A1-ifu_from_xmls.fits
+stage5/create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits output/WC_2020A1-*-tgcs.xml --out output/WC_2020A1-ifu_from_xmls.fits --cat_nme1="First Name" --cat_nme2="Surname"
 ```
 
 Stage 6: Improving the IFU FITS catalogue (optional, but recommended)
