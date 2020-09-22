@@ -28,6 +28,7 @@ from astropy.io import fits
 
 from workflow.utils import populate_fits_table_template
 from workflow.utils.get_data_from_xmls import (
+    get_datamver_from_xmls,
     get_author_from_xmls, get_cc_report_from_xmls, get_trimester_from_xmls,
     get_spa_data_of_target_random_and_sky_fibres_from_xmls)
 
@@ -172,6 +173,19 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
         xml_filename_list.sort()
     else:
         raise TypeError
+
+    # Check that DATAMVER is consistent bewteen the XML files and the template
+
+    xml_datamver = get_datamver_from_xmls(xml_filename_list)
+    template_datamver = fits.getval(fits_template, 'DATAMVER')
+
+    if template_datamver != xml_datamver:
+        logging.critical(
+            'DATAMVER mismatch ({} != {}) '.format(
+                xml_datamver, template_datamver) +
+            'between XML files and FITS template: ' +
+            'Stop unless you are sure!')
+        raise SystemExit(2)
     
     # Get the trimester, author and cc_report of the files (which should be the
     # same for all them)

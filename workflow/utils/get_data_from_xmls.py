@@ -458,3 +458,32 @@ def get_report_verbosity_from_xmls(input_xmls):
     return report_verbosity
 
 
+def get_datamver_from_xmls(input_xmls):
+    """
+    Get the datamver from a list of XML files or a single file.
+
+    Parameters
+    ----------
+    input_xmls : list of str or str
+        A list of XML filenames or a single filename.
+
+    Returns
+    -------
+    datamver : str
+        The datamver present in the XML file.
+    """
+    
+    if type(input_xmls) is list:
+        xml_filename_list = input_xmls
+    else:
+        xml_filename_list = [input_xmls]
+    
+    datamver_list = [_get_attribute_in_simple_element_of_xml_file(xml_file,
+                          'weave', 'datamver')
+                      for xml_file in xml_filename_list]
+    
+    datamver = _get_single_value_from_list(datamver_list)
+    
+    return datamver
+
+
