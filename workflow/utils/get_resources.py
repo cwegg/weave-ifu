@@ -142,7 +142,7 @@ def get_obstemp_file(file_path='obstemp.dat',
 
 
 def _get_srvy_cat(survey, healpix_index, directory='',
-                  url_template='http://hornet.ast.cam.ac.uk/{}/getHPID'):
+                  url_template='http://wasp.ast.cam.ac.uk/{}/getHPID'):
     """
     Download a catalogue of stars for the requested survey and HEALPix index.
 
