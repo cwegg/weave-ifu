@@ -27,26 +27,6 @@ from astropy.io import fits
 from workflow.utils.classes import OBXML
 
 
-class OBXMLAux(OBXML):
-
-    def _filter_fits_data(self, fits_data, targid=None, targname=None,
-                          progtemp=None, obstemp=None):
-        pass
-
-
-    def populate_with_fits_data(self, fits_cat):
-        group_id = ('TARGID', 'TARGNAME', 'PROGTEMP', 'OBSTEMP', 'IFU_DITHER')
-        group_id = ('TARGNAME', 'PROGTEMP', 'OBSTEMP', 'IFU_DITHER')
-        # ['IFU_PA','IFU_SPAXEL','IFU_DITHER']
-        
-        # Open the combo FITS catalogue
-
-        with fits.open(fits_cat) as hdu_list:
-            fits_data = hdu_list[1].data
-        
-        pass
-
-
 def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir, add_sim=False,
                              overwrite=False):
     """
@@ -65,6 +45,17 @@ def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir, add_sim=False,
     overwrite : bool, optional
         Overwrite the output XML files.
     """
+        
+    # Open the combo FITS catalogue and read the needed data
+
+    with fits.open(fits_cat) as hdu_list:
+        
+        fits_data = hdu_list[1].data
+        
+        if add_sim == True:
+            sim_data = hdu_list[2].data
+        else:
+            sim_data = None
 
     # For each XML file
 
@@ -72,20 +63,19 @@ def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir, add_sim=False,
 
         # Create an OB from the XML file
         
-        ob_xml = OBXMLAux(xml_file)
+        ob_xml = OBXML(xml_file)
+        
+        # Choose an output filename from the input filename
+        
+        input_basename = os.path.basename(xml_file)
 
-        # Populate the OB XML with the FITS data
-
-        ob_xml.populate_with_fits_data(fits_cat)
-
-        # Write the OB XML to a file
-
-        output_basename_wo_ext = '-'.join(os.path.basename(
-                                            xml_file.split('-')[:-1]))
+        output_basename_wo_ext = '-'.join(input_basename.split('-')[:-1])
         
         output_basename = '{}.xml'.format(output_basename_wo_ext)
         
         output_path = os.path.join(output_dir, output_basename)
+        
+        # If the output file exists, remove or skip it
 
         if os.path.exists(output_path):
             
@@ -97,6 +87,12 @@ def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir, add_sim=False,
                     'Skipping file because it already exists: {}'.format(
                         output_path))
                 continue
+
+        # Populate the OB XML with the FITS data
+
+        ob_xml.populate_targets_with_fits_data(fits_data, sim_data=sim_data)
+
+        # Write the OB XML to a file
         
         ob_xml.write_xml(output_path)
 
