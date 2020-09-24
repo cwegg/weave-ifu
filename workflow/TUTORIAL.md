@@ -91,7 +91,7 @@ Canonicalisation (C14N) inherited from the blank XML template and making usage
 of a pretty indentation.
 
 If you want to convert the outputs from configure to such convention (which
-would be useful for diffing), you could find useful the following commands:
+would be useful for diffing), you could find useful the following command:
 
 ```
 xmllint --c14n input.xml | xmllint --format --encode utf-8 --output output.xml -
@@ -131,5 +131,12 @@ Stage 8: Submission to WASP of the combo FITS catalogue
 Stage 9: Finishing the XML files
 --------------------------------
 
-**TBW**
+```
+stage9/fill_xmls_with_fits_info.py input/WC_2020A1.fits input/WC_2020A1-*-tgcs.xml
+```
+
+Extra tips
+----------
+
+- You can find more help for each script running it with the option `-h`.
 

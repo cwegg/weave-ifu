@@ -109,10 +109,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    level_dict = {'debug': logging.DEBUG, 'info': logging.INFO,
-                  'warning': logging.WARNING, 'error': logging.ERROR}
-
-    logging.basicConfig(level=level_dict[args.log_level])
+    logging.basicConfig(level=getattr(logging, args.log_level.upper()))
 
     if not os.path.exists(os.path.dirname(args.output_filename)):
         logging.info('Creating the output directory')

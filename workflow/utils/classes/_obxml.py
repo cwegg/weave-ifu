@@ -559,7 +559,7 @@ class OBXML:
             self.fields.appendChild(field)
 
 
-    def write_xml(self, filename):
+    def write_xml(self, filename, replace_tabs=False):
 
         # Get a pretty indented XML with its proper XML declaration
     
@@ -572,6 +572,13 @@ class OBXML:
 
         output_xml = '\n'.join([line for line in pretty_xml2.split('\n')
                                 if line.strip()]) + '\n'
+        
+        # Replace the tabs by spaces
+        # (This is useful for stage 9, to get a nice indenting when a photometry
+        #  element is removed to a target)
+        
+        if replace_tabs is True:
+            output_xml = output_xml.replace('\t', '  ')
         
         # Write the XML text to a file
 
@@ -860,4 +867,324 @@ class OBXML:
                               num_central_stars=num_central_calib_stars,
                               min_cut=min_calib_cut,
                               max_cut=max_calib_cut)
+
+
+    def _get_obstemp(self):
+
+        obstemp = self.observation.getAttribute('obstemp')
+        
+        return obstemp
+
+
+    def _get_progtemp(self):
+
+        progtemp = self.observation.getAttribute('progtemp')
+        
+        return progtemp
+
+
+    def _get_apply_dither(self):
+
+        apply_dither = int(self.dithering.getAttribute('apply_dither'))
+        
+        return apply_dither
+
+
+    def _filter_fits_data(self, fits_data, sim_data=None, rtol=0, atol=1e-5):
+    
+        # Let's start creating a mask without any filter
+    
+        mask = _np.ones(len(fits_data), dtype=bool)
+    
+        # Filter FITS data comparing the values of the column OBSTEMP with the
+        # obstemp attribute of the XML
+        
+        obstemp = self._get_obstemp()
+        mask *= (fits_data['OBSTEMP'] == obstemp)
+    
+        # Filter FITS data comparing the values of the column PROGTEMP with the
+        # progtemp attribute of the XML
+        
+        progtemp = self._get_progtemp()
+        mask *= (fits_data['PROGTEMP'] == progtemp)
+    
+        # Filter FITS data comparing the values of the column IFU_DITHER with the
+        # apply_dither attribute of the XML
+        
+        apply_dither = self._get_apply_dither()
+        mask *= (fits_data['IFU_DITHER'] == apply_dither)
+    
+        # Filter FITS data comparing the values of the column IFU_PA with the
+        # pa attribute of the XML in the case of LIFU observations
+        
+        if self._get_obsmode() == 'LIFU':
+            pa = self._get_pa()
+            mask *= _np.isclose(fits_data['IFU_PA'], pa, rtol=rtol, atol=atol)
+    
+        # Do the filtering in the data
+        
+        filtered_fits_data = fits_data[mask]
+    
+        # Do the filtering in the simulated data if provided
+        
+        if sim_data is not None:
+            filtered_sim_data = [mask]
+        else:
+            filtered_sim_data = None
+        
+        return filtered_fits_data, filtered_sim_data
+
+
+    def _get_rows_for_target(self, target, fits_data, sim_data=None, rtol=0,
+                             atol=1e-5):
+    
+        # The input fits_data must be already filtered by OBSTEMP, PROGTEMP and
+        # IFU_DITHER
+    
+        # Let's start creating a mask without any filter
+    
+        mask = _np.ones(len(fits_data), dtype=bool)
+        
+        # Apply some filters
+        
+        mask *= (fits_data['TARGID'] ==
+                 str(target.getAttribute('targid')))
+        mask *= (fits_data['TARGNAME'] ==
+                 str(target.getAttribute('targname')))
+        mask *= (fits_data['IFU_SPAXEL'] ==
+                 str(target.getAttribute('ifu_spaxel')))
+        mask *= _np.isclose(fits_data['IFU_PA'],
+                            float(target.getAttribute('ifu_pa')),
+                            rtol=rtol, atol=atol)
+       
+        # Look for the row which matches the target
+        
+        fits_row = None
+        sim_row = None
+        
+        col_atrib_list_wo_nan = [
+            ('GAIA_RA', 'targra'),
+            ('GAIA_DEC', 'targdec')
+        ]
+        
+        col_atrib_list_w_nan = [
+            ('GAIA_EPOCH', 'targepoch'),
+            ('GAIA_PMDEC', 'targpmdec'),
+            ('GAIA_PMRA', 'targpmra'),
+            ('GAIA_PARAL', 'targparal')
+        ]
+        
+        for row_index in _np.where(mask)[0]:
+        
+            # Assume that the row is a match
+            
+            row_match = True
+            
+            # Check that the row is really a match
+            
+            for col, attrib in col_atrib_list_wo_nan:
+                row_match *= _np.isclose(fits_data[row_index][col],
+                                         float(target.getAttribute(attrib)),
+                                         rtol=rtol, atol=atol)
+            
+            for col, attrib in col_atrib_list_w_nan:
+                
+                str_value = str(target.getAttribute(attrib))
+                
+                if len(str_value) != 0:
+                    row_match *= _np.isclose(fits_data[row_index][col],
+                                             float(str_value),
+                                             rtol=rtol, atol=atol)
+                else:
+                    row_match *= _np.isnan(fits_data[row_index][col])
+            
+            # If it is really a match
+            
+            if row_match == True:
+            
+                # If it is the first match, save
+                
+                if fits_row is None:
+                
+                    fits_row = fits_data[row_index]
+                
+                    if sim_data is not None:
+                        sim_row = sim_data[row_index]
+                        
+                # If it is the second match, raise an error
+                
+                else:
+                    
+                    raise ValueError('More than one match for this target')
+        
+        assert fits_row is not None
+        
+        return fits_row, sim_row
+
+
+    def _populate_target(self, target, fits_row, sim_row=None):
+    
+        # Assert that the values which should remain untouched (and which have
+        # not been used to find the match)
+    
+        str_col_atrib_list = [
+            ('TARGSRVY', 'targsrvy'),
+            ('TARGPROG', 'targprog'),
+            ('TARGCAT', 'targcat')
+        ]
+        
+        for col, attrib in str_col_atrib_list:
+            assert fits_row[col] == str(target.getAttribute(attrib))
+        
+        str_targprio = str(target.getAttribute('targprio'))
+        
+        if len(str_targprio) != 0:
+            assert _np.isclose(fits_row['TARGPRIO'], float(str_targprio))
+        else:
+            assert _np.isnan(fits_row['TARGPRIO'])
+        
+        # Overwrite the following
+        
+        target.setAttribute('cname', fits_row['CNAME'])
+        target.setAttribute('targclass', fits_row['TARGCLASS'])
+        
+        old_targuse = str(target.getAttribute('targuse'))
+        new_targuse = fits_row['TARGUSE']
+        target.setAttribute('targuse', new_targuse)
+        
+        # Remove/add photometry elements if needed
+        
+        if (new_targuse != 'T') and (old_targuse == 'T'):
+        
+            for photometry in target.getElementsByTagName('photometry'):
+                target.removeChild(photometry)
+        
+        if (new_targuse == 'T') and (old_targuse != 'T'):
+        
+            photometry = self.dom.createElement('photometry')
+            
+            photometry_attrib_list = [
+                'emag_bp', 'emag_g', 'emag_gg', 'emag_i', 'emag_r', 'emag_rp',
+                'mag_bp', 'mag_g', 'mag_gg', 'mag_i', 'mag_r', 'mag_rp'
+            ]
+            
+            for attrib in photometry_attrib_list:
+                photometry.setAttribute(attrib, '%%%')
+            
+            target.appendChild(photometry)
+        
+        # Populate the photometry element if needed
+        
+        photometry_col_atrib_list = [
+            ('GAIA_MAG_BP_ERR', 'emag_bp'),
+            ('MAG_G_ERR', 'emag_g'),
+            ('GAIA_MAG_G_ERR', 'emag_gg'),
+            ('MAG_I_ERR', 'emag_i'),
+            ('MAG_R_ERR', 'emag_r'),
+            ('GAIA_MAG_RP_ERR', 'emag_rp'),
+            ('GAIA_MAG_BP', 'mag_bp'),
+            ('MAG_G', 'mag_g'),
+            ('GAIA_MAG_G', 'mag_gg'),
+            ('MAG_I', 'mag_i'),
+            ('MAG_R', 'mag_r'),
+            ('GAIA_MAG_RP', 'mag_rp')
+        ]
+        
+        if new_targuse == 'T':
+        
+            photometry = target.getElementsByTagName('photometry')[0]
+            
+            for col, attrib in photometry_col_atrib_list:
+            
+                value = fits_row[col]
+                
+                if _np.isnan(value):
+                    value = ''
+                else:
+                    value = str(value)
+                
+                photometry.setAttribute(attrib, value)
+        
+        # Add a populated simulation element if needed
+        
+        sim_col_atrib_list = [
+            ('SIM_FILTERID', 'filterid'),
+            ('SIM_FWHM', 'fwhm'),
+            ('SIM_MAG', 'mag'),
+            ('SIM_REDSHIFT', 'redshift'),
+            ('SIM_TEMPLATE', 'template'),
+            ('SIM_VELOCITY', 'velocity')
+        ]
+        
+        if (sim_row is not None) and (new_targuse in ['T', 'R']):
+        
+            simulation = self.dom.createElement('simulation')
+            
+            for col, attrib in sim_col_atrib_list:
+            
+                value = fits_row[col]
+                
+                try:
+                    if _np.isnan(value):
+                        value = ''
+                    else:
+                        value = str(value)
+                except:
+                    value = str(value)
+            
+                simulation.setAttribute(attrib, value)
+            
+            target.appendChild(simulation)
+
+
+    def populate_targets_with_fits_data(self, fits_data, sim_data=None,
+                                        clean_non_allocated=False, rtol=0,
+                                        atol=1e-5):
+        
+        # Make an initial filter of the FITS data to discard many rows which
+        # will not be used afterwards
+        
+        filtered_fits_data, filtered_sim_data = self._filter_fits_data(
+            fits_data, sim_data=sim_data, rtol=rtol, atol=atol)
+        
+        # For each target in the XML file
+        
+        for target in self.dom.getElementsByTagName('target'):
+            
+            # We will skip the non-allocated targets (removing them if
+            # requested)
+            
+            if 'fibreid' not in target.attributes.keys():
+                continue
+            
+            # We will skip some targets which targuse G or C
+                
+            if str(target.getAttribute('targuse')) not in ['T', 'S', 'R']:
+                continue
+            
+            # Find the row of the FITS catalogue which correspond to this target
+            
+            fits_row, sim_row = self._get_rows_for_target(
+                target, filtered_fits_data, sim_data=filtered_sim_data,
+                rtol=rtol, atol=atol)
+            
+            # Populate the target with the information from the row
+            
+            self._populate_target(target, fits_row, sim_row=sim_row)
+        
+        # Clean the non-allocated targets if requested
+        
+        if clean_non_allocated == True:
+        
+            num_removed_targets = 0
+            
+            for field in self.fields.getElementsByTagName('field'):
+                for target in field.getElementsByTagName('target'):
+                    if 'fibreid' not in target.attributes.keys():
+                        num_removed_targets += 1
+                        field.removeChild(target)
+            
+            if num_removed_targets > 0:
+                logging.info('{} non-allocated targets removed'.format(
+                             num_removed_targets))
 
