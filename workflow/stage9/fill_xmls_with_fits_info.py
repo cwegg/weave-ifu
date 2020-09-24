@@ -28,7 +28,7 @@ from workflow.utils.classes import OBXML
 
 
 def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir, add_sim=False,
-                             overwrite=False):
+                             clean_non_allocated=False, overwrite=False):
     """
     Combine MOS and IFU catalogues to create a combo catalogue.
     
@@ -42,6 +42,8 @@ def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir, add_sim=False,
         Name of the directory which will contain the output XML files.
     add_sim : bool, optional
         Add simulation elements to the targets.
+    clean_non_allocated: bool, optional
+        Remove non-allocated targets in the output files.
     overwrite : bool, optional
         Overwrite the output XML files.
     """
@@ -89,12 +91,16 @@ def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir, add_sim=False,
                 continue
 
         # Populate the OB XML with the FITS data
+        
+        logging.info('Populating targets for file {}'.format(output_basename))
 
-        ob_xml.populate_targets_with_fits_data(fits_data, sim_data=sim_data)
+        ob_xml.populate_targets_with_fits_data(
+            fits_data, sim_data=sim_data,
+            clean_non_allocated=clean_non_allocated)
 
         # Write the OB XML to a file
         
-        ob_xml.write_xml(output_path)
+        ob_xml.write_xml(output_path, replace_tabs=True)
 
 
 if __name__ == '__main__':
@@ -109,6 +115,13 @@ if __name__ == '__main__':
     parser.add_argument('--outdir', dest='output_dir', default='output',
                         help="""name of the directory which will contain the
                         output XML files""")
+
+    parser.add_argument('--clean_non_allocated', action='store_true',
+                        help='remove non-allocated targets in the output files')
+    parser.add_argument('--keep_non_allocated', dest='clean_non_allocated',
+                        action='store_false',
+                        help='keep non-allocated targets in the output files')
+    parser.set_defaults(clean_non_allocated=True)
 
     parser.add_argument('--add_sim', action='store_true',
                         help='add simulation elements to the targets')
@@ -129,5 +142,6 @@ if __name__ == '__main__':
         os.mkdir(args.output_dir)
 
     fill_xmls_with_fits_info(args.fits_cat, args.xml_file, args.output_dir,
+                             clean_non_allocated=args.clean_non_allocated,
                              add_sim=args.add_sim, overwrite=args.overwrite)
 

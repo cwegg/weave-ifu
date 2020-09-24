@@ -559,7 +559,7 @@ class OBXML:
             self.fields.appendChild(field)
 
 
-    def write_xml(self, filename):
+    def write_xml(self, filename, replace_tabs=False):
 
         # Get a pretty indented XML with its proper XML declaration
     
@@ -572,6 +572,13 @@ class OBXML:
 
         output_xml = '\n'.join([line for line in pretty_xml2.split('\n')
                                 if line.strip()]) + '\n'
+        
+        # Replace the tabs by spaces
+        # (This is useful for stage 9, to get a nice indenting when a photometry
+        #  element is removed to a target)
+        
+        if replace_tabs is True:
+            output_xml = output_xml.replace('\t', '  ')
         
         # Write the XML text to a file
 
@@ -1091,7 +1098,7 @@ class OBXML:
             
                 value = fits_row[col]
                 
-                if (type(value) is float) and _np.isnan(value):
+                if _np.isnan(value):
                     value = ''
                 else:
                     value = str(value)
@@ -1117,9 +1124,12 @@ class OBXML:
             
                 value = fits_row[col]
                 
-                if (type(value) is float) and _np.isnan(value):
-                    value = ''
-                else:
+                try:
+                    if _np.isnan(value):
+                        value = ''
+                    else:
+                        value = str(value)
+                except:
                     value = str(value)
             
                 simulation.setAttribute(attrib, value)
@@ -1127,7 +1137,8 @@ class OBXML:
             target.appendChild(simulation)
 
 
-    def populate_targets_with_fits_data(self, fits_data, sim_data=None, rtol=0,
+    def populate_targets_with_fits_data(self, fits_data, sim_data=None,
+                                        clean_non_allocated=False, rtol=0,
                                         atol=1e-5):
         
         # Make an initial filter of the FITS data to discard many rows which
@@ -1140,10 +1151,13 @@ class OBXML:
         
         for target in self.dom.getElementsByTagName('target'):
             
-            # We will skip some targets which should not be edited at all
+            # We will skip the non-allocated targets (removing them if
+            # requested)
             
             if 'fibreid' not in target.attributes.keys():
                 continue
+            
+            # We will skip some targets which targuse G or C
                 
             if str(target.getAttribute('targuse')) not in ['T', 'S', 'R']:
                 continue
@@ -1157,4 +1171,20 @@ class OBXML:
             # Populate the target with the information from the row
             
             self._populate_target(target, fits_row, sim_row=sim_row)
+        
+        # Clean the non-allocated targets if requested
+        
+        if clean_non_allocated == True:
+        
+            num_removed_targets = 0
+            
+            for field in self.fields.getElementsByTagName('field'):
+                for target in field.getElementsByTagName('target'):
+                    if 'fibreid' not in target.attributes.keys():
+                        num_removed_targets += 1
+                        field.removeChild(target)
+            
+            if num_removed_targets > 0:
+                logging.info('{} non-allocated targets removed'.format(
+                             num_removed_targets))
 
