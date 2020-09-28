@@ -112,5 +112,5 @@ ____1: programme:spectrograph:red_Arm:binning_Y=1 programme:spectrograph:blue_Ar
 ____2: programme:spectrograph:red_Arm:binning_Y=2 programme:spectrograph:blue_Arm:binning_Y=2
 ____3: programme:spectrograph:red_Arm:binning_Y=3 programme:spectrograph:blue_Arm:binning_Y=3
 ____4: programme:spectrograph:red_Arm:binning_Y=4 programme:spectrograph:blue_Arm:binning_Y=4
-WEAVE_FORBIDDEN: 10___ 20___ 30___ _00__ _1___ _2___ _5___ _7___ _8___ _9___ 114__ 214__ 314__ 123__ 223__ 323__ 124__ 224__ 324__ _3___
+WEAVE_FORBIDDEN: 10___ 20___ 30___ _00__ __0__ __1__ __5__ __7__ __8__ __9__ 114__ 214__ 314__ 123__ 223__ 323__ 124__ 224__ 324__ _3___
 PI_FORBIDDEN: 10___ 20___ 30___

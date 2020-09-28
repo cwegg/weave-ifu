@@ -878,13 +878,13 @@ if __name__ == '__main__':
                         help=
                         'skip the check of the catalogue versus the template')
 
-    parser.add_argument('--progtemp_file', dest='progtemp_file',
+    parser.add_argument('--progtemp_file',
                         default=os.path.join('aux', 'progtemp.dat'),
                         help="""a progtemp.dat file with the definition of
                         PROGTEMP""")
 
 
-    parser.add_argument('--obstemp_file', dest='obstemp_file',
+    parser.add_argument('--obstemp_file',
                         default=os.path.join('aux', 'obstemp.dat'),
                         help="""a obstemp.dat file with the definition of
                         OBSTEMP""")
@@ -895,10 +895,7 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     
-    level_dict = {'debug': logging.DEBUG, 'info': logging.INFO,
-                  'warning': logging.WARNING, 'error': logging.ERROR}
-    
-    logging.basicConfig(level=level_dict[args.log_level])
+    logging.basicConfig(level=getattr(logging, args.log_level.upper()))
 
     if not os.path.exists(args.progtemp_file):
         logging.info('Downloading the progtemp file')

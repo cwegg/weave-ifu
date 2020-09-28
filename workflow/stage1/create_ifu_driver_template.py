@@ -96,13 +96,11 @@ if __name__ == '__main__':
                         help="""name for the output file which will contain the
                         new template for the IFU driver catalogues""")
 
-    parser.add_argument('--update_datetime', dest='update_datetime',
-                        action='store_true',
+    parser.add_argument('--update_datetime', action='store_true',
                         help="""update DATETIME keyword from the catalogue
                         template""")
 
-    parser.add_argument('--overwrite', dest='overwrite',
-                        action='store_true',
+    parser.add_argument('--overwrite', action='store_true',
                         help='overwrite the output file')
 
     parser.add_argument('--log_level', default='info',
@@ -111,10 +109,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     
-    level_dict = {'debug': logging.DEBUG, 'info': logging.INFO,
-                  'warning': logging.WARNING, 'error': logging.ERROR}
-    
-    logging.basicConfig(level=level_dict[args.log_level])
+    logging.basicConfig(level=getattr(logging, args.log_level.upper()))
 
     if not os.path.exists(args.catalogue_template):
         logging.info('Downloading the master catalogue template')
