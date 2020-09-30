@@ -132,7 +132,7 @@ Stage 9: Finishing the XML files
 --------------------------------
 
 ```
-stage9/fill_xmls_with_fits_info.py input/WC_2020A1.fits input/WC_2020A1-*-tgcs.xml
+stage9/fill_xmls_with_fits_info.py output/WC_2020A1.fits output/WC_2020A1-*-tgcs.xml
 ```
 
 Extra tips
