@@ -112,7 +112,7 @@ tooltip.style.display = "none";
 <div class="tooltip" id="n32">Stage 4 input files - this contains the 4 IFU XMLs at the point they are due to be submitted to Configure.</div>
 <div class="tooltip" id="n33">The underlying blank XML template. <br>All OBs are dervied from this master XML file, with specific elements updated throughout the workflow.</div>
 <div class="tooltip" id="n34">This code identifies which guide star(s) and WD calibration stars can be used for a given field, and inserts their XML data <target> representations into the "proto-field" XMLs</div>
-<div class="tooltip" id="n35">v. 20200914</div>
+<div class="tooltip" id="n35">v. 20200928</div>
 <div class="tooltip" id="n36">Notes to accompany this workflow</div>
 <div class="tooltip" id="n39">Positions of viable guidestars within the proposed FOV of the protofield.</div>
 <div class="tooltip" id="n40">HEALPix'd decomposition of the Guidestar catalogue. This is based on Gaia DR2.</div>
@@ -122,52 +122,52 @@ tooltip.style.display = "none";
 <div class="tooltip" id="n44">2</div>
 <div class="tooltip" id="n45">3</div>
 <div class="tooltip" id="n47">0</div>
-<div class="tooltip" id="n50">Survey</div>
-<div class="tooltip" id="n51">Example input IFU driver catalogue. <br>This contains the information required to produce WEAVE IFU observing blocks. <br>We provide 4 cases here, and these will evolve throughout the workflow:<br><br>1. LIFU with fixed dither pattern<br>2. LIFU with custom dither pattern<br>3. mIFU with 3-dither pattern<br>4. mIFU with 5-dither pattern<br><br>(3) and (4) are observations of the same targets.</div>
-<div class="tooltip" id="n53">"field<br>generator"</div>
-<div class="tooltip" id="n54">INFO</div>
-<div class="tooltip" id="n55">3</div>
-<div class="tooltip" id="n63">Configurers</div>
-<div class="tooltip" id="n64">Photometry<br>code</div>
-<div class="tooltip" id="n65">Survey<br>Spec. cols</div>
-<div class="tooltip" id="n66">XML-FITS I/O</div>
-<div class="tooltip" id="n67">This code takes the output of configure and converts each target (and associated metadata from the XML) into a FITS catalogue row. This includes writing the IFU position angles, spaxel IDs etc.</div>
-<div class="tooltip" id="n68">WASP</div>
-<div class="tooltip" id="n69">FITSChecker</div>
-<div class="tooltip" id="n70">Survey</div>
-<div class="tooltip" id="n71">These are the individual input catalogues from the survey teams. They have been verified by the WASP and have CNAMES added to them.</div>
-<div class="tooltip" id="n72">FITS combo</div>
-<div class="tooltip" id="n73">INFO</div>
-<div class="tooltip" id="n74">WASP</div>
-<div class="tooltip" id="n75">XMLChecker</div>
-<div class="tooltip" id="n76">Wait until OB<br> trimester submission</div>
-<div class="tooltip" id="n79">WHT</div>
-<div class="tooltip" id="n80">This code identifies the entries in the input driver and splits them into fields. It also converts the FITS file into XML.</div>
-<div class="tooltip" id="n81">4</div>
-<div class="tooltip" id="n82">6</div>
-<div class="tooltip" id="n84">CONTENTS</div>
-<div class="tooltip" id="n85">5</div>
-<div class="tooltip" id="n86">8</div>
-<div class="tooltip" id="n87">10</div>
-<div class="tooltip" id="n95">This is the output from configure. In general, configure is non-determinative: <br>the files here might not represent end-user attempts to run configure, but should serve as illustrative of the process.</div>
-<div class="tooltip" id="n96">Fibre info<br>(TARGCLASS)<br>(TARGUSE)</div>
-<div class="tooltip" id="n99">OB linking<br>code</div>
-<div class="tooltip" id="n101">XML<- FITS<br>populator<br>code</div>
-<div class="tooltip" id="n105">This is a FITS file containing all fibres for all IFU observations.</div>
-<div class="tooltip" id="n106">7b</div>
-<div class="tooltip" id="n107">7a</div>
-<div class="tooltip" id="n108">9</div>
-<div class="tooltip" id="n110">11</div>
-<div class="tooltip" id="n111">SWG workflow<br>for MOS XML<br>configure</div>
-<div class="tooltip" id="n112">If LIFU has an "apply_dither" = 3,5 then<br>the GuideStar module must ensure that the <br>*same* guidestar is visible within the fixed<br>dither pattern that Dave Terrett uses, or within<br>a displacement from origin.</div>
-<div class="tooltip" id="n119">Stage 5 input files - this contains the 4 IFU XMLs at the point they are due to be submitted to Configure.</div>
-<div class="tooltip" id="n120">If we decide to ever allow mixed-survey fields for mIFU (eg. filler-mode?), <br>then the surveys will need to split at this point for FITS - ie, <br>the survey-specfic FITS templates must be used, mapping XML target TARGSRVY to the relevant catalogue template.<br><br>From this point onwards, this workflow implies work done on just one of these surveys. In reality, both must be processed.<br></div>
-<div class="tooltip" id="n121">Survey <br>FITS <br>template</div>
-<div class="tooltip" id="n122">This is the input FITS template for a specific survey. <br>For PI-surveys, these templates can be generated at the WASP once end-users <br>receive their access credentials.</div>
-<div class="tooltip" id="n123">Stage 2 input file - this is the input driver catalogue, as a FITS file.</div>
+<div class="tooltip" id="n49">Survey</div>
+<div class="tooltip" id="n50">Example input IFU driver catalogue. <br>This contains the information required to produce WEAVE IFU observing blocks. <br>We provide 4 cases here, and these will evolve throughout the workflow:<br><br>1. LIFU with fixed dither pattern<br>2. LIFU with custom dither pattern<br>3. mIFU with 3-dither pattern<br>4. mIFU with 5-dither pattern<br><br>(3) and (4) are observations of the same targets.</div>
+<div class="tooltip" id="n52">"field<br>generator"</div>
+<div class="tooltip" id="n53">INFO</div>
+<div class="tooltip" id="n54">3</div>
+<div class="tooltip" id="n62">Configurers</div>
+<div class="tooltip" id="n63">Photometry<br>code</div>
+<div class="tooltip" id="n64">Survey<br>Spec. cols</div>
+<div class="tooltip" id="n65">XML-FITS I/O</div>
+<div class="tooltip" id="n66">This code takes the output of configure and converts each target (and associated metadata from the XML) into a FITS catalogue row. This includes writing the IFU position angles, spaxel IDs etc.</div>
+<div class="tooltip" id="n67">WASP</div>
+<div class="tooltip" id="n68">FITSChecker</div>
+<div class="tooltip" id="n69">Survey</div>
+<div class="tooltip" id="n70">These are the individual input catalogues from the survey teams. They have been verified by the WASP and have CNAMES added to them.</div>
+<div class="tooltip" id="n71">FITS combo</div>
+<div class="tooltip" id="n72">INFO</div>
+<div class="tooltip" id="n73">WASP</div>
+<div class="tooltip" id="n74">XMLChecker</div>
+<div class="tooltip" id="n75">Wait until OB<br> trimester submission</div>
+<div class="tooltip" id="n78">WHT</div>
+<div class="tooltip" id="n79">This code identifies the entries in the input driver and splits them into fields. It also converts the FITS file into XML.</div>
+<div class="tooltip" id="n80">4</div>
+<div class="tooltip" id="n81">6</div>
+<div class="tooltip" id="n83">CONTENTS</div>
+<div class="tooltip" id="n84">5</div>
+<div class="tooltip" id="n85">8</div>
+<div class="tooltip" id="n86">10</div>
+<div class="tooltip" id="n94">This is the output from configure. In general, configure is non-determinative: <br>the files here might not represent end-user attempts to run configure, but should serve as illustrative of the process.</div>
+<div class="tooltip" id="n95">Fibre info<br>(TARGCLASS)<br>(TARGUSE)</div>
+<div class="tooltip" id="n98">OB linking<br>code</div>
+<div class="tooltip" id="n100">XML<- FITS<br>populator<br>code</div>
+<div class="tooltip" id="n104">This is a FITS file containing all fibres for all IFU observations.</div>
+<div class="tooltip" id="n105">7b</div>
+<div class="tooltip" id="n106">7a</div>
+<div class="tooltip" id="n107">9</div>
+<div class="tooltip" id="n109">11</div>
+<div class="tooltip" id="n110">SWG workflow<br>for MOS XML<br>configure</div>
+<div class="tooltip" id="n111">If LIFU has an "apply_dither" = 3,5 then<br>the GuideStar module must ensure that the <br>*same* guidestar is visible within the fixed<br>dither pattern that Dave Terrett uses, or within<br>a displacement from origin.</div>
+<div class="tooltip" id="n118">Stage 5 input files - this contains the 4 IFU XMLs at the point they are due to be submitted to Configure.</div>
+<div class="tooltip" id="n119">If we decide to ever allow mixed-survey fields for mIFU (eg. filler-mode?), <br>then the surveys will need to split at this point for FITS - ie, <br>the survey-specfic FITS templates must be used, mapping XML target TARGSRVY to the relevant catalogue template.<br><br>From this point onwards, this workflow implies work done on just one of these surveys. In reality, both must be processed.<br></div>
+<div class="tooltip" id="n120">Survey <br>FITS <br>template</div>
+<div class="tooltip" id="n121">This is the input FITS template for a specific survey. <br>For PI-surveys, these templates can be generated at the WASP once end-users <br>receive their access credentials.</div>
+<div class="tooltip" id="n122">Stage 2 input file - this is the input driver catalogue, as a FITS file.</div>
+<div class="tooltip" id="n123">Generate links</div>
 <div class="tooltip" id="n124">Generate links</div>
-<div class="tooltip" id="n125">Generate links</div>
-<div class="tooltip" id="n126">Scott: provide<br></div>
+<div class="tooltip" id="n125">Scott: provide<br></div>
 <div class="tooltip" id="e0">XML</div>
 <div class="tooltip" id="e1">FITS</div>
 <div class="tooltip" id="e2">XMLs <br><br>(with PA for LIFU)</div>
@@ -202,59 +202,59 @@ tooltip.style.display = "none";
   <area shape="poly" coords="2311,1706,2311,1706,2663,1706,2663,1726,2311,1726,2311,1726" alt="" onmouseover="showTooltip('e2')" onmouseout="hideTooltip()"/>
   <area shape="poly" coords="667,1693,667,1693,961,1693,961,1713,667,1713,667,1713" alt="" onmouseover="showTooltip('e1')" onmouseout="hideTooltip()"/>
   <area shape="poly" coords="1698,1706,1698,1706,2114,1706,2114,1726,1698,1726,1698,1726" alt="" onmouseover="showTooltip('e0')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3945,740,4005,800" alt="" onmouseover="showTooltip('n126')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2416,1542,2476,1602" alt="" onmouseover="showTooltip('n125')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1960,1552,2020,1612" alt="" onmouseover="showTooltip('n124')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="797,1733,847,1783" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage2/input" alt="" onmouseover="showTooltip('n123')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="3977,767,4027,817" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage6/" alt="" onmouseover="showTooltip('n122')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="3976,619,4102,817" alt="" onmouseover="showTooltip('n121')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3855,1003,3915,1063" alt="" onmouseover="showTooltip('n120')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3523,1623,3573,1673" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage5/input" alt="" onmouseover="showTooltip('n119')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="2053,1633,2113,1693" alt="" onmouseover="showTooltip('n112')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1451,133,1636,318" alt="" onmouseover="showTooltip('n111')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1100,563,1185,648" alt="" onmouseover="showTooltip('n110')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2092,938,2176,1022" alt="" onmouseover="showTooltip('n108')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3418,715,3503,800" alt="" onmouseover="showTooltip('n107')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2573,505,2658,590" alt="" onmouseover="showTooltip('n106')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3507,1135,3557,1185" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage6/input" alt="" onmouseover="showTooltip('n105')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="1960,993,2142,1175" alt="" onmouseover="showTooltip('n101')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1721,993,1903,1175" alt="" onmouseover="showTooltip('n99')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2881,1003,3063,1185" alt="" onmouseover="showTooltip('n96')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="4271,1271,4321,1321" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage5/input" alt="" onmouseover="showTooltip('n95')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="1266,961,1350,1045" alt="" onmouseover="showTooltip('n87')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1581,515,1666,599" alt="" onmouseover="showTooltip('n86')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3898,1164,3982,1249" alt="" onmouseover="showTooltip('n85')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2569,133,2965,448" alt="" onmouseover="showTooltip('n84')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3267,954,3352,1038" alt="" onmouseover="showTooltip('n82')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="4029,1664,4114,1748" alt="" onmouseover="showTooltip('n81')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1109,1755,1159,1805" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage2/" alt="" onmouseover="showTooltip('n80')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="984,148,1150,291" alt="" onmouseover="showTooltip('n79')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1470,961,1495,985" alt="" onmouseover="showTooltip('n76')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="919,976,1100,1157" alt="" onmouseover="showTooltip('n75')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="894,943,1241,1190" alt="" onmouseover="showTooltip('n74')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3033,133,3429,371" alt="" onmouseover="showTooltip('n73')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2658,515,2839,697" alt="" onmouseover="showTooltip('n72')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3719,412,4084,800" alt="" onmouseover="showTooltip('n71')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3131,431,3332,781" alt="" onmouseover="showTooltip('n70')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1783,515,1964,697" alt="" onmouseover="showTooltip('n69')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1758,482,2104,729" alt="" onmouseover="showTooltip('n68')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="4080,1145,4130,1195" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage6/" alt="" onmouseover="showTooltip('n67')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="3948,1003,4130,1185" alt="" onmouseover="showTooltip('n66')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2642,1003,2824,1185" alt="" onmouseover="showTooltip('n65')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3120,1003,3302,1185" alt="" onmouseover="showTooltip('n64')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="3701,1613,3886,1798" alt="" onmouseover="showTooltip('n63')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2698,1778,2798,1878" alt="" onmouseover="showTooltip('n55')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="870,2236,1266,2681" alt="" onmouseover="showTooltip('n54')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="977,1612,1159,1794" alt="" onmouseover="showTooltip('n53')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3945,740,4005,800" alt="" onmouseover="showTooltip('n125')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="2416,1542,2476,1602" alt="" onmouseover="showTooltip('n124')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1960,1552,2020,1612" alt="" onmouseover="showTooltip('n123')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="797,1733,847,1783" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage2/input" alt="" onmouseover="showTooltip('n122')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="3977,767,4027,817" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage6/" alt="" onmouseover="showTooltip('n121')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="3976,619,4102,817" alt="" onmouseover="showTooltip('n120')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3855,1003,3915,1063" alt="" onmouseover="showTooltip('n119')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3523,1623,3573,1673" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage5/input" alt="" onmouseover="showTooltip('n118')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="2053,1633,2113,1693" alt="" onmouseover="showTooltip('n111')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1451,133,1636,318" alt="" onmouseover="showTooltip('n110')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1100,563,1185,648" alt="" onmouseover="showTooltip('n109')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="2092,938,2176,1022" alt="" onmouseover="showTooltip('n107')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3418,715,3503,800" alt="" onmouseover="showTooltip('n106')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="2573,505,2658,590" alt="" onmouseover="showTooltip('n105')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3507,1135,3557,1185" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage6/input" alt="" onmouseover="showTooltip('n104')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="1960,993,2142,1175" alt="" onmouseover="showTooltip('n100')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1721,993,1903,1175" alt="" onmouseover="showTooltip('n98')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="2881,1003,3063,1185" alt="" onmouseover="showTooltip('n95')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="4271,1271,4321,1321" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage5/input" alt="" onmouseover="showTooltip('n94')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="1266,961,1350,1045" alt="" onmouseover="showTooltip('n86')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1581,515,1666,599" alt="" onmouseover="showTooltip('n85')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3898,1164,3982,1249" alt="" onmouseover="showTooltip('n84')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="2569,133,2965,448" alt="" onmouseover="showTooltip('n83')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3267,954,3352,1038" alt="" onmouseover="showTooltip('n81')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="4029,1664,4114,1748" alt="" onmouseover="showTooltip('n80')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1109,1755,1159,1805" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage2/" alt="" onmouseover="showTooltip('n79')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="984,148,1150,291" alt="" onmouseover="showTooltip('n78')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1470,961,1495,985" alt="" onmouseover="showTooltip('n75')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="919,976,1100,1157" alt="" onmouseover="showTooltip('n74')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="894,943,1241,1190" alt="" onmouseover="showTooltip('n73')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3033,133,3429,371" alt="" onmouseover="showTooltip('n72')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="2658,515,2839,697" alt="" onmouseover="showTooltip('n71')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3719,412,4084,800" alt="" onmouseover="showTooltip('n70')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3131,431,3332,781" alt="" onmouseover="showTooltip('n69')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1783,515,1964,697" alt="" onmouseover="showTooltip('n68')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1758,482,2104,729" alt="" onmouseover="showTooltip('n67')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="4080,1145,4130,1195" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage6/" alt="" onmouseover="showTooltip('n66')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="3948,1003,4130,1185" alt="" onmouseover="showTooltip('n65')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="2642,1003,2824,1185" alt="" onmouseover="showTooltip('n64')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3120,1003,3302,1185" alt="" onmouseover="showTooltip('n63')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="3701,1613,3886,1798" alt="" onmouseover="showTooltip('n62')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="2698,1778,2798,1878" alt="" onmouseover="showTooltip('n54')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="870,2478,1266,2924" alt="" onmouseover="showTooltip('n53')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="977,1612,1159,1794" alt="" onmouseover="showTooltip('n52')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="1676,2100,1726,2150" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage3/input" alt="" target="_blank"/>
-  <area shape="rect" coords="635,1854,685,1904" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage2/input" alt="" onmouseover="showTooltip('n51')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="465,1528,666,1878" alt="" onmouseover="showTooltip('n50')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="635,1854,685,1904" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage2/input" alt="" onmouseover="showTooltip('n50')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="465,1528,666,1878" alt="" onmouseover="showTooltip('n49')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="251,1967,335,2052" alt="" onmouseover="showTooltip('n47')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="2047,1807,2131,1891" alt="" onmouseover="showTooltip('n45')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="1016,1973,1101,2057" alt="" onmouseover="showTooltip('n44')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1249,1450,1333,1534" alt="" onmouseover="showTooltip('n44')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="524,1967,608,2052" alt="" onmouseover="showTooltip('n43')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2063,2340,2113,2390" href="http://casu.ast.cam.ac.uk/weave/data_model/docs/WEAVE-ICD-030%20WEAVE%20SPA%20to%20SWG%20&%20QAG.pdf" alt="" onmouseover="showTooltip('n42')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="2072,2248,2193,2368" alt="" onmouseover="showTooltip('n41')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="908,2299,958,2349" href="http://casu.ast.cam.ac.uk/weave/data_model/docs/WEAVE-ICD-030%20WEAVE%20SPA%20to%20SWG%20&%20QAG.pdf" alt="" onmouseover="showTooltip('n42')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="917,2207,1037,2327" alt="" onmouseover="showTooltip('n41')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="1992,1583,2042,1633" alt="" onmouseover="showTooltip('n40')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="2020,1463,2146,1617" alt="" onmouseover="showTooltip('n39')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="513,212,563,262" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow" alt="" target="_blank"/>
@@ -263,16 +263,16 @@ tooltip.style.display = "none";
   <area shape="rect" coords="2261,1763,2311,1813" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage3/" alt="" onmouseover="showTooltip('n34')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="996,1450,1046,1500" href="http://casu.ast.cam.ac.uk/weave/data_model/misc/BlankXMLTemplate.xml" alt="" onmouseover="showTooltip('n33')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="2915,2100,2965,2150" href="https://ingbitbucket.ing.iac.es/projects/WVSWG/repos/ifu/browse/workflow/stage4/input" alt="" onmouseover="showTooltip('n32')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="2270,2080,2320,2130" href="http://casu.ast.cam.ac.uk/weave/data_model/misc/progtemp.dat" alt="" onmouseover="showTooltip('n31')" onmouseout="hideTooltip()" target="_blank"/>
-  <area shape="rect" coords="2064,2080,2114,2130" href="http://casu.ast.cam.ac.uk/weave/data_model/misc/obstemp.dat" alt="" onmouseover="showTooltip('n30')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="1115,2038,1165,2088" href="http://casu.ast.cam.ac.uk/weave/data_model/misc/progtemp.dat" alt="" onmouseover="showTooltip('n31')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="908,2038,958,2088" href="http://casu.ast.cam.ac.uk/weave/data_model/misc/obstemp.dat" alt="" onmouseover="showTooltip('n30')" onmouseout="hideTooltip()" target="_blank"/>
   <area shape="rect" coords="4270,1615,4452,1797" alt="" onmouseover="showTooltip('n29')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="368,2236,764,2681" alt="" onmouseover="showTooltip('n28')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2038,2471,2434,2681" alt="" onmouseover="showTooltip('n27')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="368,2478,764,2924" alt="" onmouseover="showTooltip('n28')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="2038,2713,2434,2924" alt="" onmouseover="showTooltip('n27')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="2307,1463,2433,1617" alt="" onmouseover="showTooltip('n26')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2270,1932,2396,2130" alt="" onmouseover="showTooltip('n25')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2063,1932,2189,2130" alt="" onmouseover="showTooltip('n24')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1115,1890,1241,2088" alt="" onmouseover="showTooltip('n25')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="908,1890,1034,2088" alt="" onmouseover="showTooltip('n24')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="1005,1302,1131,1500" alt="" onmouseover="showTooltip('n23')" onmouseout="hideTooltip()"/>
-  <area shape="rect" coords="2873,2236,3269,2681" alt="" onmouseover="showTooltip('n22')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="2873,2478,3269,2924" alt="" onmouseover="showTooltip('n22')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="2698,1958,2798,2058" alt="" onmouseover="showTooltip('n19')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="2698,1598,2798,1698" alt="" onmouseover="showTooltip('n15')" onmouseout="hideTooltip()"/>
   <area shape="rect" coords="2698,1419,2798,1519" alt="" onmouseover="showTooltip('n14')" onmouseout="hideTooltip()"/>
