@@ -1,3 +1,4 @@
+- Change the code to produce output LIFU PAs in the range (-180, 180)
 - Should new survey elements be added for guide/calib stars? To be
   discussed between DM, DT and LPdA.
 - Should targprio be overwritten for guide/calib stars? To be discussed
