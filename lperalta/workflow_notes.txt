@@ -1,57 +1,68 @@
 ############################### STAGE 1 ################################
 
 cd stage1/
-./create_ifu_driver_template.py --in ../aux/Master_CatalogueTemplate.fits
+
+./create_ifu_driver_template.py --in aux/Master_CatalogueTemplate.fits
 ./_create_ifu_driver_cat_example.py
 ./_create_ifu_driver_cat_cheating.py
-./check_ifu_driver_cat.py output/WC_2020A1-ifu_driver_cat.fits --progtemp_file ../aux/progtemp.dat --obstemp_file ../aux/obstemp.dat
+./check_ifu_driver_cat.py output/WC_2020A1-ifu_driver_cat.fits
 ./plot_ifu_driver_cat.py output/WC_2020A1-ifu_driver_cat.fits
 
 ############################### STAGE 2 ################################
 
 cd ../stage2/
-./create_xml_files.py input/WC_2020A1-ifu_driver_cat.fits --xml_template  ../aux/BlankXMLTemplate.xml --progtemp_file ../aux/progtemp.dat --obstemp_file ../aux/obstemp.dat
+
+./create_xml_files.py input/WC_2020A1-ifu_driver_cat.fits
 
 ############################### STAGE 3 ################################
 
 cd ../stage3/
+
 ./add_guide_and_calib_stars.py --mifu_num_guide_stars_request None input/WC_2020A1-*-t.xml
 
 ############################### STAGE 4 ################################
 
-sed -i 's/datamver="dev"/datamver="8.00"/g' WC_2020A1-lifu_01-tgc.xml
-./lifu_configure --epoch 2020 -i WC_2020A1-lifu_01-tgc.xml -o WC_2020A1-lifu_01-tgcs-tmp.xml
-./dither -i WC_2020A1-lifu_01-tgcs-tmp.xml -o WC_2020A1-lifu_01-tgcs.xml
-sed -i 's/datamver="8.00"/datamver="dev"/g' WC_2020A1-lifu_01-tgcs-tmp.xml
-sed -i 's/datamver="8.00"/datamver="dev"/g' WC_2020A1-lifu_01-tgcs.xml
+cd ../stage4/
 
-sed -i 's/datamver="dev"/datamver="8.00"/g' WC_2020A1-lifu_02-tgc.xml
-./lifu_configure --epoch 2020 -i WC_2020A1-lifu_02-tgc.xml -o WC_2020A1-lifu_02-tgcs-tmp.xml
-./dither -i WC_2020A1-lifu_02-tgcs-tmp.xml -o WC_2020A1-lifu_02-tgcs.xml
-sed -i 's/datamver="8.00"/datamver="dev"/g' WC_2020A1-lifu_02-tgcs-tmp.xml
-sed -i 's/datamver="8.00"/datamver="dev"/g' WC_2020A1-lifu_02-tgcs.xml
+./lifu_configure --epoch 2020 -i input/WC_2020A1-lifu_01-tgc.xml -o output/WC_2020A1-lifu_01-tgcs-tmp-orig.xml
+./dither -i output/WC_2020A1-lifu_01-tgcs-tmp-orig.xml -o output/WC_2020A1-lifu_01-tgcs-orig.xml
+xmllint --c14n output/WC_2020A1-lifu_01-tgcs-tmp-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-lifu_01-tgcs-tmp.xml -
+xmllint --c14n output/WC_2020A1-lifu_01-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-lifu_01-tgcs.xml -
 
-sed -i 's/datamver="dev"/datamver="8.00"/g' WC_2020A1-mifu_01-tgc.xml
-./configure --epoch 2020 -f WC_2020A1-mifu_01-tgc.xml
-./dither -i WC_2020A1-mifu_01-tgcs-tmp.xml -o WC_2020A1-mifu_01-tgcs.xml
-sed -i 's/datamver="8.00"/datamver="dev"/g' WC_2020A1-mifu_01-tgcs-tmp.xml
-sed -i 's/datamver="8.00"/datamver="dev"/g' WC_2020A1-mifu_01-tgcs.xml
+./lifu_configure --epoch 2020 -i input/WC_2020A1-lifu_02-tgc.xml -o output/WC_2020A1-lifu_02-tgcs-tmp-orig.xml
+./dither -i output/WC_2020A1-lifu_02-tgcs-tmp-orig.xml -o output/WC_2020A1-lifu_02-tgcs-orig.xml
+xmllint --c14n output/WC_2020A1-lifu_02-tgcs-tmp-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-lifu_02-tgcs-tmp.xml -
+xmllint --c14n output/WC_2020A1-lifu_02-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-lifu_02-tgcs.xml -
 
-sed -i 's/datamver="dev"/datamver="8.00"/g' WC_2020A1-mifu_02-tgc.xml
-./configure --epoch 2020 -f WC_2020A1-mifu_02-tgc.xml
-./dither -i WC_2020A1-mifu_02-tgcs-tmp.xml -o WC_2020A1-mifu_02-tgcs.xml
-sed -i 's/datamver="8.00"/datamver="dev"/g' WC_2020A1-mifu_02-tgcs-tmp.xml
-sed -i 's/datamver="8.00"/datamver="dev"/g' WC_2020A1-mifu_02-tgcs.xml
+./configure --epoch 2020 -f input/WC_2020A1-mifu_01-tgc.xml -o output/WC_2020A1-mifu_01-tgcs-tmp-orig.xml
+./dither -i output/WC_2020A1-mifu_01-tgcs-tmp-orig.xml -o output/WC_2020A1-mifu_01-tgcs-orig.xml
+xmllint --c14n output/WC_2020A1-mifu_01-tgcs-tmp-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-mifu_01-tgcs-tmp.xml -
+xmllint --c14n output/WC_2020A1-mifu_01-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-mifu_01-tgcs.xml -
+
+./configure --epoch 2020 -f input/WC_2020A1-mifu_02-tgc.xml -o output/WC_2020A1-mifu_02-tgcs-tmp-orig.xml
+./dither -i output/WC_2020A1-mifu_02-tgcs-tmp-orig.xml -o output/WC_2020A1-mifu_02-tgcs-orig.xml
+xmllint --c14n output/WC_2020A1-mifu_02-tgcs-tmp-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-mifu_02-tgcs-tmp.xml -
+xmllint --c14n output/WC_2020A1-mifu_02-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-mifu_02-tgcs.xml -
 
 ############################### STAGE 5 ################################
 
 cd ../stage5/
-./create_ifu_fits_cat.py ../aux/WC_CatalogueTemplate.fits input/WC_2020A1-*-tgcs.xml --out output/WC_2020A1-ifu_from_xmls.fits
+
+./create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits input/WC_2020A1-*-tgcs.xml --out output/WC_2020A1-ifu_from_xmls.fits
 
 ############################### STAGE 6 ################################
 
 ############################### STAGE 7 ################################
 
 cd ../stage7/
-./create_combo_fits_cat.py stage7/input/WC_2020A1-mos.fits input/WC_2020A1-ifu.fits --out output/WC_2020A1.fits
+
+./create_combo_fits_cat.py input/WC_2020A1-mos.fits input/WC_2020A1-ifu.fits --out output/WC_2020A1.fits
+
+############################### STAGE 8 ################################
+
+############################### STAGE 9 ################################
+
+cd ../stage9/
+
+./fill_xmls_with_fits_info.py input/WC_2020A1.fits input/WC_2020A1-*-tgcs.xml
 

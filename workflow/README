@@ -55,8 +55,6 @@ Stage 2: Creation of the XML files with the targets
 
 **Contributors:** David Murphy, Luis Peralta
 
-**Contributors: DM**
-
 The code at stage 2 analyses the input IFU driver catalogue and
 converts this list into a series of distinct pointings (grouping mIFU
 pointings into fields where required). This process outputs the
@@ -173,7 +171,7 @@ version that has CASU-generated CNAMES. The WEAVE Survey Working Group
 Stage 9: Finishing the XML files
 --------------------------------
 
-**Contributors:** ?
+**Contributors:** Luis Peralta
 
 End-users for the IFU workflow also take the WASP-validated FITS
 catalogue and generate XML OB files. The code collection in stage 9
@@ -200,7 +198,7 @@ of these files ahead of this window can be checked via the test
 channel open to all WASP users. Bulk submission of these files can be
 done by generating a tarball and submitting this to the WASP, as per
 instructions. For OB submissions, WASP permits incremental uploads of
-(for example) MOS-only fields followed by IFU-only fields. 
+(for example) MOS-only fields followed by IFU-only fields.
 
 Stage 11: Happy ending
 ----------------------
