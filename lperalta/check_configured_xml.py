@@ -22,83 +22,49 @@ import argparse
 import logging
 import xml.dom.minidom as minidom
 
-import ipdb
 
-
-def get_obsmode_and_fields(filename):
+def get_info_from_xml(filename):
 
     dom = minidom.parse(filename)
 
     observation = dom.getElementsByTagName('observation')[0]
-
     obsmode = observation.getAttribute('obs_mode')
 
+    survey = dom.getElementsByTagName('survey')[0]
+    survey_name = survey.getAttribute('name')
+
     fields = dom.getElementsByTagName('fields')[0]
-    
     field_list = fields.getElementsByTagName('field')
-    
-    return obsmode, field_list
 
-
-def check_attributes_of_targets(field_list):
-
-    expected_attribs = ['cname', 'targcat', 'targclass', 'targdec', 'targepoch',
-                        'targid', 'targname', 'targparal', 'targpmdec',
-                        'targpmra', 'targprio', 'targprog', 'targra',
-                        'targsrvy', 'targuse',
-                        'automatic', 'configid', 'fibreid', 'ifu_pa',
-                        'ifu_spaxel', 'targx', 'targy']
-
-    for i, field in enumerate(field_list):
-    
-        for j, target in enumerate(field.getElementsByTagName('target')):
+    try:
+        offsets = dom.getElementsByTagName('offsets')[0]
+        step_ra0 = float(offsets.getAttribute('offset_step_ra').split()[0])
+        step_dec0 = float(offsets.getAttribute('offset_step_dec').split()[0])
         
-            # Get the attributes of the target
-        
-            attrib_list = list(target.attributes.keys())
-            attrib_list.sort()
-            
-            # Guess the missing attributes
-            
-            missing_attribs = []
-            
-            for attrib in expected_attribs:
-                if attrib not in attrib_list:
-                    missing_attribs.append(attrib)
-            
-            if len(missing_attribs) > 0:
-                logging.error(
-                    'missing attributes in target {} of field {}: {}'.format(
-                    j + 1, i + 1, missing_attribs))
-            
-            # Guess the unexpected attributes
-            
-            unexpected_attribs = []
-            
-            for attrib in attrib_list:
-                if attrib not in expected_attribs:
-                    unexpected_attribs.append(attrib)
-            
-            if len(unexpected_attribs) > 0:
-                logging.error(
-                    'unexpected attributes in target {} of field {}: {}'.format(
-                    j + 1, i + 1, unexpected_attribs))
-
-
-def check_attributes_of_targets_allowing_missing(obsmode, field_list):
-
-    expected_attribs = ['cname', 'targcat', 'targclass', 'targdec', 'targepoch',
-                        'targid', 'targname', 'targparal', 'targpmdec',
-                        'targpmra', 'targprio', 'targprog', 'targra',
-                        'targsrvy', 'targuse',
-                        'automatic', 'configid', 'fibreid', 'ifu_pa',
-                        'ifu_spaxel', 'targx', 'targy']
+        if (step_ra0 == 0.0) and (step_dec0 == 0.0):
+            first_field_with_offset = False
+        else:
+            first_field_with_offset = True
+    except:
+        first_field_with_offset = None
     
-    lifu_guide_flag = False
-    lifu_central_flag = False
-    mifu_non_allocated_flag = False
-    mifu_guide_flag = False
-    mifu_central_flag = False
+    return obsmode, survey_name, field_list, first_field_with_offset
+
+
+def check_attributes_of_targets(obsmode, field_list):
+
+    expected_attribs = [
+        'cname', 'targcat', 'targclass', 'targdec', 'targepoch', 'targid',
+        'targname', 'targparal', 'targpmdec', 'targpmra', 'targprio',
+        'targprog', 'targra', 'targsrvy', 'targuse',
+        'automatic', 'configid', 'fibreid', 'ifu_pa', 'ifu_spaxel', 'targx',
+        'targy']
+    
+    lifu_guide_automatic_flag = 0
+    lifu_central_automatic_flag = 0
+    mifu_non_allocated_attribs_flag = 0
+    mifu_guide_attribs_flag = 0
+    mifu_central_automatic_flag = 0
 
     for i, field in enumerate(field_list):
     
@@ -125,7 +91,7 @@ def check_attributes_of_targets_allowing_missing(obsmode, field_list):
                 
                     missing_attribs.remove('automatic')
                     
-                    lifu_guide_flag = True
+                    lifu_guide_automatic_flag += 1
                 
                 # In LIFU mode, automatic attribute is not added to central
                 # fibre
@@ -134,7 +100,7 @@ def check_attributes_of_targets_allowing_missing(obsmode, field_list):
                 
                     missing_attribs.remove('automatic')
                     
-                    lifu_central_flag = True
+                    lifu_central_automatic_flag += 1
             
             elif obsmode == 'mIFU':
             
@@ -148,7 +114,7 @@ def check_attributes_of_targets_allowing_missing(obsmode, field_list):
                     missing_attribs.remove('ifu_pa')
                     missing_attribs.remove('ifu_spaxel')
                     
-                    mifu_non_allocated_flag = True
+                    mifu_non_allocated_attribs_flag += 1
                     
                 else:
                 
@@ -161,22 +127,35 @@ def check_attributes_of_targets_allowing_missing(obsmode, field_list):
                         missing_attribs.remove('ifu_pa')
                         missing_attribs.remove('ifu_spaxel')
                         
-                        mifu_guide_flag = True
+                        mifu_guide_attribs_flag += 1
                 
                     # In mIFU mode, automatic is not added to central spaxel
                     # with allocated calib stars and targets
                     
-                    if ((target.getAttribute('targuse') in ['C', 'T']) and
+                    if ((target.getAttribute('targuse') in ['C', 'T', 'R']) and
                         (target.getAttribute('ifu_spaxel')[-3:] == 'C04')):
                         
                         missing_attribs.remove('automatic')
                         
-                        mifu_central_flag = True
+                        mifu_central_automatic_flag += 1
             
             if len(missing_attribs) > 0:
+            
+                try:
+                    ifu_spaxel = target.getAttribute('ifu_spaxel')
+                except:
+                    ifu_spaxel = None
+            
+                try:
+                    targuse = target.getAttribute('targuse')
+                except:
+                    targuse = None
+                
                 logging.error(
-                    'missing attributes in target {} of field {}: {}'.format(
-                    j + 1, i + 1, missing_attribs))
+                    'missing attributes in target {} of field {} '.format(
+                        j + 1, i + 1) +
+                    '(ifu_spaxel={}, targuse={}): {}'.format(
+                        ifu_spaxel, targuse, missing_attribs))
             
             # Guess the unexpected attributes
             
@@ -191,49 +170,47 @@ def check_attributes_of_targets_allowing_missing(obsmode, field_list):
                     'unexpected attributes in target {} of field {}: {}'.format(
                     j + 1, i + 1, unexpected_attribs))
 
-    if lifu_guide_flag is True:
+    if lifu_guide_automatic_flag > 0:
         logging.warning(
             'LIFU guide stars do not include the attribute ' +
-            'automatic'
-        )
+            'automatic ({})'.format(lifu_guide_automatic_flag))
 
-    if lifu_central_flag is True:
+    if lifu_central_automatic_flag > 0:
         logging.warning(
             'LIFU central target does not include the attribute ' +
-            'automatic'
-        )
+            'automatic ({})'.format(lifu_central_automatic_flag))
 
-    if mifu_non_allocated_flag is True:
+    if mifu_non_allocated_attribs_flag > 0:
         logging.warning(
-            'mIFU non-allocated targets do not include the attribute ' +
-            'automatic, fibreid, ifu_pa and ifu_spaxel'
-        )
+            'mIFU non-allocated targets do not include the attributes ' +
+            'automatic, fibreid, ifu_pa and ifu_spaxel ({})'.format(
+                mifu_non_allocated_attribs_flag))
 
-    if mifu_guide_flag is True:
+    if mifu_guide_attribs_flag > 0:
         logging.warning(
-            'mIFU guide stars do not include the attribute ' +
-            'automatic, ifu_pa and ifu_spaxel'
-        )
+            'mIFU guide stars do not include the attributes ' +
+            'automatic, ifu_pa and ifu_spaxel ({})'.format(
+                mifu_guide_attribs_flag))
 
-    if mifu_central_flag is True:
+    if mifu_central_automatic_flag > 0:
         logging.warning(
             'mIFU central targets do not include the attribute ' +
-            'automatic'
-        )
+            'automatic ({})'.format(mifu_central_automatic_flag))
 
 
 def check_attributes_of_photometry(field_list):
 
     expected_attribs = [
-        'mag_g', 'emag_g', 'mag_r', 'emag_r','mag_i', 'emag_i',
-        'mag_gg', 'emag_gg', 'mag_bp', 'emag_bp', 'mag_rp', 'emag_rp']
+        'emag_bp', 'emag_g', 'emag_gg', 'emag_i', 'emag_r', 'emag_rp',
+        'mag_bp', 'mag_g', 'mag_gg', 'mag_i', 'mag_r', 'mag_rp']
 
     for i, field in enumerate(field_list):
     
         for j, target in enumerate(field.getElementsByTagName('target')):
         
-            # Get the targuse of the target
+            # Get the ifu_spaxel and targuse of the target
         
+            ifu_spaxel = target.getAttribute('ifu_spaxel')
             targuse = target.getAttribute('targuse')
             
             # Get the photometry elements
@@ -245,15 +222,21 @@ def check_attributes_of_photometry(field_list):
             
             if targuse in ['T', 'G', 'C']:
             
-            
                 if len(photometry_list) == 0:
+                
                     logging.error(
                        'missing photometry in target ' +
-                        '{} of field {}: {}'.format(j + 1, i + 1))
+                        '{} of field {} (ifu_spaxel={}, targuse={})'.format(
+                            j + 1, i + 1, ifu_spaxel, targuse))
+                    
+                    continue
+                    
                 elif len(photometry_list) > 1:
+                    
                     logging.error(
                         'unexpected photometry in target ' +
-                        '{} of field {}: {}'.format(j + 1, i + 1))
+                        '{} of field {} (ifu_spaxel={}, targuse={})'.format(
+                            j + 1, i + 1, ifu_spaxel, targuse))
             
                 photometry = photometry_list[0]
             
@@ -273,8 +256,8 @@ def check_attributes_of_photometry(field_list):
                 if len(missing_attribs) > 0:
                     logging.error(
                         'missing attributes in photometry of target ' +
-                        '{} of field {}: {}'.format(j + 1, i + 1,
-                                                    missing_attribs))
+                        '{} of field {} (ifu_spaxel={}, targuse={}): {}'.format(
+                            j + 1, i + 1, ifu_spaxel, targuse, missing_attribs))
                 
                 # Guess the unexpected attributes
                 
@@ -295,20 +278,250 @@ def check_attributes_of_photometry(field_list):
                 if len(photometry_list) > 0:
                     logging.error(
                         'unexpected photometry in target ' +
-                        '{} of field {}: {}'.format(j + 1, i + 1))
+                        '{} of field {} (ifu_spaxel={}, targuse={})'.format(
+                            j + 1, i + 1, ifu_spaxel, targuse))
             
             else:
                 logging.error(
-                    'unexpected targuse in target {} of field {}: {}'.format(
-                        j + 1, i + 1, targuse))
+                    'unexpected targuse in target ' +
+                    '{} of field {} (ifu_spaxel={}): {}'.format(
+                        j + 1, i + 1, ifu_spaxel, targuse))
 
+
+def check_values_of_attributes_of_photometry(field_list):
+
+    for i, field in enumerate(field_list):
+
+        for j, target in enumerate(field.getElementsByTagName('target')):
+
+            targuse = target.getAttribute('targuse')
+            ifu_spaxel = target.getAttribute('ifu_spaxel')
+        
+            photometry_list = target.getElementsByTagName('photometry')
+        
+            if targuse in ['G', 'C']:
+            
+                if len(photometry_list) == 0:
+                    
+#                    logging.error(
+#                       'missing photometry in target ' +
+#                        '{} of field {} (ifu_spaxel={}, targuse={})'.format(
+#                            j + 1, i + 1, ifu_spaxel, targuse))
+                    
+                    continue
+            
+                photometry = photometry_list[0]
+                    
+                for attrib in photometry.attributes.keys():
+                    
+                    value = photometry.getAttribute(attrib)
+                    
+                    if value != '':
+                        float(value)
+            
+            elif targuse == 'T':
+            
+                photometry = photometry_list[0]
+                    
+                for attrib in photometry.attributes.keys():
+                    
+                    value = photometry.getAttribute(attrib)
+                    
+                    assert value == '%%%'
+            
+            elif targuse in ['S', 'R']:
+            
+                pass
                 
-def check_inherited_values_in_mifu(field_list):
+#                if len(photometry_list) > 0:
+#                    logging.error(
+#                        'unexpected photometry in target ' +
+#                        '{} of field {} (ifu_spaxel={}, targuse={})'.format(
+#                            j + 1, i + 1, ifu_spaxel, targuse))
+            
+            else:
+            
+                raise ValueError
+
+
+def check_values_of_attributes_of_lifu_targets(field_list):
 
     inherited_attribs = [
-        'targcat', 'targclass', 'targepoch', 'targid', 'targname', 'targparal',
-        'targpmdec', 'targpmra', 'targprio', 'targprog', 'targsrvy', 'ifu_pa'
-    ]
+        'targcat', 'targepoch', 'targid', 'targname', 'targparal',
+        'targpmdec', 'targpmra', 'targprio', 'targprog', 'targsrvy', 'ifu_pa']
+
+    # Get a dictionary with the central target information
+
+    for target in field_list[0].getElementsByTagName('target'):
+
+        ifu_spaxel = target.getAttribute('ifu_spaxel')
+
+        if ifu_spaxel == 'C14':
+
+            central_target_attrib_dict = {
+                key: target.getAttribute(key)
+                for key in target.attributes.keys()}
+
+    # Check the inherited values of all targets
+
+    for i, field in enumerate(field_list):
+
+        for j, target in enumerate(field.getElementsByTagName('target')):
+
+            ifu_spaxel = target.getAttribute('ifu_spaxel')
+
+            if ifu_spaxel != '':
+            
+                for key in inherited_attribs:
+                
+                    assert (target.getAttribute(key) ==
+                            central_target_attrib_dict[key])
+                
+            else:
+            
+                assert (target.getAttribute('ifu_pa') ==
+                        central_target_attrib_dict['ifu_pa'])
+
+    # Check attributes which depend on the bundle
+
+    for i, field in enumerate(field_list):
+
+        for j, target in enumerate(field.getElementsByTagName('target')):
+
+            ifu_spaxel = target.getAttribute('ifu_spaxel')
+
+            if ifu_spaxel != '':
+            
+                assert len(ifu_spaxel) == 3
+            
+                if ifu_spaxel[0] != 'S':
+                
+                    assert (target.getAttribute('targuse') == 'T')
+                    assert (target.getAttribute('targclass') ==
+                            central_target_attrib_dict['targclass'])
+                    
+                else:
+                
+                    assert (target.getAttribute('targuse') == 'S')
+                    assert (target.getAttribute('targclass') == '')
+            
+            else:
+            
+                assert (target.getAttribute('targuse') == 'G')
+
+    # Check that the assigned values by configure are as expected
+
+    for i, field in enumerate(field_list):
+
+        for j, target in enumerate(field.getElementsByTagName('target')):
+            
+            float(target.getAttribute('targdec'))
+            float(target.getAttribute('targra'))
+            
+            int(target.getAttribute('configid'))
+            
+            float(target.getAttribute('targx'))
+            float(target.getAttribute('targy'))
+        
+            ifu_spaxel = target.getAttribute('ifu_spaxel')
+            
+            if ifu_spaxel != '':
+                int(target.getAttribute('fibreid'))
+            else:
+                assert (target.getAttribute('fibreid') == '')
+            
+            if ifu_spaxel != '' and ifu_spaxel != 'C14':
+                assert (target.getAttribute('automatic') == '1')
+            elif ifu_spaxel == 'C14':
+                if 'automatic' in target.attributes.keys():
+                    assert (target.getAttribute('automatic') == '0')
+            elif ifu_spaxel == '':
+                if 'automatic' in target.attributes.keys():
+                    assert (target.getAttribute('automatic') == '0')
+
+    # Check that CNAMEs are empty unless in guide stars
+
+    for i, field in enumerate(field_list):
+
+        for j, target in enumerate(field.getElementsByTagName('target')):
+        
+            if target.getAttribute('targuse') != 'G':
+                
+                assert (target.getAttribute('cname') == '%%%')
+            
+            else:
+                
+                assert (target.getAttribute('cname')[:4] == 'WVE_')
+
+
+def check_lifu_versus_pre_xml_file(field_list, pre_field_list,
+                                   first_field_with_offset):
+
+    for i, field in enumerate(field_list):
+        
+        if len(pre_field_list) == 1:
+            ref_field = pre_field_list[0]
+        else:
+            ref_field = pre_field_list[i]
+            
+        for j, pre_target in enumerate(ref_field.getElementsByTagName('target')):
+            
+            targuse = pre_target.getAttribute('targuse')
+            
+            if targuse == 'G':
+            
+                cname = pre_target.getAttribute('cname')
+                
+                match_found = False
+            
+                for k, target in enumerate(field.getElementsByTagName('target')):
+                    
+                    if target.getAttribute('cname') == cname:
+                    
+                        for attrib in pre_target.attributes.keys():
+                        
+                            assert (pre_target.getAttribute(attrib) ==
+                                    target.getAttribute(attrib))
+                        
+                        match_found = True
+                        break
+                
+                if match_found == False:
+                    logging.error('Match not-found for guiding star')
+                
+            elif targuse == 'T':
+                
+                match_found = False
+            
+                for k, target in enumerate(field.getElementsByTagName('target')):
+                    
+                    if target.getAttribute('ifu_spaxel') == 'C14':
+                    
+                        for attrib in pre_target.attributes.keys():
+                            
+                            if (attrib not in ['targra', 'targdec']):
+                                assert (pre_target.getAttribute(attrib) ==
+                                        target.getAttribute(attrib))
+                            elif (i == 0) and (first_field_with_offset == False): 
+                                assert (pre_target.getAttribute(attrib) ==
+                                        target.getAttribute(attrib))
+                        
+                        match_found = True
+                        break
+                
+                if match_found == False:
+                    logging.error('Match not-found for central fibre')
+            
+            else:
+            
+                raise ValueError
+
+
+def check_values_of_attributes_of_mifu_targets(field_list, survey_name=None):
+
+    inherited_attribs = [
+        'targcat', 'targepoch', 'targid', 'targname', 'targparal', 'targpmdec',
+        'targpmra', 'targprio', 'targprog', 'targsrvy', 'ifu_pa']
 
     # Get a dictionary with the central target information
 
@@ -331,15 +544,19 @@ def check_inherited_values_in_mifu(field_list):
                     key: target.getAttribute(key)
                     for key in target.attributes.keys()}
 
-                if target.getAttribute('targuse') == 'T':
+                if target.getAttribute('targuse') in ['T', 'R']:
+                    assert (central_target_attrib_dict[prefix]['cname'] ==
+                            '%%%')
                     assert (central_target_attrib_dict[prefix]['targclass'] ==
                             '%%%')
                 elif target.getAttribute('targuse') == 'S':
+                    
                     assert (central_target_attrib_dict[prefix]['cname'] ==
                             '%%%')
 
-                    # assert (central_target_attrib_dict[prefix]['targsrvy'] ==
-                    #         '')
+                    if survey_name is not None:
+                        assert (central_target_attrib_dict[prefix]['targsrvy'] ==
+                                survey_name)
 
                     assert (central_target_attrib_dict[prefix]['targprog'] ==
                             '')
@@ -353,10 +570,7 @@ def check_inherited_values_in_mifu(field_list):
                             '1')
 
                     assert (central_target_attrib_dict[prefix]['targclass'] ==
-                            'UNKNOWN')
-                    logging.warning(
-                        'UNKNOWN != "" ({})'.format(
-                            central_target_attrib_dict[prefix]['targclass']))
+                            '')
 
                     assert (central_target_attrib_dict[prefix]['targepoch'] ==
                             '')
@@ -367,112 +581,339 @@ def check_inherited_values_in_mifu(field_list):
                     assert (central_target_attrib_dict[prefix]['targparal'] ==
                             '0')
 
-    # Check the values of all targets
-
-    targprio_flag = False
-    automatic_flag = False
+    # Check the inherited values of all targets
 
     for i, field in enumerate(field_list):
 
         for j, target in enumerate(field.getElementsByTagName('target')):
 
             if 'fibreid' in target.attributes.keys():
-
+            
+                ifu_spaxel = target.getAttribute('ifu_spaxel')
                 targuse = target.getAttribute('targuse')
+                targclass = target.getAttribute('targclass')
 
-                if targuse != 'G':
-
-                    ifu_spaxel = target.getAttribute('ifu_spaxel')
-
+                if len(ifu_spaxel) > 0:
                     prefix = ifu_spaxel[:-3]
                     suffix = ifu_spaxel[-3:]
+                    
+                    central_targuse = central_target_attrib_dict[prefix]['targuse']
+                else:
+                    prefix = ''
+                    suffix = ''
+                
+                    central_targuse = 'G'
 
-                    if targuse != 'C':
-                        assert target.getAttribute('cname') == '%%%'
-
-                    if suffix == 'C04':
-                        if (i == 0) and (targuse in ['T', 'C']):
-                            if target.getAttribute('automatic') != '0':
-                                if target.getAttribute('automatic') == '':
-                                    automatic_flag = True
-                                else:
-                                    raise ValueError
-                        else:
-                            if target.getAttribute('automatic') != '1':
-                                if target.getAttribute('automatic') == '':
-                                    automatic_flag = True
-                                else:
-                                    raise ValueError
-                    else:
-                        assert target.getAttribute('automatic') == '1'
+                if central_targuse in ['T', 'S', 'C']:
 
                     for key in inherited_attribs:
-                        try:
-                            assert (target.getAttribute(key) ==
-                                    central_target_attrib_dict[prefix][key])
-                        except:
-                            if key == 'targprio':
-                                targprio_flag = True
+                        assert (target.getAttribute(key) ==
+                                central_target_attrib_dict[prefix][key])
+
+                    if central_targuse in ['T', 'S']:
+                        assert targuse == central_targuse
+                    elif central_targuse == 'C':
+                        # ***Improve this assert
+                        if suffix == 'C04':
+                            if i == 0:
+                                assert targuse == 'C'
                             else:
-                                raise ValueError
+                                assert targuse == 'R'
+                        elif suffix in ['C03', '03C', '03D', 'C05', '05D', '05C']:
+                            if targuse != 'R':
+                                logging.error(
+                                    'unexpected targuse in target ' +
+                                    '{} of field {} (ifu_spaxel={}, targuse={})'.format(
+                                        j + 1, i + 1, ifu_spaxel, targuse))
+                        else:
+                            assert targuse == 'S'
+                    
+                    if targuse == 'T':
+                        assert targclass == '%%%'
+                    elif targuse == 'S':
+                        assert targclass == ''
 
+                elif central_targuse == 'G':
 
-                    if central_target_attrib_dict[prefix]['targuse'] == 'T':
-                        assert targuse == 'T'
-                    elif central_target_attrib_dict[prefix]['targuse'] == 'S':
-                        assert targuse == 'S'
-                    else:
-                        assert targuse in ['C', 'R', 'S']
+                    pass
 
                 else:
+                    
+                    raise ValueError
 
-                    if 'automatic' in target.attributes.keys():
-                        assert target.getAttribute('automatic') == '0'
+    # Check that the assigned values by configure are as expected
 
-                    assert target.getAttribute('ifu_spaxel') == ''
+    for i, field in enumerate(field_list):
 
-                int(target.getAttribute('fibreid'))
+        for j, target in enumerate(field.getElementsByTagName('target')):
+
+            if 'fibreid' in target.attributes.keys():
+            
+                float(target.getAttribute('targdec'))
+                float(target.getAttribute('targra'))
                 
-            int(target.getAttribute('configid'))
-            float(target.getAttribute('targra'))
-            float(target.getAttribute('targdec'))
-            float(target.getAttribute('targx'))
-            float(target.getAttribute('targy'))
+                int(target.getAttribute('fibreid'))
+                int(target.getAttribute('configid'))
+                
+                float(target.getAttribute('targx'))
+                float(target.getAttribute('targy'))
+            
+                targuse = target.getAttribute('targuse')
+                ifu_spaxel = target.getAttribute('ifu_spaxel')
+                
+                if targuse != 'G':
+                    assert len(ifu_spaxel) == 6
+                else:
+                    assert (ifu_spaxel == '')
+                
+                if ifu_spaxel != '' and ifu_spaxel[-3:] != 'C04':
+                    assert (target.getAttribute('automatic') == '1')
+                elif (ifu_spaxel[-3:] == 'C04') and (targuse != 'S'):
+                    if 'automatic' in target.attributes.keys():
+                        assert (target.getAttribute('automatic') == '0')
+                elif (ifu_spaxel[-3:] == 'C04') and (targuse == 'S'):
+                    if 'automatic' in target.attributes.keys():
+                        assert (target.getAttribute('automatic') == '1')
+                elif ifu_spaxel == '':
+                    if 'automatic' in target.attributes.keys():
+                        assert (target.getAttribute('automatic') == '0')
 
-    if targprio_flag == True:
-        logging.error('targprio is not being inherited in mIFU bundles')
+    # Check that CNAMEs are empty unless for guide stars and central fibre of
+    # the calib stars
 
-    if automatic_flag == True:
-        logging.error('automatic is None in mIFU fibres')
+    for i, field in enumerate(field_list):
+
+        for j, target in enumerate(field.getElementsByTagName('target')):
+
+            if 'fibreid' in target.attributes.keys():
+            
+                targuse = target.getAttribute('targuse')
+                ifu_spaxel = target.getAttribute('ifu_spaxel')
+        
+                if targuse == 'G':
+                    
+                    assert (target.getAttribute('cname')[:4] == 'WVE_')
+            
+                elif ((targuse == 'C') and (ifu_spaxel[-3:] == 'C04')):
+                    
+                    assert (target.getAttribute('cname')[:4] == 'WVE_')
+                
+                else:
+                    
+                    if (target.getAttribute('cname') != '%%%'):
+                        logging.error(
+                            'unexpected cname in target ' +
+                            '{} of field {} (ifu_spaxel={}, targuse={})'.format(
+                                j + 1, i + 1, ifu_spaxel, targuse))
 
 
-def check_inherited_values(obsmode, field_list):
+def check_mifu_versus_pre_xml_file(field_list, pre_field_list):
+
+    for i, field in enumerate(field_list):
+        
+        ref_field = pre_field_list[0]
+            
+        for j, pre_target in enumerate(ref_field.getElementsByTagName('target')):
+            
+            targuse = pre_target.getAttribute('targuse')
+            
+            if targuse == 'G':
+            
+                cname = pre_target.getAttribute('cname')
+                
+                match_found = False
+            
+                for k, target in enumerate(field.getElementsByTagName('target')):
+                    
+                    if target.getAttribute('cname') == cname:
+                    
+                        for attrib in pre_target.attributes.keys():
+                        
+                            assert (pre_target.getAttribute(attrib) ==
+                                    target.getAttribute(attrib))
+                        
+                        match_found = True
+                        break
+                
+                if match_found == False:
+                    logging.error('Match not-found for guiding star')
+                
+            elif targuse == 'C':
+            
+                if i == 0:
+                
+                    cname = pre_target.getAttribute('cname')
+                    
+                    match_found = False
+                
+                    for k, target in enumerate(field.getElementsByTagName('target')):
+                        
+                        if target.getAttribute('cname') == cname:
+                        
+                            for attrib in pre_target.attributes.keys():
+                            
+                                assert (pre_target.getAttribute(attrib) ==
+                                        target.getAttribute(attrib))
+                            
+                            match_found = True
+                            break
+                    
+                    if match_found == False:
+                        logging.error('Match not-found for calib star')
+                
+                else:
+                
+                    targname = pre_target.getAttribute('targname')
+                    targid = pre_target.getAttribute('targid')
+                    
+                    match_found = False
+                
+                    for k, target in enumerate(field.getElementsByTagName('target')):
+                        
+                        if ((target.getAttribute('targname') == targname) and
+                            (target.getAttribute('targid') == targid) and
+                            (target.getAttribute('ifu_spaxel')[-3:] == 'C04')):
+                        
+                            for attrib in pre_target.attributes.keys():
+                            
+                                if attrib not in ['cname', 'targdec', 'targra', 'targuse']:
+                                    assert (pre_target.getAttribute(attrib) ==
+                                            target.getAttribute(attrib))
+                                elif attrib == 'cname':
+                                    ifu_spaxel = target.getAttribute('ifu_spaxel')
+                                    targuse = target.getAttribute('targuse')
+                                    if target.getAttribute(attrib) != '%%%':
+                                        logging.error(
+                                            'unexpected cname in target ' +
+                                            '{} of field {} (ifu_spaxel={}, targuse={})'.format(
+                                                k + 1, i + 1, ifu_spaxel, targuse))
+                                elif attrib == 'targuse':
+                                    assert (target.getAttribute(attrib) != 'C')
+                            
+                            match_found = True
+                            break
+                    
+                    if match_found == False:
+                        logging.error('Match not-found for calib star')
+                
+            elif targuse == 'T':
+            
+                if i == 0:
+                
+                    targname = pre_target.getAttribute('targname')
+                    targid = pre_target.getAttribute('targid')
+                    
+                    match_found = False
+                
+                    for k, target in enumerate(field.getElementsByTagName('target')):
+                        
+                        if ((target.getAttribute('targname') == targname) and
+                            (target.getAttribute('targid') == targid) and
+                            ((target.getAttribute('ifu_spaxel')[-3:] == 'C04') or
+                             (target.getAttribute('ifu_spaxel') == ''))):
+                        
+                            for attrib in pre_target.attributes.keys():
+                                
+                                if attrib not in ['targdec', 'targra']:
+                                    assert (pre_target.getAttribute(attrib) ==
+                                            target.getAttribute(attrib))
+                                else:
+                                    if (pre_target.getAttribute(attrib) !=
+                                        target.getAttribute(attrib)):
+                                        ifu_spaxel = target.getAttribute('ifu_spaxel')
+                                        targuse = target.getAttribute('targuse')
+                                        logging.error(
+                                            'unexpected change in attribe in target ' +
+                                            '{} of field {} (ifu_spaxel={}, targuse={}): {}'.format(
+                                                k + 1, i + 1, ifu_spaxel, targuse, attrib))
+                            
+                            match_found = True
+                            break
+                    
+                    if match_found == False:
+                        logging.error(
+                            'Match not-found for target ' +
+                            'in field {} (targname={}, targid={})'.format(
+                                i + 1, targname, targid))
+                
+                else:
+                
+                    targname = pre_target.getAttribute('targname')
+                    targid = pre_target.getAttribute('targid')
+                    
+                    match_found = False
+                
+                    for k, target in enumerate(field.getElementsByTagName('target')):
+                        
+                        if ((target.getAttribute('targname') == targname) and
+                            (target.getAttribute('targid') == targid) and
+                            ((target.getAttribute('ifu_spaxel')[-3:] == 'C04') or
+                             (target.getAttribute('ifu_spaxel') == ''))):
+                        
+                            for attrib in pre_target.attributes.keys():
+                            
+                                if attrib not in ['cname', 'targdec', 'targra']:
+                                    assert (pre_target.getAttribute(attrib) ==
+                                            target.getAttribute(attrib))
+                                elif attrib == 'cname':
+                                    ifu_spaxel = target.getAttribute('ifu_spaxel')
+                                    targuse = target.getAttribute('targuse')
+                                    if target.getAttribute(attrib) != '%%%':
+                                        logging.error(
+                                            'unexpected cname in target ' +
+                                            '{} of field {} (ifu_spaxel={}, targuse={})'.format(
+                                                k + 1, i + 1, ifu_spaxel, targuse))
+                            
+                            match_found = True
+                            break
+                    
+                    if match_found == False:
+                        logging.error(
+                            'Match not-found for target ' +
+                            'in field {} (targname={}, targid={})'.format(
+                                i + 1, targname, targid))
+            
+            else:
+            
+                raise ValueError
+
+
+def check_configured_xml(filename, pre_xml_file=None):
+
+    obsmode, survey_name, field_list, first_field_with_offset = (
+        get_info_from_xml(filename))
+        
+    if pre_xml_file is not None:
+        pre_obsmode, pre_survey_name, pre_field_list, pre_first_field_with_offset = (
+            get_info_from_xml(pre_xml_file))
+    
+    check_attributes_of_targets(obsmode, field_list)
+    
+    check_attributes_of_photometry(field_list)
+    
+    check_values_of_attributes_of_photometry(field_list)
 
     if obsmode == 'LIFU':
 
-        check_inherited_values_in_lifu(field_list)
+        check_values_of_attributes_of_lifu_targets(field_list)
+        
+        if pre_xml_file is not None:
+        
+            check_lifu_versus_pre_xml_file(
+                field_list, pre_field_list, first_field_with_offset)
 
     elif obsmode == 'mIFU':
 
-        check_inherited_values_in_mifu(field_list)
+        check_values_of_attributes_of_mifu_targets(field_list,
+                                                   survey_name=survey_name)
+        
+        if pre_xml_file is not None:
+        
+            check_mifu_versus_pre_xml_file(field_list, pre_field_list)
 
     else:
 
         raise ValueError
-
-
-def check_configured_xml(filename, allow_missing=True):
-
-    obsmode, field_list = get_obsmode_and_fields(filename)
-    
-    if allow_missing is False:
-        check_attributes_of_targets(field_list)
-    else:
-        check_attributes_of_targets_allowing_missing(obsmode, field_list)
-    
-    check_attributes_of_photometry(field_list)
-    
-    check_inherited_values(obsmode, field_list)
 
 
 if __name__ == '__main__':
@@ -480,8 +921,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
              description='Check the contents of configured XML files')
 
-    parser.add_argument('xml_file',
-                        help="""a configured OB XML file""")
+    parser.add_argument('xml_file', help='a configured OB XML file')
+
+    parser.add_argument('--pre', dest='pre_xml_file', default=None,
+                        help='the pre-configured OB XML file')
 
     parser.add_argument('--log_level', default='info',
                         choices=['debug', 'info', 'warning', 'error'],
@@ -489,9 +932,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    level_dict = {'debug': logging.DEBUG, 'info': logging.INFO,
-                  'warning': logging.WARNING, 'error': logging.ERROR}
+    logging.basicConfig(level=getattr(logging, args.log_level.upper()))
 
-    logging.basicConfig(level=level_dict[args.log_level])
+    check_configured_xml(args.xml_file, pre_xml_file=args.pre_xml_file)
 
-    check_configured_xml(args.xml_file)
