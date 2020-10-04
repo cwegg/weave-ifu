@@ -24,23 +24,23 @@ cd ../stage3/
 
 cd ../stage4/
 
-./lifu_configure --epoch 2020 -i input/WC_2020A1-lifu_01-tgc.xml -o output/WC_2020A1-lifu_01-tgcs-tmp-orig.xml
-./dither -i output/WC_2020A1-lifu_01-tgcs-tmp-orig.xml -o output/WC_2020A1-lifu_01-tgcs-orig.xml
+lifu_configure --epoch 2020 -i input/WC_2020A1-lifu_01-tgc.xml -o output/WC_2020A1-lifu_01-tgcs-tmp-orig.xml
+dither -i output/WC_2020A1-lifu_01-tgcs-tmp-orig.xml -o output/WC_2020A1-lifu_01-tgcs-orig.xml
 xmllint --c14n output/WC_2020A1-lifu_01-tgcs-tmp-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-lifu_01-tgcs-tmp.xml -
 xmllint --c14n output/WC_2020A1-lifu_01-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-lifu_01-tgcs.xml -
 
-./lifu_configure --epoch 2020 -i input/WC_2020A1-lifu_02-tgc.xml -o output/WC_2020A1-lifu_02-tgcs-tmp-orig.xml
-./dither -i output/WC_2020A1-lifu_02-tgcs-tmp-orig.xml -o output/WC_2020A1-lifu_02-tgcs-orig.xml
+lifu_configure --epoch 2020 -i input/WC_2020A1-lifu_02-tgc.xml -o output/WC_2020A1-lifu_02-tgcs-tmp-orig.xml
+dither -i output/WC_2020A1-lifu_02-tgcs-tmp-orig.xml -o output/WC_2020A1-lifu_02-tgcs-orig.xml
 xmllint --c14n output/WC_2020A1-lifu_02-tgcs-tmp-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-lifu_02-tgcs-tmp.xml -
 xmllint --c14n output/WC_2020A1-lifu_02-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-lifu_02-tgcs.xml -
 
-./configure --epoch 2020 -f input/WC_2020A1-mifu_01-tgc.xml -o output/WC_2020A1-mifu_01-tgcs-tmp-orig.xml
-./dither -i output/WC_2020A1-mifu_01-tgcs-tmp-orig.xml -o output/WC_2020A1-mifu_01-tgcs-orig.xml
+configure --epoch 2020 -f input/WC_2020A1-mifu_01-tgc.xml -o output/WC_2020A1-mifu_01-tgcs-tmp-orig.xml
+dither -i output/WC_2020A1-mifu_01-tgcs-tmp-orig.xml -o output/WC_2020A1-mifu_01-tgcs-orig.xml
 xmllint --c14n output/WC_2020A1-mifu_01-tgcs-tmp-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-mifu_01-tgcs-tmp.xml -
 xmllint --c14n output/WC_2020A1-mifu_01-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-mifu_01-tgcs.xml -
 
-./configure --epoch 2020 -f input/WC_2020A1-mifu_02-tgc.xml -o output/WC_2020A1-mifu_02-tgcs-tmp-orig.xml
-./dither -i output/WC_2020A1-mifu_02-tgcs-tmp-orig.xml -o output/WC_2020A1-mifu_02-tgcs-orig.xml
+configure --epoch 2020 -f input/WC_2020A1-mifu_02-tgc.xml -o output/WC_2020A1-mifu_02-tgcs-tmp-orig.xml
+dither -i output/WC_2020A1-mifu_02-tgcs-tmp-orig.xml -o output/WC_2020A1-mifu_02-tgcs-orig.xml
 xmllint --c14n output/WC_2020A1-mifu_02-tgcs-tmp-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-mifu_02-tgcs-tmp.xml -
 xmllint --c14n output/WC_2020A1-mifu_02-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-mifu_02-tgcs.xml -
 
@@ -48,7 +48,7 @@ xmllint --c14n output/WC_2020A1-mifu_02-tgcs-orig.xml | xmllint --format --encod
 
 cd ../stage5/
 
-./create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits input/WC_2020A1-*-tgcs.xml --out output/WC_2020A1-ifu_from_xmls.fits
+./create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits input/WC_2020A1-*-tgcs.xml --out output/WC_2020A1-ifu_from_xmls.fits --cat_nme1="First Name" --cat_nme2="Surname"
 
 ############################### STAGE 6 ################################
 
