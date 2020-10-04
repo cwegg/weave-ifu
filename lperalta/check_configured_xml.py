@@ -394,7 +394,7 @@ def check_values_of_attributes_of_lifu_targets(field_list):
             
                 assert len(ifu_spaxel) == 3
             
-                if ifu_spaxel[0] != 'S':
+                if ifu_spaxel[0] not in ['R', 'S']:
                 
                     assert (target.getAttribute('targuse') == 'T')
                     assert (target.getAttribute('targclass') ==
