@@ -7,10 +7,13 @@ log.txt
 # Testing files:
 workflow_test/.cache/
 
-# Files in the auxiliar file for development
-workflow/stage1/aux/Aladin.jar
+# Files in the auxiliar directory:
+workflow/aux/obstemp.dat
+workflow/aux/progtemp.dat
+workflow/aux/Aladin.jar
+workflow/aux/BlankXMLTemplate.xml
 
-# Output files
+# Output files:
 workflow/output/
 workflow/stage1/output/
 workflow/stage2/output/
