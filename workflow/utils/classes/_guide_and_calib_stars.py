@@ -236,7 +236,7 @@ class _AuxStars:
 
             distance_list.append(centre_coord.separation(row_coord).deg)
             angle_list.append(centre_coord.position_angle(row_coord).wrap_at(
-                _coordinates.Angle(360, unit='deg')).deg)
+                _coordinates.Angle(180, unit='deg')).deg)
 
         distance_column = _Column(distance_list, name='DISTANCE')
         angle_column = _Column(angle_list, name='ANGLE')
@@ -272,8 +272,8 @@ class _AuxStars:
 
         cam_offset_dist = _np.hypot(self.cam_x_offset, self.cam_y_offset)
 
-        min_radious = cam_offset_dist - self.fov_radious 
-        max_radious = cam_offset_dist + self.fov_radious 
+        min_radious = cam_offset_dist - self.fov_radious
+        max_radious = cam_offset_dist + self.fov_radious
 
         mask = ((table['DISTANCE'] >= min_radious) *
                 (table['DISTANCE'] <= max_radious))
@@ -317,7 +317,7 @@ class _AuxStars:
         index = None
 
         wrapped_angle_list = [
-            _coordinates.Angle(angle , unit='deg').wrap_at(
+            _coordinates.Angle(angle, unit='deg').wrap_at(
                 _coordinates.Angle(ref_angle + 180, unit='deg')).deg
             for angle in angle_array]
 
@@ -447,7 +447,7 @@ class _AuxStars:
             cam_pa_at_request = _coordinates.Angle(
                 _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) +
                 pa_request - 90, unit='deg').wrap_at(
-                    _coordinates.Angle(360, unit='deg')).deg
+                    _coordinates.Angle(180, unit='deg')).deg
 
             argmin = self._get_index_of_nearest_angle(cam_pa_at_request,
                                                       table['ANGLE'])
@@ -455,11 +455,11 @@ class _AuxStars:
             cam_pa_at_zero = _coordinates.Angle(
                 _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) -
                 90, unit='deg').wrap_at(
-                    _coordinates.Angle(360, unit='deg')).deg
+                    _coordinates.Angle(180, unit='deg')).deg
 
             selected_pa = _coordinates.Angle(
                 table['ANGLE'][argmin] - cam_pa_at_zero, unit='deg').wrap_at(
-                    _coordinates.Angle(360, unit='deg')).deg
+                    _coordinates.Angle(180, unit='deg')).deg
 
             selected_table = self._select_stars_in_guide_cam(table, selected_pa,
                                                              num_stars_request)
@@ -750,7 +750,7 @@ class _AuxStars:
             assert num_stars_request > 0
         
         if pa_request not in [None, _np.nan]:
-            assert (pa_request >= 0.0) or (pa_request < 360.0)
+            assert (pa_request > -180.0) or (pa_request < 180.0)
 
             if self.obsmode != 'LIFU':
 
