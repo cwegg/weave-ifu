@@ -32,6 +32,7 @@ from workflow.utils.get_data_from_xmls import (
     get_author_from_xmls, get_cc_report_from_xmls, get_trimester_from_xmls,
     get_spa_data_of_target_random_and_sky_fibres_from_xmls)
 
+
 def _get_col_null_dict_of_template(fits_template):
     
     # Get an empty dictionary for the result
