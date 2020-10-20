@@ -2,7 +2,6 @@
   discussed between DM, DT and LPdA.
 - Should targprio be overwritten for guide/calib stars? To be discussed
   between DM, DT and LPdA.
-- Write the tests.
 - Check the position of the LIFU guide camera is right (if it is OK for PA=0,
   rotation should work fine; there is logging.critical call in
   _guide_and_calib_stars.py where the information should be edited).
