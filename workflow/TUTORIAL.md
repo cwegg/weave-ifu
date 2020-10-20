@@ -64,7 +64,7 @@ Stage 3: Adding guide and calibration stars to the XML files
 ------------------------------------------------------------
 
 ```
-stage3/add_guide_and_calib_stars.py --mifu_num_guide_stars_request None output/WC_2020A1-*-t.xml
+stage3/add_guide_and_calib_stars.py output/WC_2020A1-*-t.xml
 ```
 
 Stage 4: Configuring the XML files

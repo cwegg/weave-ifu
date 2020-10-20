@@ -18,7 +18,7 @@ cd ../stage2/
 
 cd ../stage3/
 
-./add_guide_and_calib_stars.py --mifu_num_guide_stars_request None input/WC_2020A1-*-t.xml
+./add_guide_and_calib_stars.py input/WC_2020A1-*-t.xml
 
 ############################### STAGE 4 ################################
 
