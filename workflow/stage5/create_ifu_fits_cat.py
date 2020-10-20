@@ -217,31 +217,59 @@ def _add_sim_extension(filename):
         hdu_list.append(sim_hdu)
 
 
-def create_ifu_fits_cat(xml_files, fits_template, output_filename,
-                        cat_nme1='', cat_nme2='', sim_ext=False,
-                        overwrite=False):
+def create_ifu_fits_cat(fits_template, xml_files, cat_nme1='', cat_nme2='',
+                        output_dir='output', output_filename=None,
+                        sim_ext=False, overwrite=False):
     """
     Create an IFU FITS catalogue.
     
     Parameters
     ----------
+    fits_template : str
+        A FITS template with a primary HDU and a first extension with a table.
     xml_files : str or list of str
         A string with a pattern of the input XML files or list of strings with
         the filenames of the XML files.
-    fits_template : str
-        A FITS template with a primary HDU and a first extension with a table.
-    output_filename : str
-        The name of the output file which will be created.
     cat_nme1 : str, optional
         Value for populating CAT_NME1 keyword of the output file.
     cat_nme2 : str, optional
         Value for populating CAT_NME2 keyword of the output file.
+    output_dir : str
+        Name of the directory which will contain the output IFU FITS catalogue.
+    output_filename : str
+        The name of the output IFU FITS catalogue (output_dir will be ignored if
+        output_filename is not None).
     sim_ext : bool, optional
         Add an extra extension to the output file for the information needed to
         generate the simulations.
     overwrite : bool, optional
         Overwrite the output FITS file.
+
+    Returns
+    -------
+    output_filename : str
+        The name of the output IFU FITS catalogue.
     """
+    
+    # Set the name of the output file
+    
+    if output_filename is None:
+    
+        prefix = '-'.join(xml_files[0].split('-')[:-2])
+    
+        for xml_file in xml_files:
+        
+            prefix_of_this_xml_file = '-'.join(xml_file.split('-')[:-2])
+        
+            if prefix_of_this_xml_file != prefix:
+                prefix = ''
+                break
+        
+        if prefix != '':
+            output_filename = os.path.join(
+                output_dir, '{}-ifu_from_xmls.fits'.format(prefix))
+        else:
+            output_filename = os.path.join(output_dir, 'cat-ifu_from_xmls.fits')
     
     # Get list of filenames depending on the type of input given for XML files
     
@@ -300,6 +328,8 @@ def create_ifu_fits_cat(xml_files, fits_template, output_filename,
 
     if sim_ext == True:
         _add_sim_extension(output_filename)
+    
+    return output_filename
 
 
 if __name__ == '__main__':
@@ -312,11 +342,6 @@ if __name__ == '__main__':
 
     parser.add_argument('xml_file', nargs='+', help='name of a XML file')
 
-    parser.add_argument('--out', dest='output_filename',
-                        default='output/cat-ifu_from_xmls.fits',
-                        help="""name for the output file which will contain the
-                        IFU FITS catalogue""")
-
     parser.add_argument('--cat_nme1', default='',
                         help="""value for populating CAT_NME1 keyword of the
                         output file""")
@@ -324,6 +349,15 @@ if __name__ == '__main__':
     parser.add_argument('--cat_nme2', default='',
                         help="""value for populating CAT_NME1 keyword of the
                         output file""")
+
+    parser.add_argument('--outdir', dest='output_dir', default='output',
+                        help="""name of the directory which will contain the
+                        output IFU FITS catalogue""")
+
+    parser.add_argument('--out', dest='output_filename', default=None,
+                        help="""name of the file which will contain the output
+                        IFU FITS catalogue (outdir value will be ignored if
+                        provided)""")
 
     parser.add_argument('--sim_ext',  action='store_true',
                         help="""add an extra extension to the output file for
@@ -344,7 +378,9 @@ if __name__ == '__main__':
         logging.info('Creating the output directory')
         os.mkdir(os.path.dirname(args.output_filename))
 
-    create_ifu_fits_cat(args.xml_file, args.template, args.output_filename,
+    create_ifu_fits_cat(args.template, args.xml_file,
                         cat_nme1=args.cat_nme1, cat_nme2=args.cat_nme2,
+                        output_dir=args.output_dir,
+                        output_filename=args.output_filename,
                         sim_ext=args.sim_ext, overwrite=args.overwrite)
 

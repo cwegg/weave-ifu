@@ -28,12 +28,11 @@ import workflow
 @pytest.fixture(scope='module')
 def ifu_cat_from_xmls(pkg_tgcs_xml_files, pkg_wc_cat, tmpdir_factory):
 
-    file_path = str(tmpdir_factory.mktemp('output').join(
-                        'WC_2020A1-ifu_from_xmls.fits'))
+    output_dir = str(tmpdir_factory.mktemp('output'))
 
-    xml_filename_list = workflow.stage5.create_ifu_fits_cat(
-        pkg_tgcs_xml_files, pkg_wc_cat, file_path,
-        cat_nme1='First Name', cat_nme2='Surname')
+    file_path = workflow.stage5.create_ifu_fits_cat(
+        pkg_wc_cat, pkg_tgcs_xml_files,
+        cat_nme1='First Name', cat_nme2='Surname', output_dir=output_dir)
     
     return file_path
 
