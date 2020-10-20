@@ -32,7 +32,7 @@ def tgc_xml_files(pkg_t_xml_files, tmpdir_factory):
     output_dir = str(tmpdir_factory.mktemp('output'))
 
     xml_filename_list = workflow.stage3.add_guide_and_calib_stars(
-        pkg_t_xml_files, output_dir, mifu_num_guide_stars_request=None)
+        pkg_t_xml_files, output_dir)
     
     return xml_filename_list
 
