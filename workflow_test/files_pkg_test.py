@@ -125,8 +125,7 @@ def test_pkg_copy_tgcs_xml_files(pkg_copy_tgcs_xml_files):
     pass
 
 
-def test_diff_pkg_copy_tgcs_xml_files(pkg_tgcs_xml_files,
-                                      pkg_copy_tgcs_xml_files):
+def test_diff_pkg_tgcs_xml_files(pkg_tgcs_xml_files, pkg_copy_tgcs_xml_files):
     
     assert len(pkg_tgcs_xml_files) == len(pkg_copy_tgcs_xml_files)
     
