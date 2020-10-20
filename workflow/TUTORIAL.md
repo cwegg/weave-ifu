@@ -104,7 +104,7 @@ Stage 5: Creation the IFU FITS catalogue
 ----------------------------------------
 
 ```
-stage5/create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits output/WC_2020A1-*-tgcs.xml --cat_nme1="First Name" --cat_nme2="Surname"
+stage5/create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits output/WC_2020A1-*-tgcs.xml --cat_nme1 "First Name" --cat_nme2 "Surname" --gaia_dr 2
 ```
 
 Stage 6: Improving the IFU FITS catalogue (optional, but recommended)
@@ -120,7 +120,7 @@ Stage 7: Creation of the combo FITS catalogue
 ---------------------------------------------
 
 ```
-stage7/create_combo_fits_cat.py stage7/input/WC_2020A1-mos.fits output/WC_2020A1-ifu.fits --out output/WC_2020A1.fits
+stage7/create_combo_fits_cat.py stage7/input/WC_2020A1-mos.fits output/WC_2020A1-ifu.fits
 ```
 
 Stage 8: Submission to WASP of the combo FITS catalogue

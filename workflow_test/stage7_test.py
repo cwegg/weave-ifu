@@ -28,10 +28,10 @@ import workflow
 @pytest.fixture(scope='module')
 def combo_cat(pkg_mos_cat, pkg_ifu_cat, tmpdir_factory):
 
-    file_path = str(tmpdir_factory.mktemp('output').join(
-                        'WC_2020A1.fits'))
+    output_dir = str(tmpdir_factory.mktemp('output'))
 
-    workflow.stage7.create_combo_fits_cat(pkg_mos_cat, pkg_ifu_cat, file_path)
+    file_path = workflow.stage7.create_combo_fits_cat(
+        pkg_mos_cat, pkg_ifu_cat, output_dir=output_dir)
     
     return file_path
 
