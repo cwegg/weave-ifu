@@ -24,8 +24,6 @@ import subprocess
 
 import pytest
 
-import workflow
-
 
 @pytest.fixture(scope='module')
 def wasp_cat(pkg_combo_cat, tmpdir_factory):
