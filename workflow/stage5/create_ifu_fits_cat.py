@@ -218,7 +218,7 @@ def _add_sim_extension(filename):
 
 
 def create_ifu_fits_cat(fits_template, xml_files, cat_nme1='', cat_nme2='',
-                        output_dir='output', output_filename=None,
+                        gaia_dr=None, output_dir='output', output_filename=None,
                         sim_ext=False, overwrite=False):
     """
     Create an IFU FITS catalogue.
@@ -234,6 +234,8 @@ def create_ifu_fits_cat(fits_template, xml_files, cat_nme1='', cat_nme2='',
         Value for populating CAT_NME1 keyword of the output file.
     cat_nme2 : str, optional
         Value for populating CAT_NME2 keyword of the output file.
+    gaia_dr : str, optional
+        Value for populating GAIA_DR column of the output file.
     output_dir : str
         Name of the directory which will contain the output IFU FITS catalogue.
     output_filename : str
@@ -247,7 +249,7 @@ def create_ifu_fits_cat(fits_template, xml_files, cat_nme1='', cat_nme2='',
 
     Returns
     -------
-    output_filename : str
+    ifu_fits_cat_filename : str
         The name of the output IFU FITS catalogue.
     """
     
@@ -255,21 +257,27 @@ def create_ifu_fits_cat(fits_template, xml_files, cat_nme1='', cat_nme2='',
     
     if output_filename is None:
     
-        prefix = '-'.join(xml_files[0].split('-')[:-2])
+        prefix = '-'.join(os.path.basename(xml_files[0]).split('-')[:-2])
     
         for xml_file in xml_files:
         
-            prefix_of_this_xml_file = '-'.join(xml_file.split('-')[:-2])
+            prefix_of_this_xml_file = (
+                '-'.join(os.path.basename(xml_file).split('-')[:-2]))
         
             if prefix_of_this_xml_file != prefix:
                 prefix = ''
                 break
         
         if prefix != '':
-            output_filename = os.path.join(
+            ifu_fits_cat_filename = os.path.join(
                 output_dir, '{}-ifu_from_xmls.fits'.format(prefix))
         else:
-            output_filename = os.path.join(output_dir, 'cat-ifu_from_xmls.fits')
+            ifu_fits_cat_filename = os.path.join(
+                output_dir, 'cat-ifu_from_xmls.fits')
+    
+    else:
+        
+        ifu_fits_cat_filename = output_filename
     
     # Get list of filenames depending on the type of input given for XML files
     
@@ -318,18 +326,25 @@ def create_ifu_fits_cat(fits_template, xml_files, cat_nme1='', cat_nme2='',
     
     data_dict = _add_missing_cols_of_template(spa_data_dict, fits_template)
     
+    # Assign the requested value to the GAIA_DR column
+    
+    if gaia_dr is not None:
+        data_dict['GAIA_DR'] = [gaia_dr
+                                for i in range(len(data_dict['GAIA_DR']))]
+    
     # Populate the template
     
-    populate_fits_table_template(fits_template, data_dict, output_filename,
+    populate_fits_table_template(fits_template, data_dict,
+                                 ifu_fits_cat_filename,
                                  primary_kwds=primary_kwds,
                                  update_datetime=True, overwrite=overwrite)
 
     # Add an extra extension for the simulations if requested
 
     if sim_ext == True:
-        _add_sim_extension(output_filename)
+        _add_sim_extension(ifu_fits_cat_filename)
     
-    return output_filename
+    return ifu_fits_cat_filename
 
 
 if __name__ == '__main__':
@@ -348,6 +363,10 @@ if __name__ == '__main__':
 
     parser.add_argument('--cat_nme2', default='',
                         help="""value for populating CAT_NME1 keyword of the
+                        output file""")
+
+    parser.add_argument('--gaia_dr', default=None,
+                        help="""value for populating GAIA_DR column of the
                         output file""")
 
     parser.add_argument('--outdir', dest='output_dir', default='output',
@@ -374,13 +393,18 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=getattr(logging, args.log_level.upper()))
 
-    if not os.path.exists(os.path.dirname(args.output_filename)):
+    if args.output_filename is None:
+        dirname = args.output_dir
+    else:
+        dirname = os.path.dirname(args.output_filename)
+    
+    if not os.path.exists(dirname):
         logging.info('Creating the output directory')
-        os.mkdir(os.path.dirname(args.output_filename))
+        os.mkdir(dirname)
 
     create_ifu_fits_cat(args.template, args.xml_file,
                         cat_nme1=args.cat_nme1, cat_nme2=args.cat_nme2,
-                        output_dir=args.output_dir,
+                        gaia_dr=args.gaia_dr, output_dir=args.output_dir,
                         output_filename=args.output_filename,
                         sim_ext=args.sim_ext, overwrite=args.overwrite)
 
