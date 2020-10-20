@@ -34,11 +34,9 @@ def aladin_jar(tmpdir_factory):
     
     workflow.utils.get_resources.get_aladin_jar(file_path=file_path)
     
-    result = str(file_path)
+    assert os.path.exists(file_path)
     
-    assert os.path.exists(result)
-    
-    return result
+    return file_path
 
 
 @pytest.fixture(scope='session')
@@ -49,18 +47,59 @@ def master_cat(tmpdir_factory):
     
     workflow.utils.get_resources.get_master_cat(file_path=file_path)
     
-    result = str(file_path)
+    assert os.path.exists(file_path)
     
-    assert os.path.exists(result)
-    
-    return result
+    return file_path
 
 
-def test_fitscheck_master_cat(master_cat):
+@pytest.fixture(scope='session')
+def blank_xml_template(tmpdir_factory):
 
-    returncode = subprocess.call(['fitscheck', master_cat])
+    file_path = str(tmpdir_factory.mktemp('aux').join(
+                        'BlankXMLTemplate.xml'))
     
-    assert returncode == 0
+    workflow.utils.get_resources.get_blank_xml_template(file_path=file_path)
+    
+    assert os.path.exists(file_path)
+    
+    return file_path
+
+
+@pytest.fixture(scope='session')
+def progtemp_file(tmpdir_factory):
+
+    file_path = str(tmpdir_factory.mktemp('aux').join(
+                        'progtemp.dat'))
+    
+    workflow.utils.get_resources.get_progtemp_file(file_path=file_path)
+    
+    assert os.path.exists(file_path)
+    
+    return file_path
+
+
+@pytest.fixture(scope='session')
+def obstemp_file(tmpdir_factory):
+
+    file_path = str(tmpdir_factory.mktemp('aux').join(
+                        'obstemp.dat'))
+    
+    workflow.utils.get_resources.get_obstemp_file(file_path=file_path)
+    
+    assert os.path.exists(file_path)
+    
+    return file_path
+
+
+@pytest.fixture(scope='session')
+def pkg_wc_cat():
+
+    pkg_file_path = str(pathlib.Path(workflow.__path__[0]) / 'stage5' / 'aux' /
+                        'WC_CatalogueTemplate.fits')
+    
+    assert os.path.exists(pkg_file_path)
+    
+    return pkg_file_path
 
 
 @pytest.fixture(scope='session')
@@ -74,13 +113,6 @@ def pkg_ifu_driver_template():
     return pkg_file_path
 
 
-def test_fitscheck_pkg_ifu_driver_template(pkg_ifu_driver_template):
-
-    returncode = subprocess.call(['fitscheck', pkg_ifu_driver_template])
-    
-    assert returncode == 0
-
-
 @pytest.fixture(scope='session')
 def pkg_ifu_driver_cat():
 
@@ -92,11 +124,21 @@ def pkg_ifu_driver_cat():
     return pkg_file_path
 
 
-def test_fitscheck_pkg_ifu_driver_cat(pkg_ifu_driver_cat):
-
-    returncode = subprocess.call(['fitscheck', pkg_ifu_driver_cat])
+@pytest.fixture(scope='session')
+def pkg_t_xml_files():
     
-    assert returncode == 0
+    xml_files_pattern = str(pathlib.Path(workflow.__path__[0]) / 'stage3' /
+                            'input' / '*-t.xml')
+    
+    xml_filename_list = glob.glob(xml_files_pattern)
+    xml_filename_list.sort()
+
+    assert len(xml_filename_list) > 0
+    
+    for xml_filename in xml_filename_list:
+        assert os.path.exists(xml_filename)
+    
+    return xml_filename_list
 
 
 @pytest.fixture(scope='session')
@@ -104,6 +146,112 @@ def pkg_tgc_xml_files():
     
     xml_files_pattern = str(pathlib.Path(workflow.__path__[0]) / 'stage4' /
                             'input' / '*-tgc.xml')
+    
+    xml_filename_list = glob.glob(xml_files_pattern)
+    xml_filename_list.sort()
+
+    assert len(xml_filename_list) > 0
+    
+    for xml_filename in xml_filename_list:
+        assert os.path.exists(xml_filename)
+    
+    return xml_filename_list
+
+
+@pytest.fixture(scope='session')
+def pkg_tgcs_xml_files():
+    
+    xml_files_pattern = str(pathlib.Path(workflow.__path__[0]) / 'stage5' /
+                            'input' / '*-tgcs.xml')
+    
+    xml_filename_list = glob.glob(xml_files_pattern)
+    xml_filename_list.sort()
+
+    assert len(xml_filename_list) > 0
+    
+    for xml_filename in xml_filename_list:
+        assert os.path.exists(xml_filename)
+    
+    return xml_filename_list
+
+
+@pytest.fixture(scope='session')
+def pkg_ifu_cat_from_xmls():
+
+    pkg_file_path = str(pathlib.Path(workflow.__path__[0]) / 'stage6' /
+                        'input' / 'WC_2020A1-ifu_from_xmls.fits')
+
+    assert os.path.exists(pkg_file_path)
+    
+    return pkg_file_path
+
+
+@pytest.fixture(scope='session')
+def pkg_ifu_cat():
+
+    pkg_file_path = str(pathlib.Path(workflow.__path__[0]) / 'stage7' /
+                        'input' / 'WC_2020A1-ifu.fits')
+
+    assert os.path.exists(pkg_file_path)
+    
+    return pkg_file_path
+
+
+@pytest.fixture(scope='session')
+def pkg_mos_cat():
+
+    pkg_file_path = str(pathlib.Path(workflow.__path__[0]) / 'stage7' /
+                        'input' / 'WC_2020A1-mos.fits')
+
+    assert os.path.exists(pkg_file_path)
+    
+    return pkg_file_path
+
+
+@pytest.fixture(scope='session')
+def pkg_combo_cat():
+
+    pkg_file_path = str(pathlib.Path(workflow.__path__[0]) / 'stage8' /
+                        'input' / 'WC_2020A1.fits')
+
+    assert os.path.exists(pkg_file_path)
+    
+    return pkg_file_path
+
+
+@pytest.fixture(scope='session')
+def pkg_wasp_cat():
+
+    pkg_file_path = str(pathlib.Path(workflow.__path__[0]) / 'stage9' /
+                        'input' / 'WC_2020A1.fits')
+
+    assert os.path.exists(pkg_file_path)
+    
+    return pkg_file_path
+
+
+@pytest.fixture(scope='session')
+def pkg_copy_tgcs_xml_files():
+    
+    xml_files_pattern = str(pathlib.Path(workflow.__path__[0]) / 'stage9' /
+                            'input' / '*-tgcs.xml')
+    
+    xml_filename_list = glob.glob(xml_files_pattern)
+    xml_filename_list.sort()
+
+    assert len(xml_filename_list) > 0
+    
+    for xml_filename in xml_filename_list:
+        assert os.path.exists(xml_filename)
+    
+    return xml_filename_list
+
+
+@pytest.fixture(scope='session')
+def pkg_wasp_xml_files():
+    
+    xml_files_pattern = str(pathlib.Path(workflow.__path__[0]) / 'stage10' /
+                            'input' / '*.xml')
     
     xml_filename_list = glob.glob(xml_files_pattern)
     xml_filename_list.sort()
