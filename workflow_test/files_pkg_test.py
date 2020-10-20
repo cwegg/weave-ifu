@@ -119,6 +119,20 @@ def test_fitscheck_pkg_wasp_cat(pkg_wasp_cat):
     assert returncode == 0
 
 
+def test_cnames_pkg_wasp_cat(pkg_wasp_cat):
+
+    num_empty_cnames = 0
+    
+    with fits.open(pkg_wasp_cat) as hdu_list:
+        
+        for cname in hdu_list[1].data['CNAME']:
+        
+            if len(cname) == 0:
+                num_empty_cnames += 1
+    
+    assert num_empty_cnames == 0
+
+
 def test_pkg_copy_tgcs_xml_files(pkg_copy_tgcs_xml_files):
 
     # We simply pass, as the existence of the files is checked in the fixture
