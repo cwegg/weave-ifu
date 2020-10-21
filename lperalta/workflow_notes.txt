@@ -2,7 +2,7 @@
 
 cd stage1/
 
-./create_ifu_driver_template.py --in aux/Master_CatalogueTemplate.fits
+./create_ifu_driver_template.py
 ./_create_ifu_driver_cat_example.py
 ./_create_ifu_driver_cat_cheating.py
 ./check_ifu_driver_cat.py output/WC_2020A1-ifu_driver_cat.fits
