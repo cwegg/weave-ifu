@@ -110,7 +110,8 @@ stage5/create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits output/WC_2020A1-*-t
 Stage 6: Improving the IFU FITS catalogue (optional, but recommended)
 ---------------------------------------------------------------------
 
-**TBW**
+In the most simple case (although it is not recommented at all), you can simply
+copy the catalogue of the previous step:
 
 ```
 cp output/WC_2020A1-ifu_from_xmls.fits output/WC_2020A1-ifu.fits
@@ -126,7 +127,8 @@ stage7/create_combo_fits_cat.py stage7/input/WC_2020A1-mos.fits output/WC_2020A1
 Stage 8: Submission to WASP of the combo FITS catalogue
 -------------------------------------------------------
 
-**TBW**
+This step is performed via the WEAVE Automated Submission Platform (WASP,
+http://wasp.ast.cam.ac.uk/ ).
 
 Stage 9: Finishing the XML files
 --------------------------------
