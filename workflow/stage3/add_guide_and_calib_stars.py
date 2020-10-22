@@ -27,7 +27,7 @@ from workflow.utils.classes import OBXML
 
 def add_guide_and_calib_stars(
         xml_file_list, output_dir, lifu_num_guide_stars_request=1,
-        mifu_num_guide_stars_request=8, mifu_num_central_guide_stars=1,
+        mifu_num_guide_stars_request=None, mifu_num_central_guide_stars=1,
         mifu_min_guide_cut=0.9, mifu_max_guide_cut=1.0,
         num_calib_stars_request=2, num_central_calib_stars=0,
         min_calib_cut=0.2, max_calib_cut=0.4, overwrite=False):
@@ -149,7 +149,7 @@ if __name__ == '__main__':
                         help="""maximum number of LIFU guide stars in the
                         output; None means no limit""")
 
-    parser.add_argument('--mifu_num_guide_stars_request', default=8,
+    parser.add_argument('--mifu_num_guide_stars_request', default='None',
                         help="""maximum number of mIFU guide stars in the
                         output; None means no limit""")
 

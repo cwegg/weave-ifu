@@ -551,6 +551,14 @@ class _AuxStars:
                         len(self.selected_table), self.star_type,
                         self.ra, self.dec) +
                     ' PA = {} deg'.format(self.selected_pa))
+            
+            assert len(set(self.selected_table['GAIA_DR'])) == 1
+            
+            gaia_dr_value = str(self.selected_table['GAIA_DR'][0])
+            
+            logging.info(
+                'Notice that GAIA_DR value for the selected stars is {}'.format(
+                    gaia_dr_value))
 
 
     def _fix_ra_for_plotting(self, ra_array):

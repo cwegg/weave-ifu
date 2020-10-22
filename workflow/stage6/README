@@ -1,5 +1,27 @@
 Stage 6
 =======
 
-**Contributors:** 
+**Contributors:** Luis Peralta
+
+Input, auxiliar files and output
+--------------------------------
+
+* **Input:**
+
+  + An IFU FITS catalogue populated with the information available in the XML
+    files created with configure.
+
+* **Output:**
+
+  + A fully-populated IFU FITS catalogue.
+
+
+Software
+--------
+
+* *check_populated_ifu_fits_cat.py*:
+
+  A Python script/function to check a fully-populated FITS catalogue versus a
+  non-populated version. It allows to detect potential undesired changes
+  produced at this stage.
 

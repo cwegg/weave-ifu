@@ -27,25 +27,31 @@ from astropy.io import fits
 from workflow.utils.classes import OBXML
 
 
-def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir, add_sim=False,
-                             clean_non_allocated=False, overwrite=False):
+def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir,
+                             clean_non_allocated=True, add_sim=False,
+                             overwrite=False):
     """
-    Combine MOS and IFU catalogues to create a combo catalogue.
+    Fill a set of XML files with the information from a FITS catalogue.
     
     Parameters
     ----------
     fits_cat : str
-        Name of a FITS file containing a combo FITS catalogue.
+        Name of a FITS file containing a FITS catalogue.
     xml_files : list of str
         A list of strings with the filenames of the XML files.
     output_dir : str
         Name of the directory which will contain the output XML files.
-    add_sim : bool, optional
-        Add simulation elements to the targets.
     clean_non_allocated: bool, optional
         Remove non-allocated targets in the output files.
+    add_sim : bool, optional
+        Add simulation elements to the targets.
     overwrite : bool, optional
         Overwrite the output XML files.
+
+    Returns
+    -------
+    output_file_list : list of str
+        A list with the output XML files.
     """
         
     # Open the combo FITS catalogue and read the needed data
@@ -58,6 +64,10 @@ def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir, add_sim=False,
             sim_data = hdu_list[2].data
         else:
             sim_data = None
+    
+    # Create a list for saving the names of the output files
+    
+    output_file_list = []
 
     # For each XML file
 
@@ -76,6 +86,10 @@ def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir, add_sim=False,
         output_basename = '{}.xml'.format(output_basename_wo_ext)
         
         output_path = os.path.join(output_dir, output_basename)
+        
+        # Save the name of the output file
+        
+        output_file_list.append(output_path)
         
         # If the output file exists, remove or skip it
 
@@ -101,6 +115,8 @@ def fill_xmls_with_fits_info(fits_cat, xml_files, output_dir, add_sim=False,
         # Write the OB XML to a file
         
         ob_xml.write_xml(output_path, replace_tabs=True)
+    
+    return output_file_list
 
 
 if __name__ == '__main__':

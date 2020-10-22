@@ -19,7 +19,6 @@
 
 
 import os
-import pathlib
 import subprocess
 
 import pytest
@@ -27,90 +26,28 @@ import pytest
 import workflow
 
 
-@pytest.fixture(scope='session')
-def aladin_jar(tmpdir_factory):
-
-    file_path = str(tmpdir_factory.mktemp('aux').join('Aladin.jar'))
-    
-    workflow.utils.get_resources.get_aladin_jar(file_path=file_path)
-    
-    return str(file_path)
-
-
-def test_download_aladin(aladin_jar):
-
-    assert os.path.exists(aladin_jar)
-
-
-@pytest.fixture(scope='session')
-def master_cat(tmpdir_factory):
-
-    file_path = str(tmpdir_factory.mktemp('aux').join(
-                        'Master_CatalogueTemplate.fits'))
-    
-    workflow.utils.get_resources.get_master_cat(file_path=file_path)
-    
-    return str(file_path)
-
-
-def test_download_master_cat(master_cat):
-
-    assert os.path.exists(master_cat)
-
-
-def test_check_master_cat(master_cat):
-
-    returncode = subprocess.call(['fitscheck', master_cat])
-    
-    assert returncode == 0
-
-
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def ifu_driver_template(master_cat, tmpdir_factory):
 
     file_path = str(tmpdir_factory.mktemp('aux').join(
                         'ifu_driver_template.fits'))
     
     workflow.stage1.create_ifu_driver_template(master_cat, file_path)
+
+    assert os.path.exists(file_path)
     
     return file_path
 
 
-def test_create_ifu_driver_template(ifu_driver_template):
-
-    assert os.path.exists(ifu_driver_template)
-
-
-def test_check_ifu_driver_template(ifu_driver_template):
+def test_fitscheck_ifu_driver_template(ifu_driver_template):
 
     returncode = subprocess.call(['fitscheck', ifu_driver_template])
     
     assert returncode == 0
 
 
-@pytest.fixture(scope='session')
-def pkg_ifu_driver_template():
-
-    pkg_file_path = str(pathlib.Path(workflow.__path__[0]) / 'stage1' / 'aux' /
-                        'ifu_driver_template.fits')
-    
-    return pkg_file_path
-
-
-def test_pkg_ifu_driver_template(pkg_ifu_driver_template):
-
-    assert os.path.exists(pkg_ifu_driver_template)
-
-
-def test_check_pkg_ifu_driver_template(pkg_ifu_driver_template):
-
-    returncode = subprocess.call(['fitscheck', pkg_ifu_driver_template])
-    
-    assert returncode == 0
-
-
-def test_compare_ifu_driver_template(ifu_driver_template,
-                                     pkg_ifu_driver_template):
+def test_fitsdiff_ifu_driver_template(ifu_driver_template,
+                                      pkg_ifu_driver_template):
 
     returncode = subprocess.call(
                      ['fitsdiff', '-k', 'CHECKSUM,DATASUM',
@@ -119,7 +56,7 @@ def test_compare_ifu_driver_template(ifu_driver_template,
     assert returncode == 0
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def ifu_driver_cat(ifu_driver_template, tmpdir_factory):
 
     file_path = str(tmpdir_factory.mktemp('output').join(
@@ -135,43 +72,19 @@ def ifu_driver_cat(ifu_driver_template, tmpdir_factory):
                                           report_verbosity=report_verbosity,
                                           cc_report=cc_report)
     
+    assert os.path.exists(file_path)
+    
     return file_path
 
 
-def test_check_ifu_driver_cat(ifu_driver_cat):
+def test_fitscheck_ifu_driver_cat(ifu_driver_cat):
 
     returncode = subprocess.call(['fitscheck', ifu_driver_cat])
     
     assert returncode == 0
 
 
-def test_create_ifu_driver_cat(ifu_driver_cat):
-
-    assert os.path.exists(ifu_driver_cat)
-
-
-@pytest.fixture(scope='session')
-def pkg_ifu_driver_cat():
-
-    pkg_file_path = str(pathlib.Path(workflow.__path__[0]) / 'stage2' /
-                        'input' / 'WC_2020A1-ifu_driver_cat.fits')
-    
-    return pkg_file_path
-
-
-def test_pkg_ifu_driver_cat(pkg_ifu_driver_cat):
-
-    assert os.path.exists(pkg_ifu_driver_cat)
-
-
-def test_check_pkg_ifu_driver_cat(pkg_ifu_driver_cat):
-
-    returncode = subprocess.call(['fitscheck', pkg_ifu_driver_cat])
-    
-    assert returncode == 0
-
-
-def test_compare_ifu_driver_cat(ifu_driver_cat, pkg_ifu_driver_cat):
+def test_fitsdiff_ifu_driver_cat(ifu_driver_cat, pkg_ifu_driver_cat):
 
     returncode = subprocess.call(
                      ['fitsdiff', '-k', 'CHECKSUM,DATASUM,DATETIME',
@@ -180,41 +93,36 @@ def test_compare_ifu_driver_cat(ifu_driver_cat, pkg_ifu_driver_cat):
     assert returncode == 0
 
 
-@pytest.fixture(scope='session')
-def ifu_driver_cat_cheating(ifu_driver_template, tmpdir_factory):
+@pytest.fixture(scope='module')
+def ifu_driver_cat_cheating(ifu_driver_template, pkg_tgc_xml_files,
+                            tmpdir_factory):
 
     file_path = str(tmpdir_factory.mktemp('output').join(
                         'ifu_driver_cat-cheating.fits'))
-    
-    xml_files_pattern = str(pathlib.Path(workflow.__path__[0]) / 'stage4' /
-                            'input' / '*.xml')
 
-    data_dict = workflow.stage1._get_data_dict_for_cheating(xml_files_pattern)
+    data_dict = workflow.stage1._get_data_dict_for_cheating(pkg_tgc_xml_files)
 
     trimester, author, report_verbosity, cc_report = \
-        workflow.stage1._get_keywords_info_for_cheating(xml_files_pattern)
+        workflow.stage1._get_keywords_info_for_cheating(pkg_tgc_xml_files)
     
     workflow.stage1.create_ifu_driver_cat(ifu_driver_template, data_dict,
                                           file_path, trimester, author,
                                           report_verbosity=report_verbosity,
                                           cc_report=cc_report)
     
+    assert os.path.exists(file_path)
+    
     return file_path
 
 
-def test_create_ifu_driver_cat_cheating(ifu_driver_cat_cheating):
-
-    assert os.path.exists(ifu_driver_cat_cheating)
-
-
-def test_check_ifu_driver_cat_cheating(ifu_driver_cat_cheating):
+def test_fitscheck_ifu_driver_cat_cheating(ifu_driver_cat_cheating):
 
     returncode = subprocess.call(['fitscheck', ifu_driver_cat_cheating])
     
     assert returncode == 0
 
 
-def test_compare_ifu_driver_cat_cheating(ifu_driver_cat_cheating,
+def test_fitsdiff_ifu_driver_cat_cheating(ifu_driver_cat_cheating,
                                          pkg_ifu_driver_cat):
 
     returncode = subprocess.call(

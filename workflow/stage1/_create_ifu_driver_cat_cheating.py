@@ -31,10 +31,7 @@ from workflow.utils.get_data_from_xmls import \
 from workflow.utils.get_progtemp_info import get_obsmode_from_progtemp
 
 
-def get_keywords_info(xml_files_pattern):
-    
-    xml_filename_list = glob.glob(xml_files_pattern)
-    xml_filename_list.sort()
+def get_keywords_info(xml_filename_list):
 
     trimester = get_trimester_from_xmls(xml_filename_list)
     author = get_author_from_xmls(xml_filename_list)
@@ -44,10 +41,7 @@ def get_keywords_info(xml_files_pattern):
     return trimester, author, report_verbosity, cc_report
 
 
-def get_data_dict(xml_files_pattern):
-    
-    xml_filename_list = glob.glob(xml_files_pattern)
-    xml_filename_list.sort()
+def get_data_dict(xml_filename_list):
     
     data_dict = get_spa_data_of_target_fibres_from_xmls(xml_filename_list,
                                                         post_configure=False)
@@ -67,9 +61,12 @@ def get_data_dict(xml_files_pattern):
 if __name__ == '__main__':
 
     ############################################################################
-    # Set the filename pattern of the XMLs used for cheating
+    # Set the the list of XML files used for cheating
     
     xml_files_pattern = os.path.join('..', 'stage4', 'input', '*.xml')
+    
+    xml_filename_list = glob.glob(xml_files_pattern)
+    xml_filename_list.sort()
     
     ############################################################################
     # Set the location of the template and the output file and directory
@@ -90,13 +87,13 @@ if __name__ == '__main__':
     # Get the dictionary with the data which will populate the template from the
     # XMLs
     
-    data_dict = get_data_dict(xml_files_pattern)
+    data_dict = get_data_dict(xml_filename_list)
     
     ############################################################################
     # Set the needed information to populate some keywords of the primary header
 
     trimester, author, report_verbosity, cc_report = \
-        get_keywords_info(xml_files_pattern)
+        get_keywords_info(xml_filename_list)
     
     ############################################################################
     # Create the IFU driver catalogue

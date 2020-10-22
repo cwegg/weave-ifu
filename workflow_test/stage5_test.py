@@ -18,7 +18,38 @@
 #
 
 
-def test_stage5():
+import subprocess
+
+import pytest
+
+import workflow
+
+
+@pytest.fixture(scope='module')
+def ifu_cat_from_xmls(pkg_tgcs_xml_files, pkg_wc_cat, tmpdir_factory):
+
+    output_dir = str(tmpdir_factory.mktemp('output'))
+
+    file_path = workflow.stage5.create_ifu_fits_cat(
+        pkg_wc_cat, pkg_tgcs_xml_files,
+        cat_nme1='First Name', cat_nme2='Surname', gaia_dr='2',
+        output_dir=output_dir)
     
-    raise NotImplementedError
+    return file_path
+
+
+def test_fitscheck_ifu_cat_from_xmls(ifu_cat_from_xmls):
+
+    returncode = subprocess.call(['fitscheck', ifu_cat_from_xmls])
+    
+    assert returncode == 0
+
+
+def test_fitsdiff_ifu_cat_from_xmls(ifu_cat_from_xmls, pkg_ifu_cat_from_xmls):
+
+    returncode = subprocess.call(
+                     ['fitsdiff', '-k', 'CHECKSUM,DATASUM,DATETIME',
+                      ifu_cat_from_xmls, pkg_ifu_cat_from_xmls])
+    
+    assert returncode == 0
 

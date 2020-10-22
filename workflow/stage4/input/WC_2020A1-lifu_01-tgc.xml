@@ -308,7 +308,7 @@
         <target cname="WVE_21052828-0509402" targcat="Guides_S4.fits" targclass="STAR" targdec="-5.1611759" targepoch="2015.5" targid="6912012880884858880" targname="guide_12278_269" targparal="0.852" targpmdec="-9.242" targpmra="3.131" targprio="10" targprog="" targra="316.3678468" targsrvy="GUIDES" targuse="G">
           <photometry emag_bp="0.002" emag_g="" emag_gg="0.001" emag_i="" emag_r="" emag_rp="0.002" mag_bp="15.536" mag_g="" mag_gg="15.164" mag_i="" mag_r="" mag_rp="14.636"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.71060356792" targepoch="" targid="PSZ1_125A" targname="PSZ1_125A" targparal="" targpmdec="" targpmra="" targprio="10.0" targprog="LR" targra="316.369609537" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.71060356792" targepoch="2015.5" targid="PSZ1_125A" targname="PSZ1_125A" targparal="" targpmdec="" targpmra="" targprio="10.0" targprog="LR" targra="316.369609537" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
       </field>

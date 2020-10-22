@@ -1,8 +1,18 @@
+############################### STAGE -1 ###############################
+
+http://casu.ast.cam.ac.uk/weave/
+
+Download the file WC_CatalogueTemplate.fits to update its version at stage5/aux
+
+./create_empty_mos_cat.py
+
+cd ../workflow
+
 ############################### STAGE 1 ################################
 
 cd stage1/
 
-./create_ifu_driver_template.py --in aux/Master_CatalogueTemplate.fits
+./create_ifu_driver_template.py
 ./_create_ifu_driver_cat_example.py
 ./_create_ifu_driver_cat_cheating.py
 ./check_ifu_driver_cat.py output/WC_2020A1-ifu_driver_cat.fits
@@ -18,7 +28,7 @@ cd ../stage2/
 
 cd ../stage3/
 
-./add_guide_and_calib_stars.py --mifu_num_guide_stars_request None input/WC_2020A1-*-t.xml
+./add_guide_and_calib_stars.py input/WC_2020A1-*-t.xml
 
 ############################### STAGE 4 ################################
 
@@ -48,21 +58,34 @@ xmllint --c14n output/WC_2020A1-mifu_02-tgcs-orig.xml | xmllint --format --encod
 
 cd ../stage5/
 
-./create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits input/WC_2020A1-*-tgcs.xml --out output/WC_2020A1-ifu_from_xmls.fits --cat_nme1="First Name" --cat_nme2="Surname"
+./create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits input/WC_2020A1-*-tgcs.xml --cat_nme1 "First Name" --cat_nme2 "Surname" --gaia_dr 2
 
 ############################### STAGE 6 ################################
+
+cd ../stage6/
+
+mkdir output
+cp input/WC_2020A1-ifu_from_xmls.fits output/WC_2020A1-ifu.fits
 
 ############################### STAGE 7 ################################
 
 cd ../stage7/
 
-./create_combo_fits_cat.py input/WC_2020A1-mos.fits input/WC_2020A1-ifu.fits --out output/WC_2020A1.fits
+./create_combo_fits_cat.py input/WC_2020A1-mos.fits input/WC_2020A1-ifu.fits
 
 ############################### STAGE 8 ################################
+
+http://wasp.ast.cam.ac.uk/
 
 ############################### STAGE 9 ################################
 
 cd ../stage9/
 
+rm input/WC_2020A1-*-tgcs.xml
+cp ../stage5/input/WC_2020A1-*-tgcs.xml input/
+
 ./fill_xmls_with_fits_info.py input/WC_2020A1.fits input/WC_2020A1-*-tgcs.xml
+
+sed -i 's/binning_X="%%%"/binning_X="1"/g' output/WC_2020A1-*.xml
+sed -i 's/"%%%"/""/g' output/WC_2020A1-*.xml
 
