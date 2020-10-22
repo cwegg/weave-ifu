@@ -90,9 +90,9 @@ def create_combo_fits_cat(mos_cat, ifu_cat, output_dir='output',
         if ((mos_cat_basename.endswith('-mos.fits') or
              mos_cat_basename.endswith('-ifu.fits')) and
             (ifu_cat_basename.endswith('-mos.fits') or
-             ifu_cat_basename.endswith('-ifu.fits')):
+             ifu_cat_basename.endswith('-ifu.fits'))):
             
-            prefix = mos_cat[:-9]
+            prefix = mos_cat_basename[:-9]
             
             combo_fits_cat_filename = os.path.join(
                 output_dir, '{}.fits'.format(prefix))
