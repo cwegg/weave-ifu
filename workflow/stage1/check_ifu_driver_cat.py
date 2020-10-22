@@ -724,7 +724,7 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True,
         A obstemp.dat file with the definition of OBSTEMP.
 
     Returns
-    ----------
+    -------
     result : bool
         True if the file passes all the checks, otherwise False.
     """
