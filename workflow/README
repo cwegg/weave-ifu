@@ -122,7 +122,7 @@ to be added later.
 Stage 6: Improving the IFU FITS catalogue (optional, but recommended)
 ---------------------------------------------------------------------
 
-**Contributors:** Jesús Falcón-Barroso
+**Contributors:** Luis Peralta
 
 This code collection takes the stage 5 FITS catalogue and populates
 all relevant missing columns. These fall into 3 categories:

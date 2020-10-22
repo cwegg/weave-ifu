@@ -59,3 +59,9 @@ def test_fitsdiff_ifu_cat(ifu_cat, pkg_ifu_cat):
     
     assert returncode == 0
 
+
+def test_check_populated_ifu_fits_cat(ifu_cat, pkg_ifu_cat_from_xmls):
+    
+    assert workflow.stage6.check_populated_ifu_fits_cat(pkg_ifu_cat_from_xmls,
+                                                        ifu_cat)
+
