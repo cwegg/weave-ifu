@@ -370,10 +370,19 @@ def _check_gaia_dec(hdu):
 
 def _check_gaia_epoch(hdu):
 
-    result = _check_in_tl_range(hdu, 'GAIA_EPOCH')
+    result = True
 
-    if result is False:
+    null_result = _check_non_null_value(hdu.data['GAIA_EPOCH'])
+
+    if null_result is False:
+        logging.error('GAIA_EPOCH values contain NaN')
+        result = False
+
+    range_result = _check_in_tl_range(hdu, 'GAIA_EPOCH')
+
+    if range_result is False:
         logging.error('GAIA_EPOCH values out of range')
+        result = False
 
     return result
 
@@ -715,7 +724,7 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True,
         A obstemp.dat file with the definition of OBSTEMP.
 
     Returns
-    ----------
+    -------
     result : bool
         True if the file passes all the checks, otherwise False.
     """

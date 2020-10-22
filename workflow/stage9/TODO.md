@@ -1,4 +1,7 @@
-- To develop the code to update the XML files.
-- To consider the option of adding simulation elements (if requested and present
-  in the input FITS catalogue).
+- To modify the XML template to contain binning_X="1" as default value.
+  Otherwise, decide an alternative to assign this value. By now, this has to be
+  fixed by hand at this stage (c.f. stage 2).
+- To develop an OB linking code. In case of no linking, we can simply replace
+  "%%%" in the XML files by "". It is worth noting that this should be done once
+  the value of binning_X has been assigned.
 

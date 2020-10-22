@@ -133,16 +133,16 @@ def get_data_dict():
            -4.2647, -4.4497, -4.5789]
     
     data_dict['GAIA_EPOCH'] = \
-        [np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan]
+        [2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+           2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+         2015.5, 2015.5, 2015.5, 2015.5, 2015.5,
+           2015.5, 2015.5, 2015.5]
     
     data_dict['GAIA_PMRA'] = \
         [np.nan, np.nan, np.nan, np.nan, np.nan,

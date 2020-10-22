@@ -64,24 +64,24 @@ Stage 3: Adding guide and calibration stars to the XML files
 ------------------------------------------------------------
 
 ```
-stage3/add_guide_and_calib_stars.py --mifu_num_guide_stars_request None output/WC_2020A1-*-t.xml
+stage3/add_guide_and_calib_stars.py output/WC_2020A1-*-t.xml
 ```
 
 Stage 4: Configuring the XML files
 ----------------------------------
 
 ```
-lifu_configure --epoch 2020 -i output/WC_2020A1-lifu_01-tgc.xml -o output/WC_2020A1-lifu_01-tgcs-tmp.xml
-dither -i output/WC_2020A1-lifu_01-tgcs-tmp.xml -o output/WC_2020A1-lifu_01-tgcs.xml
+lifu_configure --epoch 2020 -i output/WC_2020A1-lifu_01-tgc.xml -o output/WC_2020A1-lifu_01-tgcs-tmp-orig.xml
+dither -i output/WC_2020A1-lifu_01-tgcs-tmp-orig.xml -o output/WC_2020A1-lifu_01-tgcs-orig.xml
 
-lifu_configure --epoch 2020 -i output/WC_2020A1-lifu_02-tgc.xml -o output/WC_2020A1-lifu_02-tgcs-tmp.xml
-dither -i output/WC_2020A1-lifu_02-tgcs-tmp.xml -o output/WC_2020A1-lifu_02-tgcs.xml
+lifu_configure --epoch 2020 -i output/WC_2020A1-lifu_02-tgc.xml -o output/WC_2020A1-lifu_02-tgcs-tmp-orig.xml
+dither -i output/WC_2020A1-lifu_02-tgcs-tmp-orig.xml -o output/WC_2020A1-lifu_02-tgcs-orig.xml
 
-configure --epoch 2020 -f output/WC_2020A1-mifu_01-tgc.xml -o output/WC_2020A1-mifu_01-tgcs-tmp.xml
-dither -i output/WC_2020A1-mifu_01-tgcs-tmp.xml -o output/WC_2020A1-mifu_01-tgcs.xml
+configure --epoch 2020 -f output/WC_2020A1-mifu_01-tgc.xml -o output/WC_2020A1-mifu_01-tgcs-tmp-orig.xml
+dither -i output/WC_2020A1-mifu_01-tgcs-tmp-orig.xml -o output/WC_2020A1-mifu_01-tgcs-orig.xml
 
-configure --epoch 2020 -f output/WC_2020A1-mifu_02-tgc.xml -o output/WC_2020A1-mifu_02-tgcs-tmp.xml
-dither -i output/WC_2020A1-mifu_02-tgcs-tmp.xml -o output/WC_2020A1-mifu_02-tgcs.xml
+configure --epoch 2020 -f output/WC_2020A1-mifu_02-tgc.xml -o output/WC_2020A1-mifu_02-tgcs-tmp-orig.xml
+dither -i output/WC_2020A1-mifu_02-tgcs-tmp-orig.xml -o output/WC_2020A1-mifu_02-tgcs-orig.xml
 ```
 
 ### Extra trick
@@ -100,17 +100,35 @@ xmllint --c14n input.xml | xmllint --format --encode utf-8 --output output.xml -
 Users of Ubuntu 20.04 could be interested in knowing that `xmllint` is available
 in the package `libxml2-utils`.
 
+Therefore, this trick applied to the files of the example followed in this
+tutorial would lead to the following commands:
+
+```
+xmllint --c14n output/WC_2020A1-lifu_01-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-lifu_01-tgcs.xml -
+
+xmllint --c14n output/WC_2020A1-lifu_02-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-lifu_02-tgcs.xml -
+
+xmllint --c14n output/WC_2020A1-mifu_01-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-mifu_01-tgcs.xml -
+
+xmllint --c14n output/WC_2020A1-mifu_02-tgcs-orig.xml | xmllint --format --encode utf-8 --output output/WC_2020A1-mifu_02-tgcs.xml -
+```
+
 Stage 5: Creation the IFU FITS catalogue
 ----------------------------------------
 
+The FITS catalogue template should be downloaded from the WEAVE Operational
+Repository ( http://casu.ast.cam.ac.uk/weave/ ). For this tutorial, we have
+included the template for the WEAVE Clusters survey:
+
 ```
-stage5/create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits output/WC_2020A1-*-tgcs.xml --out output/WC_2020A1-ifu_from_xmls.fits --cat_nme1="First Name" --cat_nme2="Surname"
+stage5/create_ifu_fits_cat.py aux/WC_CatalogueTemplate.fits output/WC_2020A1-*-tgcs.xml --cat_nme1 "First Name" --cat_nme2 "Surname" --gaia_dr 2
 ```
 
 Stage 6: Improving the IFU FITS catalogue (optional, but recommended)
 ---------------------------------------------------------------------
 
-**TBW**
+In the most simple case (although it is not recommented at all), you can simply
+copy the catalogue of the previous step:
 
 ```
 cp output/WC_2020A1-ifu_from_xmls.fits output/WC_2020A1-ifu.fits
@@ -120,13 +138,14 @@ Stage 7: Creation of the combo FITS catalogue
 ---------------------------------------------
 
 ```
-stage7/create_combo_fits_cat.py stage7/input/WC_2020A1-mos.fits output/WC_2020A1-ifu.fits --out output/WC_2020A1.fits
+stage7/create_combo_fits_cat.py stage7/input/WC_2020A1-mos.fits output/WC_2020A1-ifu.fits
 ```
 
 Stage 8: Submission to WASP of the combo FITS catalogue
 -------------------------------------------------------
 
-**TBW**
+This step is performed via the WEAVE Automated Submission Platform (WASP,
+http://wasp.ast.cam.ac.uk/ ).
 
 Stage 9: Finishing the XML files
 --------------------------------

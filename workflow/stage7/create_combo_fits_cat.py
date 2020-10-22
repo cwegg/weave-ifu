@@ -55,7 +55,8 @@ def _get_combo_data_dict(fits_filename1, fits_filename2):
     return combo_data_dict
 
 
-def create_combo_fits_cat(mos_cat, ifu_cat, output_filename, overwrite=False):
+def create_combo_fits_cat(mos_cat, ifu_cat, output_dir='output',
+                          output_filename=None, overwrite=False):
     """
     Combine MOS and IFU catalogues to create a combo catalogue.
     
@@ -65,11 +66,47 @@ def create_combo_fits_cat(mos_cat, ifu_cat, output_filename, overwrite=False):
         Name of a FITS file containing a MOS catalogue.
     ifu_cat : list of str
         Name of a FITS file containing a IFU catalogue.
-    output_filename : str
-        The name of the output file which will be created.
+    output_dir : str, optional
+        The name of the directory for the output combo catalogue.
+    output_filename : str, optional
+        The name of the output combo catalogue (outdir value will be ignored if
+        provided).
     overwrite : bool, optional
         Overwrite the output FITS file.
+
+    Returns
+    -------
+    combo_fits_cat_filename : str
+        The name of the output combo FITS catalogue.
     """
+    
+    # Set the name of the output file
+    
+    if output_filename is None:
+        
+        mos_cat_basename = os.path.basename(mos_cat)
+        ifu_cat_basename = os.path.basename(ifu_cat)
+    
+        if ((mos_cat_basename.endswith('-mos.fits') or
+             mos_cat_basename.endswith('-ifu.fits')) and
+            (ifu_cat_basename.endswith('-mos.fits') or
+             ifu_cat_basename.endswith('-ifu.fits'))):
+            
+            prefix = mos_cat_basename[:-9]
+            
+            combo_fits_cat_filename = os.path.join(
+                output_dir, '{}.fits'.format(prefix))
+        
+        else:
+        
+            combo_fits_cat_filename = os.path.join(
+                output_dir, 'combo_cat.fits')
+    
+    else:
+        
+        combo_fits_cat_filename = output_filename
+    
+    # Check that the headers of both files are equal
     
     equal_headers = check_equal_headers(mos_cat, ifu_cat,
                                         ignore_values=['DATETIME'])
@@ -79,10 +116,15 @@ def create_combo_fits_cat(mos_cat, ifu_cat, output_filename, overwrite=False):
         
         assert equal_headers
     
+    # Create the combo FITS catalogue
+    
     combo_data_dict = _get_combo_data_dict(mos_cat, ifu_cat)
     
-    populate_fits_table_template(mos_cat, combo_data_dict, output_filename,
+    populate_fits_table_template(mos_cat, combo_data_dict,
+                                 combo_fits_cat_filename,
                                  update_datetime=True, overwrite=overwrite)
+    
+    return combo_fits_cat_filename
 
 
 if __name__ == '__main__':
@@ -95,10 +137,14 @@ if __name__ == '__main__':
     parser.add_argument('ifu_cat',
                         help="""a FITS file containing a IFU catalogue""")
 
-    parser.add_argument('--out', dest='output_filename',
-                        default='output/combo_cat.fits',
-                        help="""name for the output file which will contain the
+    parser.add_argument('--outdir', dest='output_dir', default='output',
+                        help="""name for the directory which will contain the
                         combo catalogue""")
+
+    parser.add_argument('--out', dest='output_filename', default=None,
+                        help="""name for the output file which will contain the
+                        combo catalogue (outdir value will be ignored if
+                        provided)""")
 
     parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                         help='overwrite the output file')
@@ -111,10 +157,17 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=getattr(logging, args.log_level.upper()))
 
-    if not os.path.exists(os.path.dirname(args.output_filename)):
+    if args.output_filename is None:
+        dirname = args.output_dir
+    else:
+        dirname = os.path.dirname(args.output_filename)
+    
+    if not os.path.exists(dirname):
         logging.info('Creating the output directory')
-        os.mkdir(os.path.dirname(args.output_filename))
+        os.mkdir(dirname)
 
-    create_combo_fits_cat(args.mos_cat, args.ifu_cat, args.output_filename,
+    create_combo_fits_cat(args.mos_cat, args.ifu_cat,
+                          output_dir=args.output_dir,
+                          output_filename=args.output_filename,
                           overwrite=args.overwrite)
 

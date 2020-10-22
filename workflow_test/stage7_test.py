@@ -18,7 +18,36 @@
 #
 
 
-def test_stage7():
+import subprocess
+
+import pytest
+
+import workflow
+
+
+@pytest.fixture(scope='module')
+def combo_cat(pkg_mos_cat, pkg_ifu_cat, tmpdir_factory):
+
+    output_dir = str(tmpdir_factory.mktemp('output'))
+
+    file_path = workflow.stage7.create_combo_fits_cat(
+        pkg_mos_cat, pkg_ifu_cat, output_dir=output_dir)
     
-    raise NotImplementedError
+    return file_path
+
+
+def test_fitscheck_combo_cat(combo_cat):
+
+    returncode = subprocess.call(['fitscheck', combo_cat])
+    
+    assert returncode == 0
+
+
+def test_fitsdiff_combo_cat(combo_cat, pkg_combo_cat):
+
+    returncode = subprocess.call(
+                     ['fitsdiff', '-k', 'CHECKSUM,DATASUM,DATETIME',
+                      combo_cat, pkg_combo_cat])
+    
+    assert returncode == 0
 
