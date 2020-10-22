@@ -1,3 +1,13 @@
+############################### STAGE -1 ###############################
+
+http://casu.ast.cam.ac.uk/weave/
+
+Download the file WC_CatalogueTemplate.fits to update its version at stage5/aux
+
+./create_empty_mos_cat.py
+
+cd ../workflow
+
 ############################### STAGE 1 ################################
 
 cd stage1/
@@ -65,9 +75,17 @@ cd ../stage7/
 
 ############################### STAGE 8 ################################
 
+http://wasp.ast.cam.ac.uk/
+
 ############################### STAGE 9 ################################
 
 cd ../stage9/
 
+rm input/WC_2020A1-*-tgcs.xml
+cp ../stage5/input/WC_2020A1-*-tgcs.xml input/
+
 ./fill_xmls_with_fits_info.py input/WC_2020A1.fits input/WC_2020A1-*-tgcs.xml
+
+sed -i 's/binning_X="%%%"/binning_X="1"/g' output/WC_2020A1-*.xml
+sed -i 's/"%%%"/""/g' output/WC_2020A1-*.xml
 
