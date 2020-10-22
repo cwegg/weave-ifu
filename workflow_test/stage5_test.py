@@ -32,7 +32,8 @@ def ifu_cat_from_xmls(pkg_tgcs_xml_files, pkg_wc_cat, tmpdir_factory):
 
     file_path = workflow.stage5.create_ifu_fits_cat(
         pkg_wc_cat, pkg_tgcs_xml_files,
-        cat_nme1='First Name', cat_nme2='Surname', output_dir=output_dir)
+        cat_nme1='First Name', cat_nme2='Surname', gaia_dr='2',
+        output_dir=output_dir)
     
     return file_path
 
