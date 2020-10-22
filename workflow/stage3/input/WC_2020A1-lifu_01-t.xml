@@ -305,7 +305,7 @@
     -->
     <fields>
       <field Dec_d="%%%" RA_d="%%%" order="3">
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.71060356792" targepoch="" targid="PSZ1_125A" targname="PSZ1_125A" targparal="" targpmdec="" targpmra="" targprio="10.0" targprog="LR" targra="316.369609537" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.71060356792" targepoch="2015.5" targid="PSZ1_125A" targname="PSZ1_125A" targparal="" targpmdec="" targpmra="" targprio="10.0" targprog="LR" targra="316.369609537" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
       </field>
