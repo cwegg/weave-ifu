@@ -9,6 +9,7 @@ from . import stage6
 from . import stage7
 # Stage 8 is WASP
 from . import stage9
+from . import stage10
 
 
 from .stage1 import create_ifu_driver_cat as stage1_main
@@ -22,4 +23,5 @@ from .stage6 import check_populated_ifu_fits_cat as stage6_check
 from .stage7 import create_combo_fits_cat as stage7_main
 # Stage 8 is WASP
 from .stage9 import fill_xmls_with_fits_info as stage9_main
+from .stage10 import plot_data_from_xml as stage10_plot
 

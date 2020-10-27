@@ -1,7 +1,7 @@
 Stage 10
 ========
 
-**Contributors:** David Murphy, Clare Worley
+**Contributors:** David Murphy, Clare Worley, Luis Peralta
 
 Input and output
 ----------------
@@ -20,4 +20,12 @@ Software
 
 The interaction with this software is made via the WEAVE Automated Submission
 Platform (WASP, http://wasp.ast.cam.ac.uk/ ).
+
+Before submitting, it is highly recommended the human inspection and validation
+of the contents of the files. For that purpose, the following software could be
+useful:
+
+* *plot_data_from_xml.py*:
+
+  A Python script/function to plot the data contained in a set of IFU XML files.
 
