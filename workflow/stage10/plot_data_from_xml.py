@@ -187,13 +187,6 @@ class _IFUPlot():
 
         aux_ax.remove()
 
-    def _plot_empty_fig(self):
-
-        fig, ax_vect = self._get_setted_fig_ax_vect()
-
-        self.pdf.savefig(fig)
-        plt.close(fig)
-
     def _assign_color_pointings(self, i, legend=False):
 
         color_list = ['r', 'g', 'b', 'orange', 'brown', 'pink', 'purple']
