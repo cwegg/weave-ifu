@@ -1,2 +1,3 @@
 from .check_populated_ifu_fits_cat import check_populated_ifu_fits_cat
+from .photometry_from_PS1 import photometry_from_PS1
 
