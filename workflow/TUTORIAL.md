@@ -154,6 +154,21 @@ Stage 9: Finishing the XML files
 stage9/fill_xmls_with_fits_info.py output/WC_2020A1.fits output/WC_2020A1-*-tgcs.xml
 ```
 
+Stage 10: Submission to WASP of the XML files
+---------------------------------------------
+
+This step is performed via the WEAVE Automated Submission Platform (WASP,
+http://wasp.ast.cam.ac.uk/ ).
+
+Make sure that your submissions are OK: it is your responsability.
+
+For that goal, you can find useful the figures generated with the following
+script:
+
+```
+stage10/plot_data_from_xml.py output/WC_2020A1-?ifu_??.xml
+```
+
 Extra tips
 ----------
 
