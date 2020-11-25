@@ -89,3 +89,9 @@ cp ../stage5/input/WC_2020A1-*-tgcs.xml input/
 sed -i 's/binning_X="%%%"/binning_X="1"/g' output/WC_2020A1-*.xml
 sed -i 's/"%%%"/""/g' output/WC_2020A1-*.xml
 
+############################### STAGE 10 ###############################
+
+cd ../stage10/
+
+./plot_data_from_xml.py input/WC_2020A1-?ifu_??.xml
+
