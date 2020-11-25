@@ -24,9 +24,13 @@ import xml.dom.minidom as _minidom
 import numpy as _np
 
 
-def _get_lookup(post_configure=True):
+def _get_lookup(namespace='fits', post_configure=True):
+
+    assert namespace in ['fits', 'xml']
 
     lookup = {}
+
+    # Set the dictionary for the 'fits' namespace
 
     lookup['target:cname'] = 'CNAME'
     lookup['target:targsrvy'] = 'TARGSRVY'
@@ -71,6 +75,40 @@ def _get_lookup(post_configure=True):
     lookup['photometry:emag_rp'] = 'GAIA_MAG_RP_ERR'
 
     lookup.pop('')
+    
+    # Use the dictionary for 'fits' namespace to set dictionary for 'xml'
+    
+    if namespace == 'xml':
+        
+        # Remove some keys from the dictionary
+        
+        keys_to_remove_for_xml = [
+            'observation:progtemp', 'observation:obstemp',
+            'dithering:apply_dither'
+        ]
+        
+        for key in keys_to_remove_for_xml:
+            lookup.pop(key)
+        
+        # Set the values of the dictionary from the attrib name
+        
+        for key in lookup.keys():
+            lookup[key] = key.split(':')[1]
+        
+        # Set additional keys
+        
+        lookup['target:automatic'] = 'automatic'
+        lookup['target:configid'] = 'configid'
+        lookup['target:fibreid'] = 'fibreid'
+        lookup['target:targx'] = 'targx'
+        lookup['target:targy'] = 'targy'
+        
+        lookup['simulation:filterid'] = 'sim_filterid'
+        lookup['simulation:fwhm'] = 'sim_fwhm'
+        lookup['simulation:mag'] = 'sim_mag'
+        lookup['simulation:redshift'] = 'sim_redshift'
+        lookup['simulation:template'] = 'sim_template'
+        lookup['simulation:velocity'] = 'sim_velocity'
 
     return lookup
 
@@ -107,6 +145,16 @@ def _get_formats(post_configure=True):
     formats['photometry:emag_bp'] = float
     formats['photometry:mag_rp'] = float
     formats['photometry:emag_rp'] = float
+    
+    formats['target:automatic'] = int
+    formats['target:configid'] = int
+    formats['target:fibreid'] = int
+    formats['target:targx'] = float
+    formats['target:targy'] = float
+    formats['simulation:fwhm'] = float
+    formats['simulation:mag'] = float
+    formats['simulation:redshift'] = float
+    formats['simulation:velocity'] = float
 
     formats.pop('')
 
@@ -145,6 +193,7 @@ def _get_value_from_xml_data(xml_data, target, key, formats):
     if element_name == 'target':
         element = target
     elif element_name == 'photometry':
+        
         photometry_element_list = target.getElementsByTagName('photometry')
         
         # If the photometry element exist, select it and continue
@@ -164,6 +213,25 @@ def _get_value_from_xml_data(xml_data, target, key, formats):
             
             return formatted_value
         
+    elif element_name == 'simulation':
+        
+        simulation_element_list = target.getElementsByTagName('simulation')
+        
+        # If the simulation element exist, select it and continue
+        
+        if len(simulation_element_list) > 0:
+            element = simulation_element_list[0]
+        
+        # If there is not a simulation element (like for the sky fibres), the
+        # key should correspond to a float in the formats dictionary, so a NaN
+        # will be returned
+        
+        else:
+            
+            formatted_value = None
+            
+            return formatted_value
+        
     else:
         element = xml_data[element_name]
     
@@ -177,9 +245,11 @@ def _get_value_from_xml_data(xml_data, target, key, formats):
         
         if raw_value not in ['', '%%%']:
             formatted_value = format_func(raw_value)
-        elif (raw_value == '') and (format_func == float):
+        elif ((format_func == float) and
+              ((raw_value == '') or (raw_value == '%%%'))):
             formatted_value = _np.nan
-        elif (raw_value == '%%%') and (format_func == float):
+        elif ((format_func == int) and
+              ((raw_value == '') or (raw_value == '%%%'))):
             formatted_value = _np.nan
         else:
             raise ValueError(
@@ -190,13 +260,14 @@ def _get_value_from_xml_data(xml_data, target, key, formats):
     return formatted_value
 
 
-def _get_spa_data_from_targuse_per_field_of_one_xml(
+def _get_data_from_targuse_per_field_of_one_xml(
         xml_filename, targuse_list=['T', 'S', 'R'], replace_triple_percent=True,
-        post_configure=True, only_allocated=False, sort_targets=False):
+        post_configure=True, only_allocated=False, sort_targets=False,
+        namespace='fits'):
 
     # Get dictionaries with the lookup information and the formats
 
-    lookup = _get_lookup(post_configure=post_configure)
+    lookup = _get_lookup(namespace=namespace, post_configure=post_configure)
     formats = _get_formats(post_configure=post_configure)
 
     # Get the data from the XML file
@@ -305,10 +376,15 @@ def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S', 'R'],
                                replace_triple_percent=True,
                                post_configure=True, only_allocated=False,
                                sort_targets=False):
+                               
+    # Set the value of the namespace to be used in the calls of _get_lookup and
+    # _get_data_from_targuse_per_field_of_one_xml
+    
+    namespace = 'fits'
 
     # Get dictionaries with the lookup
 
-    lookup = _get_lookup(post_configure=post_configure)
+    lookup = _get_lookup(namespace=namespace, post_configure=post_configure)
 
     # Create a dictionary with the desired keywords and empty lists in order to
     # get ready to store them the data
@@ -319,11 +395,11 @@ def _get_spa_data_from_targuse(xml_filename_list, targuse_list=['T', 'S', 'R'],
     
     for xml_filename in xml_filename_list:
 
-        data_dict_list = _get_spa_data_from_targuse_per_field_of_one_xml(
+        data_dict_list = _get_data_from_targuse_per_field_of_one_xml(
             xml_filename, targuse_list=targuse_list,
             replace_triple_percent=replace_triple_percent,
             post_configure=post_configure, only_allocated=only_allocated,
-            sort_targets=sort_targets)
+            sort_targets=sort_targets, namespace=namespace)
         
         for field_data_dict in data_dict_list:
             for col_name in data_dict.keys():
@@ -406,7 +482,7 @@ def get_spa_data_of_target_random_and_sky_fibres_from_xmls(
     return data_dict
 
 
-def get_spa_data_per_field_of_one_xml(xml_filename):
+def get_data_per_field_of_one_xml(xml_filename):
     """
     Get SPA data of a XML file divided per field.
 
@@ -420,14 +496,14 @@ def get_spa_data_per_field_of_one_xml(xml_filename):
     data_dict_list : list of dict
         A list of dictionaries with the data. Each element of the list
         corresponds to a different field. Each key of each dictionary is the
-        name of the SPA columns which are expected to be potencially in the
+        name of a target attribute which are expected to be potencially in the
         configure XML file, while its values are lists containing these data.
     """
     
-    data_dict_list = _get_spa_data_from_targuse_per_field_of_one_xml(
+    data_dict_list = _get_data_from_targuse_per_field_of_one_xml(
         xml_filename, targuse_list=['C', 'T', 'S', 'R'],
         replace_triple_percent=True, post_configure=True, only_allocated=True,
-        sort_targets=False)
+        sort_targets=False, namespace='xml')
     
     return data_dict_list
 
