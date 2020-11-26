@@ -123,7 +123,7 @@ def test_fitscheck_ifu_driver_cat_cheating(ifu_driver_cat_cheating):
 
 
 def test_fitsdiff_ifu_driver_cat_cheating(ifu_driver_cat_cheating,
-                                         pkg_ifu_driver_cat):
+                                          pkg_ifu_driver_cat):
 
     returncode = subprocess.call(
                      ['fitsdiff', '-k', 'CHECKSUM,DATASUM,DATETIME',
