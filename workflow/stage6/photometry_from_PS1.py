@@ -24,7 +24,7 @@ from astropy.wcs import WCS, utils
 from photutils import CircularAperture, aperture_photometry
 
 PS1_PIXEL = 0.25  # arcsec
-LIFU_FIBRE_RADIUS = 1.3  # arcsec (2.6 arcsec diameter)
+LIFU_FIBRE_RADIUS = 1.305  # arcsec (2.6 arcsec diameter)
 LIFU_FIBRE_AREA = np.pi*LIFU_FIBRE_RADIUS**2
 
 
@@ -175,6 +175,15 @@ def photometry_from_PS1(cat_filename):
 
                 colname = 'MAG_'+band.upper()
                 hdu_list[1].data[colname][rows] = photo
+                # Scott's addition, 28.11.2020:
+                # set core spaxels with r>=25. to TARGUSE="S" -- 
+                # anything this faint in PanSTARRS
+                # imaging is likely to be sky
+                if band=='r':
+                    logging.info('Changing TARGUSE')
+                    targuse=hdu_list[1].data['TARGUSE'][rows]
+                    newtarguse=np.where(np.less_equal(hdu_list[1].data[colname][rows],25.) & np.char.equal(targuse,'T'), 'T', 'S')
+                    hdu_list[1].data['TARGUSE'][rows]=newtarguse
                 # xx = hdu_list[1].data[colname]
                 # print('\n\n')
                 # print(len(rows[0]), rows)
