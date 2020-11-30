@@ -27,4 +27,4 @@ Software
 
 * *photometry_from_PS1.py* / *add_PS1_photometry.py*:
 
-  Python scripts to download and photometer PanSTARRS1 *gri* FITS images to provide integrated-fibre photometry for each fibre in a configuration. The *photometry_from_PS1.py* script also sets the TARGUSE key to `S' if the fibre has an integrated magnitude of *R*≥24.0 mag, as this is likely well below sky. Turn this off if you do not want this behaviour.
+  Python scripts to download and photometer PanSTARRS1 *gri* FITS images to provide integrated-fibre photometry for each fibre in a configuration. The *photometry_from_PS1.py* script also sets the TARGUSE key to `S' if the fibre has an integrated magnitude of *r*≥24.0 mag, as this is likely well below sky. Turn this off if you do not want this behaviour.
