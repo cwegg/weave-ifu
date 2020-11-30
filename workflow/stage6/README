@@ -1,7 +1,7 @@
 Stage 6
 =======
 
-**Contributors:** Luis Peralta
+**Contributors:** Luis Peralta, Yago Ascasibar, Scott Trager
 
 Input, auxiliar files and output
 --------------------------------
@@ -25,3 +25,6 @@ Software
   non-populated version. It allows to detect potential undesired changes
   produced at this stage.
 
+* *photometry_from_PS1.py* / *add_PS1_photometry.py*:
+
+  Python scripts to download and photometer PanSTARRS1 *gri* FITS images to provide integrated-fibre photometry for each fibre in a configuration. The *photometry_from_PS1.py* script also sets the TARGUSE key to `S' if the fibre has an integrated magnitude of *R*≥24.0 mag, as this is likely well below sky. Turn this off if you do not want this behaviour.
