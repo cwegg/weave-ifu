@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Download PS1 images and add broadband photometry to an existing IFU catalogue.
+Add broadband photometry from SDSS (g,r,i) imaging to an existing IFU catalogue.
 
-For every source in the IFU catalogue, download Pan-STARRS (g, r, i) images
-and fill the corresponding columns with circular aperture photometric
-measurements within each fibre.
+For every source in the IFU catalogue, fill the corresponding columns
+with circular aperture photometric measurements within each
+fibre. Note that unlike the PanSTARRS1 equivalent code by Yago, this
+code does NOT download SDSS mosaics, as the web interface for these is
+quite clunky. See https://dr12.sdss.org/mosaics for instructions and
+access to these mosaics.
 
-Created on Wed Nov  4 17:33:49 2020
+Created on Tue 1 Dec 2020 09:35
 
-@author: yago.ascasibar@uam.es
+@authors: yago.ascasibar@uam.es, sctrager@astro.rug.nl
+
 """
 
 import argparse
@@ -23,76 +27,28 @@ from astropy.coordinates import SkyCoord, FK5, ICRS
 from astropy.wcs import WCS, utils
 from photutils import CircularAperture, aperture_photometry
 
-PS1_PIXEL = 0.25  # arcsec
-LIFU_FIBRE_RADIUS = 1.305  # arcsec (2.6 arcsec diameter)
+SDSS_PIXEL = 0.396  # arcsec
+LIFU_FIBRE_RADIUS = 1.305  # arcsec (2.61 arcsec diameter)
 LIFU_FIBRE_AREA = np.pi*LIFU_FIBRE_RADIUS**2
 
+# <codecell> following is taken from https://github.com/esheldon/sdsspy/blob/master/sdsspy/util.py
 
-# <codecell> Code from PanSTARRS https://ps1images.stsci.edu/ps1image.html
+_bands = ['u','g','r','i','z']
+_bvalues=[1.4, 0.9, 1.2, 1.8, 7.4]
+_log10 = np.log(10.0)
 
-def getimages(ra, dec, size=240, filters="grizy"):
-    """Query ps1filenames.py service to get a list of images.
-
-    ra, dec = position in degrees
-    size = image size in pixels (0.25 arcsec/pixel)
-    filters = string with filters to include
-    Returns a table with the results
-    """
-    service = "https://ps1images.stsci.edu/cgi-bin/ps1filenames.py"
-    url = ("{service}?ra={ra}&dec={dec}&size={size}&format=fits"
-           "&filters={filters}").format(**locals())
-    table = Table.read(url, format='ascii')
-    return table
-
-
-def geturl(ra, dec, size=240, output_size=None, filters="grizy",
-           format="jpg", color=False):
-    """
-    Get URL for images in the table.
-
-    ra, dec = position in degrees
-    size = extracted image size in pixels (0.25 arcsec/pixel)
-    output_size = output (display) image size in pixels (default = size).
-                  output_size has no effect for fits format images.
-    filters = string with filters to include
-    format = data format (options are "jpg", "png" or "fits")
-    color = if True, creates a color image (only for jpg or png format).
-            Default is return a list of URL for single-filter grayscale images.
-    Returns a string with the URL
-    """
-    if color and format == "fits":
-        raise ValueError(
-            "color images are available only for jpg or png formats")
-    if format not in ("jpg", "png", "fits"):
-        raise ValueError("format must be one of jpg, png, fits")
-    table = getimages(ra, dec, size=size, filters=filters)
-    url = ("https://ps1images.stsci.edu/cgi-bin/fitscut.cgi?"
-           "ra={ra}&dec={dec}&size={size}&format={format}").format(**locals())
-    if output_size:
-        url = url + "&output_size={}".format(output_size)
-    # sort filters from red to blue
-    flist = ["yzirg".find(x) for x in table['filter']]
-    table = table[np.argsort(flist)]
-    if color:
-        if len(table) > 3:
-            # pick 3 filters
-            table = table[[0, len(table)//2, len(table)-1]]
-        for i, param in enumerate(["red", "green", "blue"]):
-            url = url + "&{}={}".format(param, table['filename'][i])
-    else:
-        urlbase = url + "&red="
-        url = []
-        for filename in table['filename']:
-            url.append(urlbase+filename)
-    return url
-
+def _nmgy2lups_1band(nmgy, band):
+    # luptitudes = asinh mags
+    b=_bvalues[band]
+    lups = 2.5*(10.0-np.log10(b)) - 2.5*np.arcsinh(5.0*nmgy/b)/_log10
+    # pogson magnitudes
+    #lups = 22.5 - 2.5 * np.log10(nmgy)
+    return lups
 
 # <codecell> Specific WEAVE (not necessarily LIFU?) code
 
-def photometry_from_PS1(cat_filename):
+def photometry_from_SDSS(cat_filename,input_dir='output'):
     """
-    Download broadband imaging for a given catalogue.
-
     Creates a directory where one file per band is saved for every
     unique TARGID in the catalog.
 
@@ -102,12 +58,7 @@ def photometry_from_PS1(cat_filename):
         A FITS file with an IFU catalogue.
     """
     logging.info(
-        'Downloading PS1 broadband imaging for {}'.format(cat_filename))
-
-    output_dir = os.path.splitext(cat_filename)[0]+'_PS1'
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
-        logging.info('Creating {}'.format(output_dir))
+        'Reading SDSS broadmand imaging for {}'.format(cat_filename))
 
     with fits.open(cat_filename) as hdu_list:
 
@@ -121,9 +72,9 @@ def photometry_from_PS1(cat_filename):
             dec_Gaia = data['GAIA_DEC'][rows]
             coords_Gaia = SkyCoord(ra=ra_Gaia, dec=dec_Gaia,
                                    unit='deg', frame=ICRS())
-            coords_PS1 = coords_Gaia.transform_to(FK5(equinox='J2000'))
-            ra = coords_PS1.ra.value
-            dec = coords_PS1.dec.value
+            coords_SDSS = coords_Gaia.transform_to(FK5(equinox='J2000'))
+            ra = coords_SDSS.ra.value
+            dec = coords_SDSS.dec.value
 
             # Center and size of the images:
             ra_min = np.min(ra)
@@ -136,54 +87,48 @@ def photometry_from_PS1(cat_filename):
             delta_dec = dec_max - dec_min
             size_deg = np.max([delta_ra*np.sin(np.radians(center_dec)),
                                delta_dec]) * 1.1  # add 10% buffer
-            size_pix = int(size_deg * 3600. / PS1_PIXEL)
+            size_pix = int(size_deg * 3600. / SDSS_PIXEL)
             logging.info('{}: center=({}, {}); size=({} deg, {} pix)'.format(
                 galaxy, center_ra, center_dec, size_deg, size_pix))
 
-            # Retrieve images:
+            # Photometer images:
             for band in "gri":
                 filename = '{}_{}.fits'.format(galaxy, band)
-                full_path = os.path.join(output_dir, filename)
+                full_path = os.path.join(input_dir, filename)
                 if os.path.isfile(full_path):
-                    logging.info('{} already exists'.format(filename))
+                    logging.info('{} exists - good'.format(filename))
                     hdu = fits.open(full_path)
                 else:
-                    logging.info('Downloading {}'.format(filename))
-                    fitsurl = geturl(center_ra, center_dec, size=size_pix,
-                                     filters=band, format="fits")
-                    for url in fitsurl:
-                        band = url[-13]
-                        # print(filename, band)
-                        hdu = fits.open(url)
-                        hdu.writeto(full_path, overwrite=True)
-
-                zero_point = 25 + 2.5*np.log10(hdu[0].header['exptime'])
+                    logging.info('Please ensure that SDSS fits file with name {} exits'.format(full_path))
+                    sys.exit()
+ 
                 wcs_info = WCS(hdu[0].header)
                 img = hdu[0].data
 
-                coords_pix = utils.skycoord_to_pixel(coords_PS1, wcs_info,
+                coords_pix = utils.skycoord_to_pixel(coords_SDSS, wcs_info,
                                                      origin=0, mode='all')
                 apertures = CircularAperture(np.array(coords_pix).transpose(),
-                                             r=LIFU_FIBRE_RADIUS/PS1_PIXEL)
+                                             r=LIFU_FIBRE_RADIUS/SDSS_PIXEL)
                 phot_table = aperture_photometry(img, apertures)
-                # good_photo = np.where(phot_table['aperture_sum'] > 0)
                 bad_photo = np.where(phot_table['aperture_sum'] <= 0)
-                photo = zero_point - 2.5*np.log10(
-                    phot_table['aperture_sum'].data)
+                photo = _nmgy2lups_1band(phot_table['aperture_sum'].data,
+                                         _bands.index(band))
 
                 # Update table:
 
                 colname = 'MAG_'+band.upper()
                 hdu_list[1].data[colname][rows] = photo
+                
                 # Scott's addition, 28.11.2020:
                 # set core spaxels with r>=25. to TARGUSE="S" -- 
                 # anything this faint in PanSTARRS
                 # imaging is likely to be sky
-                if band=='r':
-                    logging.info('Changing TARGUSE')
-                    targuse=hdu_list[1].data['TARGUSE'][rows]
-                    newtarguse=np.where(np.less_equal(hdu_list[1].data[colname][rows],25.) & np.char.equal(targuse,'T'), 'T', 'S')
-                    hdu_list[1].data['TARGUSE'][rows]=newtarguse
+#                if band=='r':
+#                    logging.info('Changing TARGUSE')
+#                    targuse=hdu_list[1].data['TARGUSE'][rows]
+#                    newtarguse=np.where(np.less_equal(hdu_list[1].data[colname][rows],25.) & np.char.equal(targuse,'T'), 'T', 'S')
+#                    hdu_list[1].data['TARGUSE'][rows]=newtarguse
+
                 # xx = hdu_list[1].data[colname]
                 # print('\n\n')
                 # print(len(rows[0]), rows)
@@ -194,7 +139,7 @@ def photometry_from_PS1(cat_filename):
 
                 # Diagnostic plots:
 
-                # mu=zero_point-2.5*np.log10(img*LIFU_FIBRE_AREA/PS1_PIXEL**2)
+                # mu=zero_point-2.5*np.log10(img*LIFU_FIBRE_AREA/SDSS_PIXEL**2)
                 # # plt.figure()
                 # plt.figure(figsize=(8, 8))
                 # plt.imshow(mu, origin='lower',
@@ -241,7 +186,7 @@ def photometry_from_PS1(cat_filename):
         # Save a new table with the updated columns
 
         new_filename = cat_filename[:-15]+'.fits'
-        logging.info('Saving'+new_filename)
+        logging.info('Saving '+new_filename)
         hdu_list.writeto(new_filename, overwrite=True)
 
         # g = hdu_list[1].data['MAG_G']
@@ -251,7 +196,7 @@ def photometry_from_PS1(cat_filename):
         # print(len(g), len(g[rows][good_photo]), g[rows][good_photo])
 
 
-# photometry_from_PS1('../output/WA_2020A1-ifu_from_xmls.fits')
+# photometry_from_SDSS('../output/WA_2020A1-ifu_from_xmls.fits')
 
 
 # <codecell> When called from the command line
@@ -259,7 +204,7 @@ def photometry_from_PS1(cat_filename):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        description="""Add PS1 photometry to FITS catalogue.""")
+        description="""Add SDSS photometry to FITS catalogue.""")
 
     parser.add_argument('catalogue',
                         help='a FITS file with an IFU driver catalogue')
@@ -268,10 +213,12 @@ if __name__ == '__main__':
                         choices=['debug', 'info', 'warning', 'error'],
                         help='the level for the logging messages')
 
+    parser.add_argument('--input_dir',default='output',help='Directory where SDSS mosaic images correspond to the individual objects can be found')
+
     args = parser.parse_args()
     logging.basicConfig(level=getattr(logging, args.log_level.upper()))
 
-    photometry_from_PS1(args.catalogue)
+    photometry_from_SDSS(args.catalogue, args.input_dir)
 
 
 # <codecell> Bye
