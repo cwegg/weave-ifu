@@ -195,11 +195,11 @@ class _IFUDriverCat:
 
         assert (spectrograph_dict['red_exp_time'] ==
                 spectrograph_dict['blue_exp_time'])
-        science_exptime = 1200
+        science_exptime = spectrograph_dict['red_exp_time']
 
         assert (spectrograph_dict['red_binning_y'] ==
                 spectrograph_dict['blue_binning_y'])
-        binning_y = 1
+        binning_y = spectrograph_dict['red_binning_y']
 
         # Set the spatial binning from the input of this method
         
@@ -766,7 +766,8 @@ if __name__ == '__main__':
                         help="""number of extra mIFU targets to be included in
                         the OBs when 'aufbau' grouping mode is used""")
 
-    parser.add_argument('--spatial_binning', default=1, type=int,
+    parser.add_argument('--spatial_binning', default=1, choices=range(1, 5),
+                        type=int,
                         help='number of pixels for the spatial binning')
 
     parser.add_argument('--outdir', dest='output_dir', default='output',
