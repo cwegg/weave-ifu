@@ -500,6 +500,7 @@ class OBXML:
                 target_attrib_dict = {}
 
                 target_attrib_dict['targuse'] = 'T'
+                target_attrib_dict['targclass'] = 'UNKNOWN'
                 target_attrib_dict['targcat'] = targcat
 
                 for col in col_to_attrib_dict.keys():
@@ -548,6 +549,7 @@ class OBXML:
                 target_attrib_dict = {}
 
                 target_attrib_dict['targuse'] = 'T'
+                target_attrib_dict['targclass'] = 'UNKNOWN'
                 target_attrib_dict['targcat'] = targcat
 
                 for col in col_to_attrib_dict.keys():
