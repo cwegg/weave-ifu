@@ -49,8 +49,8 @@
         this OB.
     -->
     <spectrograph>
-      <red_Arm VPH="VPH1" binning_X="%%%" binning_Y="1" resolution="low" speed="slow"/>
-      <blue_Arm VPH="VPH1" binning_X="%%%" binning_Y="1" resolution="low" speed="slow"/>
+      <red_Arm VPH="VPH1" binning_X="1" binning_Y="1" resolution="low" speed="slow"/>
+      <blue_Arm VPH="VPH1" binning_X="1" binning_Y="1" resolution="low" speed="slow"/>
       <!--
           <spectrograph> defines the configuration for both arms of the
           spectrograph (both arms and all attributes are mandatory):
@@ -159,13 +159,14 @@
       <exposure arm="blue" cal_lamp="QTH" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="20" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="1" type="fibre_lampflat"/>
       <exposure arm="red" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="2" type="arc"/>
       <exposure arm="blue" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="2" type="arc"/>
-      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="1200" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="3" type="science"/>
-      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="1200" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="4" type="science"/>
-      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="1200" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="5" type="science"/>
-      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="1200" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="6" type="science"/>
-      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="1200" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="7" type="science"/>
-      <exposure arm="red" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="8" type="arc"/>
-      <exposure arm="blue" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="8" type="arc"/>
+      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="420" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="3" type="science"/>
+      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="420" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="4" type="science"/>
+      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="420" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="5" type="science"/>
+      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="420" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="6" type="science"/>
+      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="420" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="7" type="science"/>
+      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="420" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="8" type="science"/>
+      <exposure arm="red" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="9" type="arc"/>
+      <exposure arm="blue" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="9" type="arc"/>
       <!--
           What do these values mean?
           <exposure> defines the sequence of exposures the WEAVE
@@ -239,7 +240,7 @@
             chain is completed.
       -->
   </programme>
-  <observation casuid="-1" chained="False" coordinate_system="ICRS" linkedgroup="%%%" name="CLUSTER1" ob_class="science" ob_priority="1.0" obs_mode="mIFU" obsgroup="%%%" obsgroup_validity="%%%" obstemp="IAEEB" pa="0.0" progtemp="71551" tac_alloc="%%%" tac_id="%%%" trimester="2020A1">
+  <observation casuid="-1" chained="False" coordinate_system="ICRS" linkedgroup="%%%" name="CLUSTER1" ob_class="science" ob_priority="1.0" obs_mode="mIFU" obsgroup="%%%" obsgroup_validity="%%%" obstemp="IAEEB" pa="0.0" progtemp="71661" tac_alloc="%%%" tac_id="%%%" trimester="2020A1">
     <configure max_calibration="37" max_guide="8" max_sky="73" num_sky_fibres="740" plate="PLATE_B">
       <conditions epoch="%%%" ha="%%%" pressure="%%%" relative_humidity="%%%" temperature="%%%" tlr="%%%"/>
     </configure>
@@ -288,7 +289,7 @@
         The <offsets> element will be populated by configure, using the
         data entered into the <fields> element.
     -->
-    <dithering apply_dither="5"/>
+    <dithering apply_dither="6"/>
     <surveys>
       <survey max_fibres="740" name="WC" priority="1.0"/>
       <!--
@@ -307,70 +308,70 @@
     -->
     <fields>
       <field Dec_d="-4.77650" RA_d="316.27165" order="3">
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-5.35250" targepoch="2015.5" targid="PGC_91697" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.95580" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-5.35250" targepoch="2015.5" targid="PGC_91697" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.95580" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-5.11310" targepoch="2015.5" targid="PGC_65950" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="315.56080" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-5.11310" targepoch="2015.5" targid="PGC_65950" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="315.56080" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.92780" targepoch="2015.5" targid="PGC_1051614" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="315.90790" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.92780" targepoch="2015.5" targid="PGC_1051614" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="315.90790" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-5.14750" targepoch="2015.5" targid="PGC_1048686" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="315.85750" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-5.14750" targepoch="2015.5" targid="PGC_1048686" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="315.85750" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.40140" targepoch="2015.5" targid="PGC_1058689" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="315.67000" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.40140" targepoch="2015.5" targid="PGC_1058689" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="315.67000" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-5.46440" targepoch="2015.5" targid="PGC_1044404" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.63960" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-5.46440" targepoch="2015.5" targid="PGC_1044404" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.63960" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-5.40000" targepoch="2015.5" targid="PGC_1045221" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.28580" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-5.40000" targepoch="2015.5" targid="PGC_1045221" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.28580" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.68780" targepoch="2015.5" targid="PGC_1054814" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.76460" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.68780" targepoch="2015.5" targid="PGC_1054814" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.76460" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-5.67220" targepoch="2015.5" targid="PGC_1041786" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.39580" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-5.67220" targepoch="2015.5" targid="PGC_1041786" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.39580" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-5.19330" targepoch="2015.5" targid="PGC_1048019" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.70500" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-5.19330" targepoch="2015.5" targid="PGC_1048019" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.70500" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-3.88080" targepoch="2015.5" targid="PGC_1065694" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.54830" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-3.88080" targepoch="2015.5" targid="PGC_1065694" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.54830" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.91860" targepoch="2015.5" targid="PGC_1051735" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.71250" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.91860" targepoch="2015.5" targid="PGC_1051735" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.71250" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.76640" targepoch="2015.5" targid="PGC_1053791" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.48960" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.76640" targepoch="2015.5" targid="PGC_1053791" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.48960" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.30890" targepoch="2015.5" targid="PGC_1060024" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.13620" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.30890" targepoch="2015.5" targid="PGC_1060024" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.13620" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.31500" targepoch="2015.5" targid="PGC_1059931" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.92290" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.31500" targepoch="2015.5" targid="PGC_1059931" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.92290" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.08970" targepoch="2015.5" targid="PGC_1063030" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="315.69460" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.08970" targepoch="2015.5" targid="PGC_1063030" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="315.69460" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.77970" targepoch="2015.5" targid="PGC_1053595" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.91790" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.77970" targepoch="2015.5" targid="PGC_1053595" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.91790" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.62470" targepoch="2015.5" targid="PGC_1055624" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.06120" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.62470" targepoch="2015.5" targid="PGC_1055624" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.06120" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-5.07610" targepoch="2015.5" targid="PGC_1049654" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.73540" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-5.07610" targepoch="2015.5" targid="PGC_1049654" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.73540" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.26470" targepoch="2015.5" targid="PGC_1060631" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.23670" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.26470" targepoch="2015.5" targid="PGC_1060631" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.23670" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.44970" targepoch="2015.5" targid="PGC_1058049" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.59670" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.44970" targepoch="2015.5" targid="PGC_1058049" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.59670" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.57890" targepoch="2015.5" targid="PGC_1056295" targname="CLUSTER1" targparal="" targpmdec="" targpmra="" targprio="1.0" targprog="LR" targra="316.98250" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.57890" targepoch="2015.5" targid="PGC_1056295" targname="CLUSTER1" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="1.0" targprog="LR" targra="316.98250" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
       </field>
