@@ -112,7 +112,7 @@ class _AuxStars:
             # Set the position of the guide camera
 
             self.cam_x_offset =   0.0 / 60.0
-            self.cam_y_offset = -27.7 / 60.0
+            self.cam_y_offset =  27.7 / 60.0
 
             cam_offset_dist = _np.hypot(self.cam_x_offset, self.cam_y_offset)
 
