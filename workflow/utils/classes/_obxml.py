@@ -194,7 +194,7 @@ class OBXML:
         self._set_attribs(self.root, attrib_dict)
 
         
-    def set_spectrograph(self, binning_y=None, resolution=None,
+    def set_spectrograph(self, binning_x=None, binning_y=None, resolution=None,
                          red_vph=None, blue_vph=None):
 
         vph_dict = {'red': red_vph, 'blue': blue_vph}
@@ -208,6 +208,9 @@ class OBXML:
             vph = vph_dict[colour]
 
             attrib_dict = {}
+
+            if binning_x is not None:
+                attrib_dict['binning_X'] = binning_x
 
             if binning_y is not None:
                 attrib_dict['binning_Y'] = binning_y
