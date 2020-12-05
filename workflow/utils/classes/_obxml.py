@@ -735,15 +735,15 @@ class OBXML:
         }
         
         col_to_attrib_photometry_dict = {
-            'GAIA_EMAG_BP': 'emag_bp',
-            'EMAG_G': 'emag_g',
-            'GAIA_EMAG_GG': 'emag_gg',
-            'EMAG_I': 'emag_i',
-            'EMAG_R': 'emag_r',
-            'GAIA_EMAG_RP': 'emag_rp',
+            'GAIA_MAG_BP_ERR': 'emag_bp',
+            'MAG_G_ERR': 'emag_g',
+            'GAIA_MAG_G_ERR': 'emag_gg',
+            'MAG_I_ERR': 'emag_i',
+            'MAG_R_ERR': 'emag_r',
+            'GAIA_MAG_RP_ERR': 'emag_rp',
             'GAIA_MAG_BP': 'mag_bp',
             'MAG_G': 'mag_g',
-            'GAIA_MAG_GG': 'mag_gg',
+            'GAIA_MAG_G': 'mag_gg',
             'MAG_I': 'mag_i',
             'MAG_R': 'mag_r',
             'GAIA_MAG_RP': 'mag_rp',
