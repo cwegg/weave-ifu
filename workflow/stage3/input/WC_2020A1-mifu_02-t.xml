@@ -54,9 +54,9 @@
       <!--
           <spectrograph> defines the configuration for both arms of the
           spectrograph (both arms and all attributes are mandatory):
-            - binning_X:                                                [fixed in template]
+            - binning_X:                                                [mandatory value]
               Arm detector binning in spatial direction for the program.
-                Possible values: "1", "2", "3", "4"
+                Possible values: "1" (no other values will be accepted for science observations)
             - binning_Y:                                                [defined by PROGTEMP]
               Arm detector binning in spectral direction for the
               program.
@@ -92,8 +92,7 @@
             ****4.*     4
             ****9.*     (custom)
             (All other values forbidden)
-          Some attributes remain unchangable: "readout" is always
-          "slow", "binning_X" is always "1".
+          Some attributes remain unchangable: "readout" is always "slow"
           Custom (I=9) spectral binning is not available to WEAVE
           science teams, and for all other cases must be agreed with ING
           in advance.
