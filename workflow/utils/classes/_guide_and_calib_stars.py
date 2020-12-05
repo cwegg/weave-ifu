@@ -103,18 +103,18 @@ class _AuxStars:
         # NB: The dither size is substracted twice to avoid edge issues
 
         if (self.obsmode == 'LIFU'):
-            
-            logging.critical(
-                'Do not trust on the output of this code by now: ' +
-                'This software is great, but the assumed position of the LIFU '
-                'guide camera must be confirmed')
 
-            # Set the position of the guide camera
+            # Set the position of the guide camera with respect to the central
+            # fibre of the LIFU bundle: the offset is described as movement
+            # towards the North and East directions when the position angle is 0
+            # (so negative values correspond to offsets towards to South and
+            # West directions)
 
-            self.cam_x_offset =   0.0 / 60.0
-            self.cam_y_offset = -27.7 / 60.0
+            self.cam_north_offset = 27.7 / 60.0
+            self.cam_east_offset = 0.0 / 60.0
 
-            cam_offset_dist = _np.hypot(self.cam_x_offset, self.cam_y_offset)
+            cam_offset_dist = _np.hypot(self.cam_north_offset,
+                                        self.cam_east_offset)
 
             # Set the effective radious of the field of view of the guide camera
             
@@ -137,8 +137,8 @@ class _AuxStars:
 
             # Set the geometry of the guiding camera to None
 
-            self.cam_x_offset = None
-            self.cam_y_offset = None
+            self.cam_north_offset = None
+            self.cam_east_offset = None
 
             # Set the radious of the field of view
 
@@ -270,7 +270,7 @@ class _AuxStars:
     
     def _get_stars_in_guide_cam_ring(self, table):
 
-        cam_offset_dist = _np.hypot(self.cam_x_offset, self.cam_y_offset)
+        cam_offset_dist = _np.hypot(self.cam_north_offset, self.cam_east_offset)
 
         min_radious = cam_offset_dist - self.fov_radious
         max_radious = cam_offset_dist + self.fov_radious
@@ -380,9 +380,10 @@ class _AuxStars:
     def _get_guide_cam_coord(self, pa):
 
         cam_offset_dist = _coordinates.Angle(
-            _np.hypot(self.cam_x_offset, self.cam_y_offset), unit='deg')
+            _np.hypot(self.cam_north_offset, self.cam_east_offset), unit='deg')
         cam_pa_angle = _coordinates.Angle(
-            _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) +
+            _np.rad2deg(_np.arctan2(self.cam_north_offset,
+                                    -self.cam_east_offset)) +
             pa - 90, unit='deg')
 
         centre_coord = _coordinates.SkyCoord(self.ra, self.dec, unit='deg')
@@ -445,7 +446,8 @@ class _AuxStars:
         if len(table) > 0:
             
             cam_pa_at_request = _coordinates.Angle(
-                _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) +
+                _np.rad2deg(_np.arctan2(self.cam_north_offset,
+                                        -self.cam_east_offset)) +
                 pa_request - 90, unit='deg').wrap_at(
                     _coordinates.Angle(180, unit='deg')).deg
 
@@ -453,7 +455,8 @@ class _AuxStars:
                                                       table['ANGLE'])
             
             cam_pa_at_zero = _coordinates.Angle(
-                _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) -
+                _np.rad2deg(_np.arctan2(self.cam_north_offset,
+                                        -self.cam_east_offset)) -
                 90, unit='deg').wrap_at(
                     _coordinates.Angle(180, unit='deg')).deg
 
