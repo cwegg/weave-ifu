@@ -19,40 +19,52 @@
 
 
 import argparse
-import os.path
 import logging
+import os.path
+import re
 from collections import OrderedDict
 
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
-from matplotlib.colors import Normalize
-from matplotlib.patches import Ellipse
+from matplotlib import colors
+from matplotlib.patches import Ellipse, FancyArrow, FancyArrowPatch
 from matplotlib.backends.backend_pdf import PdfPages
 from astropy import coordinates
 
 from workflow.utils.get_data_from_xmls import \
-    get_obs_mode, get_coord_of_first_field, get_spa_data_per_field_of_one_xml
+    get_obs_mode, get_coord_of_first_field, get_data_per_field_of_one_xml
 
 
 class _IFUPlot():
 
-    def __init__(self, xml_file, output_dir='', verbose=False):
+    def __init__(self, xml_file, output_dir='', sim=False, verbose=False):
 
         # Save the input XML filename
 
         self.xml_file = xml_file
 
-        # Save the verbose mode
+        # Save the simulation and verbose mode
 
+        self.sim = sim
         self.verbose = verbose
 
         # Set the filename for the PDF file and create its object
 
         xml_basename_wo_ext = os.path.splitext(os.path.basename(xml_file))[0]
 
-        self.pdf_filename = os.path.join(output_dir,
-                                         xml_basename_wo_ext + '.pdf')
+        if self.sim is True:
+            sim_str = '-sim'
+        else:
+            sim_str = ''
+
+        if self.verbose is True:
+            verbose_str = '-verbose'
+        else:
+            verbose_str = ''
+
+        self.pdf_filename = os.path.join(
+            output_dir, xml_basename_wo_ext + sim_str + verbose_str + '.pdf')
 
         self.pdf = PdfPages(self.pdf_filename)
 
@@ -64,7 +76,7 @@ class _IFUPlot():
     
         # Get the data from the XML file
 
-        self.data_dict_list = get_spa_data_per_field_of_one_xml(self.xml_file)
+        self.data_dict_list = get_data_per_field_of_one_xml(self.xml_file)
 
         # Set the aspect to be used in the figures
 
@@ -86,6 +98,9 @@ class _IFUPlot():
         # Make the plots
 
         self._make_plots()
+
+    def _set_fibre_size(self):
+        raise NotImplementedError
 
     def _set_central_spaxel_list(self):
         raise NotImplementedError
@@ -121,9 +136,9 @@ class _IFUPlot():
             fov = self.fov_list[i]
 
             try:
-                index = data_dict['IFU_SPAXEL'].index(central_spaxel)
-                ra = data_dict['GAIA_RA'][index]
-                dec = data_dict['GAIA_DEC'][index]
+                index = data_dict['ifu_spaxel'].index(central_spaxel)
+                ra = data_dict['targra'][index]
+                dec = data_dict['targdec'][index]
             except ValueError:
                 # If the central bundle is not present, we put the limits out
                 # of the range of the coordinates
@@ -142,13 +157,48 @@ class _IFUPlot():
             ax.set_xticks([])
             ax.set_yticks([])
 
+    def _add_north_east(self, fig):
+
+        if self.obs_mode == 'LIFU':
+            origin_x = 0.66
+            origin_y = 0.09
+        elif self.obs_mode == 'mIFU':
+            origin_x = 0.81
+            origin_y = 0.07
+
+        lenght = 0.05
+        width = 0.001
+        head_width = 3 * width
+        head_length = 1.5 * head_width
+        text_factor = 1.2
+
+        north_arrow = FancyArrow(
+            origin_x, origin_y, 0, lenght,
+            width=width, head_width=head_width, head_length=head_length,
+            transform=fig.transFigure, figure=fig)
+
+        east_arrow = FancyArrow(
+            origin_x, origin_y, -self.figaspect * lenght, 0,
+            width=(width / self.figaspect),
+            head_width=(head_width / self.figaspect),
+            head_length=(head_length * self.figaspect),
+            transform=fig.transFigure, figure=fig)
+
+        fig.lines.extend([north_arrow, east_arrow])
+
+        fig.text(origin_x, origin_y + text_factor * lenght,
+                 'N', ha='right')
+        fig.text(origin_x - text_factor * self.figaspect * lenght, origin_y,
+                 'E', ha='right')
+
     def _get_setted_fig_ax_vect(self):
 
         fig, ax_vect = self._get_fig_ax_vect()
-
+        
         self._set_aspect_on_axes(ax_vect)
         self._set_ax_lims(ax_vect)
         self._clean_ticks_on_axes(ax_vect)
+        self._add_north_east(fig)
 
         return fig, ax_vect
 
@@ -187,16 +237,91 @@ class _IFUPlot():
 
         aux_ax.remove()
 
-    def _plot_empty_fig(self):
+    def _plot_weight_map(self):
 
         fig, ax_vect = self._get_setted_fig_ax_vect()
+
+        self._set_title_on_fig(fig, suffix_title=' - Weight map')
+        self._set_title_on_axes(ax_vect)
+
+        if self.obs_mode == 'LIFU':
+            # pix_size_arcsec = 0.50
+            pix_size_arcsec = 0.10
+        elif self.obs_mode == 'mIFU':
+            # pix_size_arcsec = 0.25
+            pix_size_arcsec = 0.05
+
+        cmap = cm.gray_r
+        vmin = 0
+        vmax = len(self.data_dict_list)
+
+        for i, ax in enumerate(ax_vect):
+
+            num_samples = int(self.fov_list[i] * 3600 / pix_size_arcsec)
+
+            ra_left, ra_right = ax_vect[i].get_xlim()
+            ra_left_edge_vect, ra_step = np.linspace(
+                ra_left, ra_right, num_samples, endpoint=False, retstep=True)
+            ra_vect = ra_left_edge_vect + ra_step / 2
+
+            dec_left, dec_right = ax_vect[i].get_ylim()
+            dec_left_edge_vect, dec_step = np.linspace(
+                dec_left, dec_right, num_samples, endpoint=False, retstep=True)
+            dec_vect = dec_left_edge_vect + dec_step / 2
+
+            ra_array, dec_array = np.meshgrid(ra_vect, dec_vect)
+
+            array = np.zeros(ra_array.shape)
+
+            for j, data_dict in enumerate(self.data_dict_list):
+
+                for k, (ra, dec) in enumerate(zip(data_dict['targra'],
+                                                  data_dict['targdec'])):
+
+                    if ((ra >= ra_right) and (ra <= ra_left) and
+                        (dec >= dec_left) and (dec <= dec_right)):
+
+                        dist_array = np.hypot(self.axaspect * (ra_array - ra),
+                                              dec_array - dec)
+
+                        mask = (dist_array <= self.fibre_size / 2)
+
+                        array[mask] += 1
+
+            extent = [ra_left, ra_right, dec_left, dec_right]
+
+            ax_vect[i].imshow(array, cmap=cmap, vmin=vmin, vmax=vmax,
+                              extent=extent, origin='lower')
+
+        mappable = cm.ScalarMappable(norm=colors.Normalize(vmin=vmin,
+                                                           vmax=vmax),
+                                     cmap=cmap)
+        self._set_fig_colorbar(fig, mappable)
 
         self.pdf.savefig(fig)
         plt.close(fig)
 
+    def _get_color_list(self):
+
+        color_list = [
+            'red', 'lime', 'blue', 'gold', 'peru',
+            'magenta', 'olive', 'cyan', 'indigo', 'silver',
+            colors.TABLEAU_COLORS['tab:red'],
+              colors.TABLEAU_COLORS['tab:green'],
+              colors.TABLEAU_COLORS['tab:blue'],
+              colors.TABLEAU_COLORS['tab:orange'],
+              colors.TABLEAU_COLORS['tab:brown'],
+            colors.TABLEAU_COLORS['tab:pink'],
+              colors.TABLEAU_COLORS['tab:olive'],
+              colors.TABLEAU_COLORS['tab:cyan'],
+              colors.TABLEAU_COLORS['tab:purple'],
+              colors.TABLEAU_COLORS['tab:gray']]
+
+        return color_list
+
     def _assign_color_pointings(self, i, legend=False):
 
-        color_list = ['r', 'g', 'b', 'orange', 'brown', 'pink', 'purple']
+        color_list = self._get_color_list()
 
         if legend is False:
             facecolor = color_list[i]
@@ -215,52 +340,93 @@ class _IFUPlot():
     def _assign_color_attrib(self, type_attrib, attrib=None, set_of_values=None,
                              legend=False):
 
-        if legend is False:
-            assert attrib is not None
+        color_list = self._get_color_list()
+
+        if type_attrib in ['cname', 'ifu_spaxel', 'sim_template']:
+
+            regex_dict = OrderedDict()
+
+            if legend is False:
+
+                if attrib is None:
+                    result = ('w', 'r')
+                elif type(attrib) is not str:
+                    assert np.isnan(attrib)
+                    result = ('w', 'k')
+                else:
+                    result = ('w', 'b')
+
+                    if type_attrib == 'cname':
+                        if re.match('^WVE_[0-9]{8}[+-][0-9]{7}$', attrib):
+                            result = ('g', None)
+                    elif type_attrib == 'ifu_spaxel':
+                        if len(attrib) == 3:
+                            if attrib[0] == 'S':
+                                result = ('lime', 'gray')
+                            else:
+                                result = ('blue', 'gray')
+                        elif len(attrib) == 6:
+                            for i in range(20):
+                                if attrib[:3] == 'm{:02d}'.format(i + 1):
+                                    result = (color_list[i], None)
+                                    break
+                    elif type_attrib == 'sim_template':
+                        result = ('g', None)
+
+            else:
+
+                legend_text_list = [type_attrib, '']
+
+                if type_attrib == 'cname':
+                    legend_text_list.append(('WVE_[0-9]+[+-][0-9]+', 'g'))
+                elif type_attrib == 'ifu_spaxel':
+                    legend_text_list.append(('S??', 'lime'))
+                    legend_text_list.append(('???', 'blue'))
+                    for i in range(20):
+                        legend_text_list.append(
+                            ('m{:02d}???'.format(i + 1), color_list[i]))
+                elif type_attrib == 'sim_template':
+                    legend_text_list.append(('Not empty', 'g'))
+
+                legend_text_list.append(('-Unexpected non-empty-', 'b'))
+                legend_text_list.append(('-Empty-', 'k'))
+                legend_text_list.append(('-Missing-', 'r'))
+
+                result = legend_text_list
+
+            return result
 
         color_dict = OrderedDict()
-
-        if type_attrib == 'TARGUSE':
-            color_dict['T'] = ('b', None)
-            color_dict['S'] = ('g', None)
-            color_dict['C'] = ('r', None)
+        
+        if type_attrib == 'targuse':
+            color_dict['T'] = ('blue', None)
+            color_dict['S'] = ('green', None)
+            color_dict['C'] = ('red', None)
             color_dict['R'] = ('orange', None)
-        elif type_attrib == 'TARGCLASS':
-            color_dict['']          = ('w', 'k')
-            color_dict['UNKNOWN']   = ('brown', None)
-            color_dict['SKY']       = ('g', None)
-            color_dict['GALAXY']    = ('r', None)
-            color_dict['NEBULA']    = ('orange', None)
-            color_dict['QSO']       = ('pink', None)
-            color_dict['STAR']      = ('b', None)
-            color_dict['STAR_BHB']  = ('LightBlue', None)
-            color_dict['STAR_CEP']  = ('LightSteelBlue', None)
-            color_dict['STAR_EM']   = ('LightSkyBlue', None)
-            color_dict['STAR_EMP']  = ('Turquoise', None)
-            color_dict['STAR_FGK']  = ('Cyan', None)
-            color_dict['STAR_IB']   = ('DeepSkyBlue', None)
-            color_dict['STAR_MLT']  = ('DodgerBlue', None)
-            color_dict['STAR_MLUM'] = ('SteelBlue', None)
-            color_dict['STAR_OB']   = ('CornflowerBlue', None)
-            color_dict['STAR_BA']   = ('SlateBlue', None)
-            color_dict['STAR_RRL']  = ('MediumSlateBlue', None)
-            color_dict['STAR_VAR']  = ('BlueViolet', None)
-            color_dict['STAR_WD']   = ('MidnightBlue', None)
-            color_dict['STAR_YSO']  = ('DarkBlue', None)
+        elif type_attrib == 'targclass':
+            color_dict[''] = ('w', 'k')
+
+            targclass_list = [
+                'UNKNOWN', 'SKY', 'GALAXY', 'NEBULA', 'QSO', 'STAR', 'STAR_BHB',
+                'STAR_CEP', 'STAR_EM', 'STAR_EMP', 'STAR_FGK', 'STAR_IB',
+                'STAR_MLT', 'STAR_MLUM', 'STAR_OB', 'STAR_BA', 'STAR_RRL',
+                'STAR_VAR', 'STAR_WD', 'STAR_YSO']
+
+            for i, targclass in enumerate(targclass_list):
+                color_dict[targclass] = (color_list[i], None)
         else:
-            color_list = [
-                'r', 'g', 'b', 'orange', 'deeppink',
-                'darkred', 'olivedrab', 'mediumslateblue', 'orangered', 'darkviolet',
-                'magenta', 'lime', 'teal', 'gold', 'indigo',
-                'salmon', 'purple', 'deepskyblue', 'yellow', 'pink'
-            ]
 
             if '' in set_of_values:
                 color_dict[''] = ('w', 'k')
 
+            if None in set_of_values:
+                color_dict[None] = ('w', 'r')
+
             copy_set_of_values = set_of_values[:]
             if '' in copy_set_of_values:
                 copy_set_of_values.remove('')
+            if None in copy_set_of_values:
+                copy_set_of_values.remove(None)
 
             for i, value in enumerate(copy_set_of_values):
                 color_dict[value] = (color_list[i % len(color_list)], None)
@@ -275,6 +441,10 @@ class _IFUPlot():
                 color_dict['-Empty-'] = color_dict[''][1]
                 color_dict.pop('')
 
+            if None in color_dict.keys():
+                color_dict['-Missing-'] = color_dict[None][1]
+                color_dict.pop(None)
+
             for key in color_dict.keys():
                 legend_text_list.append((key, color_dict[key][0]))
 
@@ -282,28 +452,42 @@ class _IFUPlot():
 
         return result
 
-    def _plot_on_ax_vect(self, ax_vect, contents='pointings', field=None):
+    def _plot_on_ax_vect(self, ax_vect, contents='pointings_color', field=None):
 
         width = self.fibre_size
         height = self.fibre_size / self.axaspect
 
-        if contents == 'pointings':
+        if contents == 'pointings_color':
             set_of_values = None
             legend_text_list = self._assign_color_pointings(
                 len(self.data_dict_list), legend=True)
             mappable = None
-            alpha = 0.5
-        elif contents in ['TARGUSE', 'TARGCLASS']:
+            alpha = 1 / len(self.data_dict_list)
+        elif contents == 'pointings_bw':
+            set_of_values = None
+            legend_text_list = None
+            mappable = None
+            alpha = 1 / len(self.data_dict_list)
+            facecolor = 'k'
+            edgecolor = None
+        elif contents in ['targuse', 'targclass', 'cname', 'ifu_spaxel',
+                          'sim_template']:
             set_of_values = None
             legend_text_list = self._assign_color_attrib(contents, legend=True)
             mappable = None
             alpha = 1
-        elif contents in ['TARGCAT', 'TARGID', 'TARGNAME', 'TARGPROG',
-                          'TARGSRVY']:
+        elif contents in ['targcat', 'targid', 'targname', 'targprog',
+                          'targsrvy', 'sim_filterid']:
             values_array = np.concatenate(
                 [data_dict[contents] for data_dict in self.data_dict_list])
             set_of_values = list(set(values_array))
-            set_of_values.sort()
+
+            if None in set_of_values:
+                set_of_values.remove(None)
+                set_of_values.sort()
+                set_of_values.append(None)
+            else:
+                set_of_values.sort()
 
             legend_text_list = self._assign_color_attrib(
                 contents, set_of_values=set_of_values, legend=True)
@@ -316,19 +500,23 @@ class _IFUPlot():
             values_array = np.concatenate(
                 [data_dict[contents] for data_dict in self.data_dict_list])
 
-            if np.all(np.isnan(values_array)):
+            clean_values_array = np.array(
+                [value for value in values_array if value is not None])
+
+            if np.all(np.isnan(clean_values_array)):
                 vmin = -1
                 vmax =  1
             else:
-                vmin = np.nanmin(values_array)
-                vmax = np.nanmax(values_array)
+                vmin = np.nanmin(clean_values_array)
+                vmax = np.nanmax(clean_values_array)
 
                 if vmin == vmax:
                     vmin -= 0.5
                     vmax += 0.5
 
-            mappable = cm.ScalarMappable(norm=Normalize(vmin=vmin, vmax=vmax),
-                                         cmap=cm.rainbow)
+            mappable = cm.ScalarMappable(norm=colors.Normalize(vmin=vmin,
+                                                               vmax=vmax),
+                                         cmap=cm.rainbow_r)
             alpha = 1
 
         for i, ax in enumerate(ax_vect):
@@ -344,30 +532,34 @@ class _IFUPlot():
                     if j != field:
                         continue
 
-                # Set the color of the contents are pointings
+                # Set the color if the contents are pointings
                 
-                if contents == 'pointings':
+                if contents == 'pointings_color':
                     facecolor, edgecolor = self._assign_color_pointings(j)
 
                 # Plot each fibre in the field of view of the axis
 
-                for k, (ra, dec) in enumerate(zip(data_dict['GAIA_RA'],
-                                                  data_dict['GAIA_DEC'])):
+                for k, (ra, dec) in enumerate(zip(data_dict['targra'],
+                                                  data_dict['targdec'])):
 
                     if ((ra >= xlim[1]) and (ra <= xlim[0]) and
                         (dec >= ylim[0]) and (dec <= ylim[1])):
 
-                        if contents in ['TARGUSE', 'TARGCLASS', 'TARGCAT',
-                                        'TARGID', 'TARGNAME', 'TARGPROG',
-                                        'TARGSRVY']:
+                        if contents in ['targuse', 'targclass', 'targcat',
+                                        'targid', 'targname', 'targprog',
+                                        'targsrvy', 'cname', 'ifu_spaxel',
+                                        'sim_filterid', 'sim_template']:
                             attrib = data_dict[contents][k]
                             facecolor, edgecolor = self._assign_color_attrib(
                                 contents, attrib=attrib,
                                 set_of_values=set_of_values)
-                        elif contents != 'pointings':
+                        elif not contents.startswith('pointings'):
                             attrib = data_dict[contents][k]
 
-                            if np.isnan(attrib):
+                            if attrib is None:
+                                facecolor = 'w'
+                                edgecolor = 'r'
+                            elif np.isnan(attrib):
                                 facecolor = 'w'
                                 edgecolor = 'k'
                             else:
@@ -381,17 +573,23 @@ class _IFUPlot():
 
         return legend_text_list, mappable
 
-    def _plot_pointings(self):
+    def _plot_pointings(self, color=True):
 
         fig, ax_vect = self._get_setted_fig_ax_vect()
 
         self._set_title_on_fig(fig)
         self._set_title_on_axes(ax_vect)
 
-        legend_text_list, mappable = self._plot_on_ax_vect(ax_vect,
-                                                           contents='pointings')
+        if color is True:
+            contents = 'pointings_color'
+        else:
+            contents = 'pointings_bw'
 
-        self._set_fig_legend(fig, legend_text_list, title=False)
+        legend_text_list, mappable = self._plot_on_ax_vect(ax_vect,
+                                                           contents=contents)
+
+        if legend_text_list is not None:
+            self._set_fig_legend(fig, legend_text_list, title=False)
 
         self.pdf.savefig(fig)
         plt.close(fig)
@@ -444,35 +642,52 @@ class _IFUPlot():
 
     def _make_plots(self):
 
-        logging.debug('plotting pointings of {}'.format(self.xml_file))
-        self._plot_pointings()
+        logging.info('starting plots for file {}'.format(
+            self.pdf_filename))
 
-        mag_list = ['MAG_G', 'MAG_R', 'MAG_I',
-                    'GAIA_MAG_G', 'GAIA_MAG_BP', 'GAIA_MAG_RP']
+        logging.info('\tplotting pointings of {} with color'.format(
+            self.xml_file))
+        self._plot_pointings(color=True)
 
-        err_mag_list = [mag + '_ERR' for mag in mag_list]
-
-        non_verbose_attrib_list = mag_list + ['TARGUSE', 'TARGCLASS']
-
-        verbose_attrib_list = (
-            ['TARGCAT', 'TARGID', 'TARGNAME', 'TARGPROG', 'TARGSRVY'] +
-             err_mag_list +
-            ['GAIA_EPOCH', 'GAIA_PARAL', 'GAIA_PARAL', 'GAIA_PMRA',
-             'GAIA_PMDEC', 'IFU_PA', 'TARGPRIO'])
-
-        for attrib in non_verbose_attrib_list:
-            logging.debug('plotting {} of {}'.format(attrib, self.xml_file))
-            self._plot_attrib(attrib)
+        logging.info('\tplotting pointings of {} in black and white'.format(
+            self.xml_file))
+        self._plot_pointings(color=False)
 
         if self.verbose is True:
+            logging.info('\tplotting weight map of {}'.format(self.xml_file))
+            self._plot_weight_map()
 
-            for attrib in verbose_attrib_list:
-                logging.debug('plotting {} of {}'.format(attrib, self.xml_file))
-                self._plot_attrib(attrib)
+        mag_list = ['mag_g', 'mag_r', 'mag_i',
+                    'mag_gg', 'mag_bp', 'mag_rp']
 
-        self._plot_empty_fig()
+        err_mag_list = ['e' + mag for mag in mag_list]
 
-    
+        non_verbose_attrib_list = ['targuse', 'targclass'] + mag_list
+
+        sim_attrib_list = [
+             'sim_filterid', 'sim_fwhm', 'sim_mag', 'sim_redshift',
+             'sim_template', 'sim_velocity']
+
+        verbose_attrib_list = (err_mag_list +
+            ['targparal', 'targpmra', 'targpmdec', 'targepoch',
+             'targcat', 'targsrvy', 'targprog', 'targname', 'targid',
+             'ifu_pa', 'targprio', 'cname', 'ifu_spaxel',
+             'automatic', 'configid', 'fibreid', 'targx', 'targy'])
+        
+        plot_attrib_list = non_verbose_attrib_list
+        
+        if self.verbose is True:
+            plot_attrib_list.extend(verbose_attrib_list)
+        
+        if self.sim is True:
+            plot_attrib_list.extend(sim_attrib_list)
+
+        for attrib in plot_attrib_list:
+            logging.info('\tplotting {} of {}'.format(attrib, self.xml_file))
+            self._plot_attrib(attrib, split=False)
+            self._plot_attrib(attrib, split=True)
+
+
 class _LIFUPlot(_IFUPlot):
 
     def _set_fibre_size(self):
@@ -530,9 +745,9 @@ class _LIFUPlot(_IFUPlot):
 
         for i, central_spaxel in enumerate(self.central_spaxel_list):
 
-            index = data_dict['IFU_SPAXEL'].index(central_spaxel)
-            ra = data_dict['GAIA_RA'][index]
-            dec = data_dict['GAIA_DEC'][index]
+            index = data_dict['ifu_spaxel'].index(central_spaxel)
+            ra = data_dict['targra'][index]
+            dec = data_dict['targdec'][index]
 
             if i == 0:
                 centre_coord = coordinates.SkyCoord(ra, dec, unit='deg')
@@ -588,16 +803,18 @@ class _MIFUPlot(_IFUPlot):
                          fontdict={'fontsize': 10})
 
 
-def plot_data_from_xml(xml_file, output_dir='output', verbose=False):
+def plot_data_from_xml(xml_file, output_dir='output', sim=False, verbose=False):
     """
-    Plot targets contained in an IFU driver catalogue with Aladin.
+    Plot the data of a XML files.
 
-    Parameters xml_file, output_dir=args.dir)
+    Parameters
     ----------
     xml_file : str
         The name of a XML file.
     output_dir : str, optional
         The directory which will contain the plot.
+    sim : bool, optional
+        Option for plotting simulation attributes
     verbose : bool, optional
         Option for verbose mode.
 
@@ -619,12 +836,14 @@ def plot_data_from_xml(xml_file, output_dir='output', verbose=False):
 
     if obs_mode == 'LIFU':
 
-        with _LIFUPlot(xml_file, output_dir=output_dir, verbose=verbose) as plot:
+        with _LIFUPlot(xml_file, output_dir=output_dir, sim=sim,
+                       verbose=verbose) as plot:
             output_filename = plot.get_pdf_filename()
         
     elif obs_mode == 'mIFU':
 
-        with _MIFUPlot(xml_file, output_dir=output_dir, verbose=verbose) as plot:
+        with _MIFUPlot(xml_file, output_dir=output_dir, sim=sim,
+                       verbose=verbose) as plot:
             output_filename = plot.get_pdf_filename()
 
     else:
@@ -647,6 +866,9 @@ if __name__ == '__main__':
     parser.add_argument('--dir', default='output',
                         help='the directory which will contain the plots')
 
+    parser.add_argument('--sim', action='store_true',
+                        help='option for plotting simulation attributes')
+
     parser.add_argument('--verbose', action='store_true',
                         help='option for verbose mode')
 
@@ -663,5 +885,6 @@ if __name__ == '__main__':
         os.mkdir(args.dir)
     
     for xml_file in args.xml_file:
-        plot_data_from_xml(xml_file, output_dir=args.dir, verbose=args.verbose)
+        plot_data_from_xml(xml_file, output_dir=args.dir, sim=args.sim,
+                           verbose=args.verbose)
 
