@@ -66,6 +66,7 @@ cd ../stage6/
 
 mkdir output
 cp input/WC_2020A1-ifu_from_xmls.fits output/WC_2020A1-ifu.fits
+./check_populated_ifu_fits_cat.py input/WC_2020A1-ifu_from_xmls.fits output/WC_2020A1-ifu.fits
 
 ############################### STAGE 7 ################################
 

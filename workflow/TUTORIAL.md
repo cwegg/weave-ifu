@@ -132,6 +132,7 @@ copy the catalogue of the previous step:
 
 ```
 cp output/WC_2020A1-ifu_from_xmls.fits output/WC_2020A1-ifu.fits
+stage6/check_populated_ifu_fits_cat.py output/WC_2020A1-ifu_from_xmls.fits output/WC_2020A1-ifu.fits
 ```
 
 Stage 7: Creation of the combo FITS catalogue
