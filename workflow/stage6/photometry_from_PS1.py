@@ -9,7 +9,7 @@ measurements within each fibre.
 
 Created on Wed Nov  4 17:33:49 2020
 
-@author: yago.ascasibar@uam.es
+@author: yago.ascasibar@uam.es, sctrager@astro.rug.nl
 """
 
 import argparse
@@ -177,13 +177,15 @@ def photometry_from_PS1(cat_filename):
                 hdu_list[1].data[colname][rows] = photo
                 # Scott's addition, 28.11.2020:
                 # set core spaxels with r>=25. to TARGUSE="S" -- 
-                # anything this faint in PanSTARRS
-                # imaging is likely to be sky
+                # anything this faint in PanSTARRS imaging
+                # is indistinguishable from sky
                 if band=='r':
                     logging.info('Changing TARGUSE')
                     targuse=hdu_list[1].data['TARGUSE'][rows]
                     newtarguse=np.where(np.less_equal(hdu_list[1].data[colname][rows],25.) & np.char.equal(targuse,'T'), 'T', 'S')
                     hdu_list[1].data['TARGUSE'][rows]=newtarguse
+                    targclass=np.where(np.char.equal(newtarguse,'T') & np.char.not_equal(hdu_list[1].data['IFU_SPAXEL'][0],'S'),'GALAXY','SKY')
+                    hdu_list[1].data['TARGCLASS'][rows]=targclass
                 # xx = hdu_list[1].data[colname]
                 # print('\n\n')
                 # print(len(rows[0]), rows)
