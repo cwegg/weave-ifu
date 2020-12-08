@@ -87,9 +87,6 @@ cp ../stage5/input/WC_2020A1-*-tgcs.xml input/
 
 ./fill_xmls_with_fits_info.py input/WC_2020A1.fits input/WC_2020A1-*-tgcs.xml
 
-sed -i 's/binning_X="%%%"/binning_X="1"/g' output/WC_2020A1-*.xml
-sed -i 's/"%%%"/""/g' output/WC_2020A1-*.xml
-
 ############################### STAGE 10 ###############################
 
 cd ../stage10/
