@@ -103,18 +103,18 @@ class _AuxStars:
         # NB: The dither size is substracted twice to avoid edge issues
 
         if (self.obsmode == 'LIFU'):
-            
-            logging.critical(
-                'Do not trust on the output of this code by now: ' +
-                'This software is great, but the assumed position of the LIFU '
-                'guide camera must be confirmed')
 
-            # Set the position of the guide camera
+            # Set the position of the guide camera with respect to the central
+            # fibre of the LIFU bundle: the offset is described as movement
+            # towards the North and East directions when the position angle is 0
+            # (so negative values correspond to offsets towards to South and
+            # West directions)
 
-            self.cam_x_offset =   0.0 / 60.0
-            self.cam_y_offset =  27.7 / 60.0
+            self.cam_north_offset = 27.7 / 60.0
+            self.cam_east_offset = 0.0 / 60.0
 
-            cam_offset_dist = _np.hypot(self.cam_x_offset, self.cam_y_offset)
+            cam_offset_dist = _np.hypot(self.cam_north_offset,
+                                        self.cam_east_offset)
 
             # Set the effective radious of the field of view of the guide camera
             
@@ -137,8 +137,8 @@ class _AuxStars:
 
             # Set the geometry of the guiding camera to None
 
-            self.cam_x_offset = None
-            self.cam_y_offset = None
+            self.cam_north_offset = None
+            self.cam_east_offset = None
 
             # Set the radious of the field of view
 
@@ -270,7 +270,7 @@ class _AuxStars:
     
     def _get_stars_in_guide_cam_ring(self, table):
 
-        cam_offset_dist = _np.hypot(self.cam_x_offset, self.cam_y_offset)
+        cam_offset_dist = _np.hypot(self.cam_north_offset, self.cam_east_offset)
 
         min_radious = cam_offset_dist - self.fov_radious
         max_radious = cam_offset_dist + self.fov_radious
@@ -380,9 +380,10 @@ class _AuxStars:
     def _get_guide_cam_coord(self, pa):
 
         cam_offset_dist = _coordinates.Angle(
-            _np.hypot(self.cam_x_offset, self.cam_y_offset), unit='deg')
+            _np.hypot(self.cam_north_offset, self.cam_east_offset), unit='deg')
         cam_pa_angle = _coordinates.Angle(
-            _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) +
+            _np.rad2deg(_np.arctan2(self.cam_north_offset,
+                                    -self.cam_east_offset)) +
             pa - 90, unit='deg')
 
         centre_coord = _coordinates.SkyCoord(self.ra, self.dec, unit='deg')
@@ -445,7 +446,8 @@ class _AuxStars:
         if len(table) > 0:
             
             cam_pa_at_request = _coordinates.Angle(
-                _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) +
+                _np.rad2deg(_np.arctan2(self.cam_north_offset,
+                                        -self.cam_east_offset)) +
                 pa_request - 90, unit='deg').wrap_at(
                     _coordinates.Angle(180, unit='deg')).deg
 
@@ -453,7 +455,8 @@ class _AuxStars:
                                                       table['ANGLE'])
             
             cam_pa_at_zero = _coordinates.Angle(
-                _np.rad2deg(_np.arctan2(self.cam_y_offset, self.cam_x_offset)) -
+                _np.rad2deg(_np.arctan2(self.cam_north_offset,
+                                        -self.cam_east_offset)) -
                 90, unit='deg').wrap_at(
                     _coordinates.Angle(180, unit='deg')).deg
 
@@ -747,8 +750,9 @@ class _AuxStars:
 
                 
     def get_table(self, selection='filter', verbose=True, plot_filename=None,
-                  pa_request=None, num_stars_request=None,
-                  num_central_stars=1, min_cut=0.9, max_cut=1.0):
+                  useful_table_filename=None, pa_request=None,
+                  num_stars_request=None, num_central_stars=1, min_cut=0.9,
+                  max_cut=1.0):
 
         # Assert the input values
 
@@ -788,7 +792,7 @@ class _AuxStars:
             table = self.full_table
         elif selection == 'useful':
             pa = pa_request
-            table = self.full_table
+            table = self.useful_table
         elif selection == 'filter':
             pa = self.selected_pa
             table = self.selected_table
@@ -806,6 +810,11 @@ class _AuxStars:
                        num_stars=num_stars, num_stars_request=num_stars_request,
                        num_central_stars=num_central_stars,
                        min_cut=min_cut, max_cut=max_cut)
+        
+        if ((useful_table_filename is not None) and
+            (selection in ['useful', 'filter'])):
+            
+            self.useful_table.write(useful_table_filename)
 
         return pa, table
 
@@ -849,8 +858,9 @@ class GuideStars(_AuxStars):
 
 
     def get_table(self, selection='filter', verbose=True, plot_filename=None,
-                  pa_request=None, num_stars_request=None,
-                  num_central_stars=1, min_cut=0.9, max_cut=1.0):
+                  useful_table_filename=None, pa_request=None,
+                  num_stars_request=None, num_central_stars=1, min_cut=0.9,
+                  max_cut=1.0):
         """
         Get a table with a set of selected stars with the requested conditions.
 
@@ -864,9 +874,11 @@ class GuideStars(_AuxStars):
             prescriptions given in the other keywords of this method.
         verbose : bool
             Print a summary or not.
-        plot_filename : str
+        plot_filename : str, optional
             Name of the file to save a figure with the full table, the useful
             table and the selected table.
+        useful_table_filename : str, optional
+            Name of the file to save the useful table.
         pa_request : float, optional
             The position angle (degrees) of rotation (it can be different to
             zero only for LIFU). np.nan and None are also valid values.
@@ -892,6 +904,7 @@ class GuideStars(_AuxStars):
 
         pa, table = super().get_table(selection=selection, verbose=verbose,
                                       plot_filename=plot_filename,
+                                      useful_table_filename=useful_table_filename,
                                       pa_request=pa_request,
                                       num_stars_request=num_stars_request,
                                       num_central_stars=num_central_stars,
@@ -942,7 +955,7 @@ class CalibStars(_AuxStars):
 
 
     def get_table(self, selection='filter', verbose=True, plot_filename=None,
-                  num_stars_request=None,
+                  useful_table_filename=None, num_stars_request=None,
                   num_central_stars=0, min_cut=0.2, max_cut=0.4):
         """
         Get a table with a set of selected stars with the requested conditions.
@@ -957,9 +970,11 @@ class CalibStars(_AuxStars):
             this method.
         verbose : bool
             Print a summary or not.
-        plot_filename : str
+        plot_filename : str, optional
             Name of the file to save a figure with the full table, the useful
             table and the selected table.
+        useful_table_filename : str, optional
+            Name of the file to save the useful table.
         num_stars_request : int, optional
             Maximum number of guide stars in the output. None means no limit.
         num_central_stars : int, optional
@@ -977,6 +992,7 @@ class CalibStars(_AuxStars):
 
         pa, table = super().get_table(selection=selection, verbose=verbose,
                                       plot_filename=plot_filename,
+                                      useful_table_filename=useful_table_filename,
                                       pa_request=None,
                                       num_stars_request=num_stars_request,
                                       num_central_stars=num_central_stars,

@@ -90,11 +90,11 @@ def get_data_dict():
          '71331', '71331', '71331', '71331', '71331',
            '71331', '71331', '71331', '71331', '71331',
          '71331', '71331', '71331', '71331', '71331',
-           '71331', '71551', '71551', '71551', '71551',
-         '71551', '71551', '71551', '71551', '71551',
-           '71551', '71551', '71551', '71551', '71551',
-         '71551', '71551', '71551', '71551', '71551',
-           '71551', '71551', '71551']
+           '71331', '71661', '71661', '71661', '71661',
+         '71661', '71661', '71661', '71661', '71661',
+           '71661', '71661', '71661', '71661', '71661',
+         '71661', '71661', '71661', '71661', '71661',
+           '71661', '71661', '71661']
     
     data_dict['OBSTEMP'] = \
         ['IAEEB', 'IAEEB', 'IAEEB', 'IAEEB', 'IAEEB',
@@ -145,40 +145,25 @@ def get_data_dict():
            2015.5, 2015.5, 2015.5]
     
     data_dict['GAIA_PMRA'] = \
-        [np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan]
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
     data_dict['GAIA_PMDEC'] = \
-        [np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan]
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
     data_dict['GAIA_PARAL'] = \
-        [np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan, np.nan, np.nan,
-         np.nan, np.nan, np.nan, np.nan, np.nan,
-           np.nan, np.nan, np.nan]
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
     data_dict['IFU_PA_REQUEST'] = \
         [0.0, 0.0, 0.0, 0.0, np.nan,
@@ -195,9 +180,9 @@ def get_data_dict():
     data_dict['IFU_DITHER'] = \
         [3, -1, -1, -1, 3, 3, 3, 3, 3, 3,
          3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-         3, 3, 3, 3, 3, 3, 5, 5, 5, 5,
-         5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-         5, 5, 5, 5, 5, 5, 5, 5]
+         3, 3, 3, 3, 3, 3, 6, 6, 6, 6,
+         6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+         6, 6, 6, 6, 6, 6, 6, 6]
     
     return data_dict
 

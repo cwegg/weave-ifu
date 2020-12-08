@@ -66,6 +66,7 @@ cd ../stage6/
 
 mkdir output
 cp input/WC_2020A1-ifu_from_xmls.fits output/WC_2020A1-ifu.fits
+./check_populated_ifu_fits_cat.py input/WC_2020A1-ifu_from_xmls.fits output/WC_2020A1-ifu.fits
 
 ############################### STAGE 7 ################################
 
@@ -86,7 +87,6 @@ cp ../stage5/input/WC_2020A1-*-tgcs.xml input/
 
 ./fill_xmls_with_fits_info.py input/WC_2020A1.fits input/WC_2020A1-*-tgcs.xml
 
-sed -i 's/binning_X="%%%"/binning_X="1"/g' output/WC_2020A1-*.xml
 sed -i 's/"%%%"/""/g' output/WC_2020A1-*.xml
 
 ############################### STAGE 10 ###############################
