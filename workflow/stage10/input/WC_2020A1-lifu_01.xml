@@ -236,7 +236,7 @@
             chain is completed.
       -->
   </programme>
-  <observation casuid="-1" chained="False" coordinate_system="ICRS" linkedgroup="%%%" name="PSZ1_125A-PSZ1_125A" ob_class="science" ob_priority="1.0" obs_mode="LIFU" obsgroup="%%%" obsgroup_validity="%%%" obstemp="IAEEB" pa="2.5960672198239934" progtemp="41331" tac_alloc="%%%" tac_id="%%%" trimester="2020A1">
+  <observation casuid="-1" chained="False" coordinate_system="ICRS" linkedgroup="" name="PSZ1_125A-PSZ1_125A" ob_class="science" ob_priority="1.0" obs_mode="LIFU" obsgroup="" obsgroup_validity="" obstemp="IAEEB" pa="2.5960672198239934" progtemp="41331" tac_alloc="" tac_id="" trimester="2020A1">
     <offsets offset_step_dec="0.000000000 0.088296940 -1.642318899" offset_step_ra="0.000000000 -1.947399294 -1.050165685"/>
     <configure configure_version="3.1.0" max_calibration="547" max_guide="1" max_sky="56" num_sky_fibres="603" plate="LIFU">
       <conditions epoch="2020" ha="0" pressure="660" relative_humidity="0.2" temperature="283" tlr="0.0065"/>
