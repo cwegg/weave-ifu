@@ -49,14 +49,14 @@
         this OB.
     -->
     <spectrograph>
-      <red_Arm VPH="VPH1" binning_X="%%%" binning_Y="1" resolution="low" speed="slow"/>
-      <blue_Arm VPH="VPH1" binning_X="%%%" binning_Y="1" resolution="low" speed="slow"/>
+      <red_Arm VPH="VPH1" binning_X="1" binning_Y="1" resolution="low" speed="slow"/>
+      <blue_Arm VPH="VPH1" binning_X="1" binning_Y="1" resolution="low" speed="slow"/>
       <!--
           <spectrograph> defines the configuration for both arms of the
           spectrograph (both arms and all attributes are mandatory):
-            - binning_X:                                                [fixed in template]
+            - binning_X:                                                [mandatory value]
               Arm detector binning in spatial direction for the program.
-                Possible values: "1", "2", "3", "4"
+                Possible values: "1" (no other values will be accepted for science observations)
             - binning_Y:                                                [defined by PROGTEMP]
               Arm detector binning in spectral direction for the
               program.
@@ -92,8 +92,7 @@
             ****4.*     4
             ****9.*     (custom)
             (All other values forbidden)
-          Some attributes remain unchangable: "readout" is always
-          "slow", "binning_X" is always "1".
+          Some attributes remain unchangable: "readout" is always "slow"
           Custom (I=9) spectral binning is not available to WEAVE
           science teams, and for all other cases must be agreed with ING
           in advance.
@@ -159,9 +158,9 @@
       <exposure arm="blue" cal_lamp="QTH" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="20" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="1" type="fibre_lampflat"/>
       <exposure arm="red" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="2" type="arc"/>
       <exposure arm="blue" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="2" type="arc"/>
-      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="1200" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="3" type="science"/>
-      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="1200" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="4" type="science"/>
-      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="1200" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="5" type="science"/>
+      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="3" type="science"/>
+      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="4" type="science"/>
+      <exposure arm="both" cal_lamp="None" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="1020" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="5" type="science"/>
       <exposure arm="red" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="6" type="arc"/>
       <exposure arm="blue" cal_lamp="ThAr" cal_lamp_filter_A="Empty" cal_lamp_filter_B="Empty" exp_time="25" ff_ilu_1="0" ff_ilu_2="0" ff_ilu_3="0" order="6" type="arc"/>
       <!--
@@ -305,7 +304,7 @@
     -->
     <fields>
       <field Dec_d="%%%" RA_d="%%%" order="3">
-        <target cname="%%%" targcat="WC_2020A1.fits" targclass="%%%" targdec="-4.71060356792" targepoch="2015.5" targid="PSZ1_125A" targname="PSZ1_125A" targparal="" targpmdec="" targpmra="" targprio="10.0" targprog="LR" targra="316.369609537" targsrvy="WC" targuse="T">
+        <target cname="%%%" targcat="WC_2020A1.fits" targclass="UNKNOWN" targdec="-4.71060356792" targepoch="2015.5" targid="PSZ1_125A" targname="PSZ1_125A" targparal="0.0" targpmdec="0.0" targpmra="0.0" targprio="10.0" targprog="LR" targra="316.369609537" targsrvy="WC" targuse="T">
           <photometry emag_bp="%%%" emag_g="%%%" emag_gg="%%%" emag_i="%%%" emag_r="%%%" emag_rp="%%%" mag_bp="%%%" mag_g="%%%" mag_gg="%%%" mag_i="%%%" mag_r="%%%" mag_rp="%%%"/>
         </target>
       </field>

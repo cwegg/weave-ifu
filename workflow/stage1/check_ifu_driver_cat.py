@@ -391,20 +391,17 @@ def _check_gaia_pm(hdu):
 
     result = True
 
-    pmra_array = hdu.data['GAIA_PMRA']
-    pmdec_array = hdu.data['GAIA_PMDEC']
-    epoch_array = hdu.data['GAIA_EPOCH']
+    pmra_null_result = _check_non_null_value(hdu.data['GAIA_PMRA'])
 
-    for i, (pmra, pmdec, epoch) in enumerate(
-            zip(pmra_array, pmdec_array, epoch_array)):
+    if pmra_null_result is False:
+        logging.error('GAIA_PMRA values contain NaN')
+        result = False
 
-        if (not np.isnan(pmra)) or (not np.isnan(pmdec)):
+    pmdec_null_result = _check_non_null_value(hdu.data['GAIA_PMDEC'])
 
-            if np.isnan(pmra) or np.isnan(pmdec) or np.isnan(epoch):
-                logging.error(
-                    'unexpected GAIA_PMRA/GAIA_PMDEC/GAIA_EPOCH values in ' +
-                    'row {}'.format(i + 1))
-                result = False
+    if pmdec_null_result is False:
+        logging.error('GAIA_PMDEC values contain NaN')
+        result = False
     
     return result
 
@@ -413,18 +410,11 @@ def _check_gaia_paral(hdu):
 
     result = True
 
-    paral_array = hdu.data['GAIA_PARAL']
-    epoch_array = hdu.data['GAIA_EPOCH']
+    null_result = _check_non_null_value(hdu.data['GAIA_PARAL'])
 
-    for i, (paral, epoch) in enumerate(zip(paral_array, epoch_array)):
-
-        if not np.isnan(paral):
-
-            if np.isnan(epoch):
-                logging.error(
-                    'unexpected GAIA_PARAL/GAIA_EPOCH values in row {}'.format(
-                        i + 1))
-                result = False
+    if null_result is False:
+        logging.error('GAIA_PARAL values contain NaN')
+        result = False
     
     return result
 

@@ -154,7 +154,8 @@ class _IFUDriverCat:
 
     
     def _process_ob(self, entry_group, xml_template, progtemp_dict,
-                    obstemp_dict, output_dir='', prefix=None, suffix='-t'):
+                    obstemp_dict, spatial_binning, output_dir='', prefix=None,
+                    suffix='-t'):
 
         # Get some information from the first entry of the group
 
@@ -194,11 +195,15 @@ class _IFUDriverCat:
 
         assert (spectrograph_dict['red_exp_time'] ==
                 spectrograph_dict['blue_exp_time'])
-        science_exptime = 1200
+        science_exptime = spectrograph_dict['red_exp_time']
 
         assert (spectrograph_dict['red_binning_y'] ==
                 spectrograph_dict['blue_binning_y'])
-        binning_y = 1
+        binning_y = spectrograph_dict['red_binning_y']
+
+        # Set the spatial binning from the input of this method
+        
+        binning_x = spatial_binning
 
         # Set the some paremeters which depends on OBSMODE:
         #  - Name of the observation
@@ -280,8 +285,9 @@ class _IFUDriverCat:
 
         # Set the contents of the spectrograph element
 
-        ob_xml.set_spectrograph(binning_y=binning_y, resolution=resolution,
-                                red_vph=red_vph, blue_vph=blue_vph)
+        ob_xml.set_spectrograph(binning_x=binning_x, binning_y=binning_y,
+                                resolution=resolution, red_vph=red_vph,
+                                blue_vph=blue_vph)
 
         # Set the contents of the exposures element
 
@@ -356,8 +362,8 @@ class _IFUDriverCat:
 
         
     def _generate_lifu_xmls(self, lifu_entry_list, xml_template, progtemp_dict,
-                            obstemp_dict, output_dir='', prefix='',
-                            suffix='-t'):
+                            obstemp_dict, spatial_binning, output_dir='',
+                            prefix='', suffix='-t'):
         
         output_file_list = []
 
@@ -388,6 +394,7 @@ class _IFUDriverCat:
 
             output_file = self._process_ob(entry_group, xml_template,
                                            progtemp_dict, obstemp_dict,
+                                           spatial_binning,
                                            output_dir=output_dir, prefix=prefix,
                                            suffix=suffix)
             
@@ -417,9 +424,10 @@ class _IFUDriverCat:
         for entry_group in custom_dithers_dict.values():
         
             output_file = self._process_ob(entry_group, xml_template,
-                                          progtemp_dict, obstemp_dict,
-                                          output_dir=output_dir, prefix=prefix,
-                                          suffix=suffix)
+                                           progtemp_dict, obstemp_dict,
+                                           spatial_binning,
+                                           output_dir=output_dir, prefix=prefix,
+                                           suffix=suffix)
             
             output_file_list.append(output_file)
 
@@ -427,9 +435,9 @@ class _IFUDriverCat:
 
                 
     def _generate_mifu_xmls(self, mifu_entry_list, xml_template, progtemp_dict,
-                            obstemp_dict, mifu_mode='all', mifu_num_calibs=2,
-                            mifu_num_extra=0, output_dir='', prefix='',
-                            suffix='-t'):
+                            obstemp_dict, spatial_binning, mifu_mode='all',
+                            mifu_num_calibs=2, mifu_num_extra=0, output_dir='',
+                            prefix='', suffix='-t'):
 
         # What happens if there are (e.g.) 100 bundles in a given key and
         # mifu_num_calibs is 2?
@@ -544,6 +552,7 @@ class _IFUDriverCat:
         
             output_file = self._process_ob(entry_group, xml_template,
                                            progtemp_dict, obstemp_dict,
+                                           spatial_binning,
                                            output_dir=output_dir, prefix=prefix,
                                            suffix=suffix)
             
@@ -554,8 +563,8 @@ class _IFUDriverCat:
                     
     def generate_xmls(self, xml_template, progtemp_file=None,
                       obstemp_file=None, mifu_mode='all', mifu_num_calibs=2,
-                      mifu_num_extra=0, output_dir='', prefix='', suffix='-t',
-                      pass_datamver=False):
+                      mifu_num_extra=0, spatial_binning=1, output_dir='',
+                      prefix='', suffix='-t', pass_datamver=False):
 
         # Get the DATAMVER of the XML template
 
@@ -628,15 +637,16 @@ class _IFUDriverCat:
                 
         lifu_output_file_list = self._generate_lifu_xmls(
             lifu_entry_list, xml_template, progtemp_dict, obstemp_dict,
-            output_dir=output_dir, prefix=prefix, suffix=suffix)
+            spatial_binning, output_dir=output_dir, prefix=prefix,
+            suffix=suffix)
 
         # Generate the mIFU XMLs
                 
         mifu_output_file_list = self._generate_mifu_xmls(
             mifu_entry_list, xml_template, progtemp_dict, obstemp_dict,
-            mifu_mode=mifu_mode, mifu_num_calibs=mifu_num_calibs,
-            mifu_num_extra=mifu_num_extra, output_dir=output_dir, prefix=prefix,
-            suffix=suffix)
+            spatial_binning, mifu_mode=mifu_mode,
+            mifu_num_calibs=mifu_num_calibs, mifu_num_extra=mifu_num_extra,
+            output_dir=output_dir, prefix=prefix, suffix=suffix)
         
         # Get the list with the output files
         
@@ -648,8 +658,8 @@ class _IFUDriverCat:
 def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
                      progtemp_file=None, obstemp_file=None,
                      mifu_mode='all', mifu_num_calibs=2, mifu_num_extra=0,
-                     prefix=None, suffix='-t', pass_datamver=False,
-                     overwrite=False):
+                     spatial_binning=1, prefix=None, suffix='-t',
+                     pass_datamver=False, overwrite=False):
     """
     Create XML files with targets from an IFU driver cat.
     
@@ -673,6 +683,8 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
     mifu_num_extra : int, optional
         Number of extra mIFU targets to be included in the OBs when 'aufbau'
         grouping mode is used.
+    spatial_binning : int, optional
+        Number of pixels for the spatial binning.
     prefix : str, optional
         Prefix to be used in the output files (it will be derived from
         ifu_driver_cat_filename if None is provided).
@@ -708,8 +720,9 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
     output_file_list = ifu_driver_cat.generate_xmls(
         xml_template, progtemp_file=progtemp_file, obstemp_file=obstemp_file,
         mifu_mode=mifu_mode, mifu_num_calibs=mifu_num_calibs,
-        mifu_num_extra=mifu_num_extra, output_dir=output_dir, prefix=prefix,
-        suffix=suffix, pass_datamver=pass_datamver)
+        mifu_num_extra=mifu_num_extra, spatial_binning=spatial_binning,
+        output_dir=output_dir, prefix=prefix, suffix=suffix,
+        pass_datamver=pass_datamver)
     
     return output_file_list
 
@@ -722,37 +735,40 @@ if __name__ == '__main__':
     parser.add_argument('ifu_driver_cat',
                         help="""a FITS file containing an IFU driver cat""")
 
-    parser.add_argument('--xml_template', dest='xml_template',
+    parser.add_argument('--xml_template',
                         default=os.path.join('aux', 'BlankXMLTemplate.xml'),
                         help="""a blank XML template to be populated with the
                         information of the OBs""")
 
-    parser.add_argument('--progtemp_file', dest='progtemp_file',
+    parser.add_argument('--progtemp_file',
                         default=os.path.join('aux', 'progtemp.dat'),
                         help="""a progtemp.dat file with the definition of
                         PROGTEMP""")
 
 
-    parser.add_argument('--obstemp_file', dest='obstemp_file',
+    parser.add_argument('--obstemp_file',
                         default=os.path.join('aux', 'obstemp.dat'),
                         help="""a obstemp.dat file with the definition of
                         OBSTEMP""")
 
-    parser.add_argument('--mifu_mode', dest='mifu_mode', default='all',
+    parser.add_argument('--mifu_mode', default='all',
                         choices=['all', 'aufbau', 'equipartition', 'all'],
                         help="""grouping mode for mIFU targets: 'all' includes
                         all, 'aufbau' follows the aufbau principle,
                         'equipartition' divides up the bundles equally""")
 
-    parser.add_argument('--mifu_num_calibs', dest='mifu_num_calibs', default=2,
+    parser.add_argument('--mifu_num_calibs', default=2,
                         choices=range(20), type=int,
                         help="""number of mIFU calibration stars and sky bundles
                         to be considered in the mIFU grouping""")
 
-    parser.add_argument('--mifu_num_extra', dest='mifu_num_extra', default=0,
-                        type=int,
+    parser.add_argument('--mifu_num_extra', default=0, type=int,
                         help="""number of extra mIFU targets to be included in
                         the OBs when 'aufbau' grouping mode is used""")
+
+    parser.add_argument('--spatial_binning', default=1, choices=range(1, 5),
+                        type=int,
+                        help='number of pixels for the spatial binning')
 
     parser.add_argument('--outdir', dest='output_dir', default='output',
                         help="""name of the directory which will containe the
@@ -804,6 +820,7 @@ if __name__ == '__main__':
                      mifu_mode=args.mifu_mode,
                      mifu_num_calibs=args.mifu_num_calibs,
                      mifu_num_extra=args.mifu_num_extra,
+                     spatial_binning=args.spatial_binning,
                      prefix=args.prefix, pass_datamver=args.pass_datamver,
                      overwrite=args.overwrite)
 

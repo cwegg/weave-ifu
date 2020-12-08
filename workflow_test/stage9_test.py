@@ -41,11 +41,6 @@ def wasp_xml_files(pkg_wasp_cat, pkg_copy_tgcs_xml_files, tmpdir_factory):
         with open(xml_filename, 'r') as xml_file:
             contents = xml_file.read()
         
-        # *** The binning_X must be 1 by default 
-        #     (this should be changed in the template)
-        
-        contents = contents.replace('binning_X="%%%"', 'binning_X="1"')
-        
         contents = contents.replace('%%%', '')
         
         with open(xml_filename, 'w') as xml_file:
