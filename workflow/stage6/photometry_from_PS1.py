@@ -180,12 +180,19 @@ def photometry_from_PS1(cat_filename):
                 # anything this faint in PanSTARRS imaging
                 # is indistinguishable from sky
                 if band=='r':
-                    logging.info('Changing TARGUSE')
+                    logging.info('Changing TARGUSE, TARGCLASS, APS keys')
                     targuse=hdu_list[1].data['TARGUSE'][rows]
                     newtarguse=np.where(np.less_equal(hdu_list[1].data[colname][rows],25.) & np.char.equal(targuse,'T'), 'T', 'S')
                     hdu_list[1].data['TARGUSE'][rows]=newtarguse
                     targclass=np.where(np.char.equal(newtarguse,'T') & np.char.not_equal(hdu_list[1].data['IFU_SPAXEL'][0],'S'),'GALAXY','SKY')
                     hdu_list[1].data['TARGCLASS'][rows]=targclass
+                    aps_keys=['APS_WL_MIN','APS_WL_MAX','APS_Z','APS_SIGMA','APS_IFU_TSSL_TARG_SNR']
+                    aps_defaults=[3700.,9550.,0.09,200.,20.]
+                    for i,aps_key in enumerate(aps_keys):
+                        aps_default=np.where(np.char.equal(newtarguse,'T') & \
+                                             np.char.not_equal(hdu_list[1].data['IFU_SPAXEL'][0],'S'), \
+                                             aps_defaults[i],None)
+                        hdu_list[1].data[aps_key][rows]=aps_default
                 # xx = hdu_list[1].data[colname]
                 # print('\n\n')
                 # print(len(rows[0]), rows)
