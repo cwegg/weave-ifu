@@ -27,6 +27,9 @@ PS1_PIXEL = 0.25  # arcsec
 LIFU_FIBRE_RADIUS = 1.305  # arcsec (2.6 arcsec diameter)
 LIFU_FIBRE_AREA = np.pi*LIFU_FIBRE_RADIUS**2
 
+mIFU_FIBRE_RADIUS = 1.305/2.  # arcsec (1.305 arcsec diameter)
+mIFU_FIBRE_AREA = np.pi*mIFU_FIBRE_RADIUS**2
+
 
 # <codecell> Code from PanSTARRS https://ps1images.stsci.edu/ps1image.html
 
@@ -89,7 +92,7 @@ def geturl(ra, dec, size=240, output_size=None, filters="grizy",
 
 # <codecell> Specific WEAVE (not necessarily LIFU?) code
 
-def photometry_from_PS1(cat_filename):
+def photometry_from_PS1(cat_filename,ifu='LIFU'):
     """
     Download broadband imaging for a given catalogue.
 
@@ -100,6 +103,9 @@ def photometry_from_PS1(cat_filename):
     ----------
     cat_filename : str
         A FITS file with an IFU catalogue.
+        
+    ifu : str
+        LIFU [default] or mIFU - IFU mode
     """
     logging.info(
         'Downloading PS1 broadband imaging for {}'.format(cat_filename))
@@ -163,8 +169,12 @@ def photometry_from_PS1(cat_filename):
 
                 coords_pix = utils.skycoord_to_pixel(coords_PS1, wcs_info,
                                                      origin=0, mode='all')
+                if ifu=='LIFU':
+                    radius=LIFU_FIBRE_RADIUS/PS1_PIXEL
+                elif ifu=='mIFU':
+                    radius=mIFU_FIBRE_RADIUS/PS1_PIXEL
                 apertures = CircularAperture(np.array(coords_pix).transpose(),
-                                             r=LIFU_FIBRE_RADIUS/PS1_PIXEL)
+                                             r=radius)
                 phot_table = aperture_photometry(img, apertures)
                 # good_photo = np.where(phot_table['aperture_sum'] > 0)
                 bad_photo = np.where(phot_table['aperture_sum'] <= 0)
@@ -180,19 +190,20 @@ def photometry_from_PS1(cat_filename):
                 # anything this faint in PanSTARRS imaging
                 # is indistinguishable from sky
                 if band=='r':
-                    logging.info('Changing TARGUSE, TARGCLASS, APS keys')
+                    logging.info('Changing TARGUSE, TARGCLASS')
                     targuse=hdu_list[1].data['TARGUSE'][rows]
                     newtarguse=np.where(np.less_equal(hdu_list[1].data[colname][rows],25.) & np.char.equal(targuse,'T'), 'T', 'S')
                     hdu_list[1].data['TARGUSE'][rows]=newtarguse
                     targclass=np.where(np.char.equal(newtarguse,'T') & np.char.not_equal(hdu_list[1].data['IFU_SPAXEL'][0],'S'),'GALAXY','SKY')
                     hdu_list[1].data['TARGCLASS'][rows]=targclass
-                    aps_keys=['APS_WL_MIN','APS_WL_MAX','APS_Z','APS_SIGMA','APS_IFU_TSSL_TARG_SNR']
-                    aps_defaults=[3700.,9550.,0.09,200.,20.]
-                    for i,aps_key in enumerate(aps_keys):
-                        aps_default=np.where(np.char.equal(newtarguse,'T') & \
-                                             np.char.not_equal(hdu_list[1].data['IFU_SPAXEL'][0],'S'), \
-                                             aps_defaults[i],None)
-                        hdu_list[1].data[aps_key][rows]=aps_default
+                #   aps_keys=['APS_WL_MIN','APS_WL_MAX','APS_Z','APS_SIGMA','APS_IFU_TSSL_TARG_SNR']
+                #   aps_defaults=[3700.,9550.,0.09,200.,20.]
+                #   for i,aps_key in enumerate(aps_keys):
+                #       aps_default=np.where(np.char.equal(newtarguse,'T') & \
+                #                            np.char.not_equal(hdu_list[1].data['IFU_SPAXEL'][0],'S'), \
+                #                            aps_defaults[i],None)
+                #       hdu_list[1].data[aps_key][rows]=aps_default
+                
                 # xx = hdu_list[1].data[colname]
                 # print('\n\n')
                 # print(len(rows[0]), rows)
@@ -273,6 +284,10 @@ if __name__ == '__main__':
     parser.add_argument('catalogue',
                         help='a FITS file with an IFU driver catalogue')
 
+    parser.add_argument('--ifu_mode', default='LIFU',
+                        choices=['LIFU','mIFU'],
+                        help='IFU mode')
+
     parser.add_argument('--log_level', default='info',
                         choices=['debug', 'info', 'warning', 'error'],
                         help='the level for the logging messages')
@@ -280,7 +295,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     logging.basicConfig(level=getattr(logging, args.log_level.upper()))
 
-    photometry_from_PS1(args.catalogue)
+    photometry_from_PS1(args.catalogue, ifu=args.ifu_mode)
 
 
 # <codecell> Bye
