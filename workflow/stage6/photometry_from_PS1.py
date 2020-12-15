@@ -147,7 +147,7 @@ def photometry_from_PS1(cat_filename,ifu='LIFU'):
                 galaxy, center_ra, center_dec, size_deg, size_pix))
 
             # Retrieve images:
-            for band in "gri":
+            for band in "gir":
                 filename = '{}_{}.fits'.format(galaxy, band)
                 full_path = os.path.join(output_dir, filename)
                 if os.path.isfile(full_path):
@@ -196,6 +196,11 @@ def photometry_from_PS1(cat_filename,ifu='LIFU'):
                     hdu_list[1].data['TARGUSE'][rows]=newtarguse
                     targclass=np.where(np.char.equal(newtarguse,'T') & np.char.not_equal(hdu_list[1].data['IFU_SPAXEL'][0],'S'),'GALAXY','SKY')
                     hdu_list[1].data['TARGCLASS'][rows]=targclass
+                    # clean up photometry
+                    for magband in "gri":
+                        magcolname = 'MAG_'+magband.upper()
+                        newphot = np.where(np.char.equal(newtarguse,'S'), None, hdu_list[1].data[magcolname][rows])
+                        hdu_list[1].data[magcolname][rows] = newphot
                 #   aps_keys=['APS_WL_MIN','APS_WL_MAX','APS_Z','APS_SIGMA','APS_IFU_TSSL_TARG_SNR']
                 #   aps_defaults=[3700.,9550.,0.09,200.,20.]
                 #   for i,aps_key in enumerate(aps_keys):

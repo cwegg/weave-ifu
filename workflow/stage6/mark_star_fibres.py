@@ -101,6 +101,8 @@ def mark_star_fibres(cat_filename, match_dist=2.5, ifu='LIFU',
         which_nearby_star = np.argmin(fibre_separations,axis=0)
 
         # change TARGCLASS and TARGNAME
+        newtarguse = np.where(nearby_star,'T',hdu_list[1].data['TARGUSE'])
+        hdu_list[1].data['TARGUSE']=newtarguse
         newtargclass = np.where(nearby_star,'STAR',hdu_list[1].data['TARGCLASS'])
         hdu_list[1].data['TARGCLASS']=newtargclass
         logging.info('Updated TARGCLASS')
