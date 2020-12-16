@@ -233,6 +233,9 @@ class _IFUPlot():
 
         aux_ax = fig.add_axes([left, 0.07, 0.05, height])
 
+        if mappable.get_array() is None:
+            mappable.set_array([])
+
         fig.colorbar(mappable, ax=aux_ax, fraction=fraction)
 
         aux_ax.remove()
