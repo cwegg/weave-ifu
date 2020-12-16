@@ -119,7 +119,7 @@ def _check_targsrvy(array, trimester, cat_filename):
     for targsrvy_value in targsrvy_set:
         if targsrvy_value not in icd_030_targsrvy_set:
 
-            if not re.match(sv_ot_regex, value):
+            if not re.match(sv_ot_regex, targsrvy_value):
                 logging.error('unexpected TARGSRVY value: {}'.format(
                     targsrvy_value))
                 result = False
@@ -299,7 +299,7 @@ def _check_progtemp(array, progtemp_dict, forbidden_dict):
             spectrograph_dict = get_progtemp_info(progtemp_value,
                                                   progtemp_dict=progtemp_dict)
         except:
-            logging.error('unexpected PROGTEMP value: {}'.format(value))
+            logging.error('unexpected PROGTEMP value: {}'.format(progtemp_value))
             result = False
 
         for survey_type in forbidden_dict.keys():
