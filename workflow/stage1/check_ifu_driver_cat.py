@@ -324,7 +324,7 @@ def _check_obstemp(array, obstemp_dict):
             obsconstraints_dict = get_obstemp_info(obstemp_value,
                                                    obstemp_dict=obstemp_dict)
         except:
-            logging.error('unexpected OBSTEMP value: {}'.format(value))
+            logging.error('unexpected OBSTEMP value: {}'.format(obstemp_value))
             result = False
 
     return result
