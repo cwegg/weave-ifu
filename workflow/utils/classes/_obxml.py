@@ -727,9 +727,15 @@ class OBXML:
     def _add_target(self, field, target_attrib_dict, photometry_attrib_dict,
                     assert_targuse=None):
 
+        # Sky targets have a different template
+        if target_attrib_dict['targuse'] == 'S':
+            target_targuse = 'S'
+        else:
+            target_targuse = 'T'
+
         for target in field.getElementsByTagName('target'):
             targuse = target.getAttribute('targuse')
-            if targuse == 'T':
+            if targuse == target_targuse:
                 first_science_target = target
                 break
 
@@ -743,14 +749,17 @@ class OBXML:
         if assert_targuse is not None:
             assert new_target.getAttribute('targuse') == assert_targuse
 
-        new_target_photometry = new_target.getElementsByTagName('photometry')[0]
+        # Sky doesn't have any photometry
+        if target_targuse != 'S':
+            new_target_photometry = new_target.getElementsByTagName('photometry')[0]
 
-        for key in new_target_photometry.attributes.keys():
-            assert key in photometry_attrib_dict.keys()
+            for key in new_target_photometry.attributes.keys():
+                assert key in photometry_attrib_dict.keys()
 
-        self._set_attribs(new_target_photometry, photometry_attrib_dict)
+            self._set_attribs(new_target_photometry, photometry_attrib_dict)
 
         field.insertBefore(new_target, first_science_target)
+
 
 
     def _add_table_as_targets(self, table, assert_targuse=None):
