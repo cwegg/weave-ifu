@@ -574,8 +574,8 @@ class OBXML:
             order = self.first_science_order
 
             # All mos entries should share a field center
-            field_dec = entry_group[0]['FIELD_RA']
-            field_ra = entry_group[0]['FIELD_DEC']
+            field_ra = entry_group[0]['FIELD_RA']
+            field_dec = entry_group[0]['FIELD_DEC']
 
             field = field_template.cloneNode(True)
 
@@ -936,7 +936,7 @@ class OBXML:
     def _filter_fits_data(self, fits_data, sim_data=None, rtol=0, atol=1e-5):
     
         # Let's start creating a mask without any filter
-    
+
         mask = _np.ones(len(fits_data), dtype=bool)
     
         # Filter FITS data comparing the values of the column OBSTEMP with the
