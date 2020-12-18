@@ -61,7 +61,8 @@ def populate_fits_table_template(fits_template, data_dict, output_filename,
     template_column_names = [col.name for col in template_hdu.columns]
     
     for col_name in template_column_names:
-        assert col_name in data_dict.keys()
+        assert col_name in data_dict.keys(), '{} not found in input'.format(
+            col_name)
     
     # Create list of columns as described in the template populated with the
     # provided data
