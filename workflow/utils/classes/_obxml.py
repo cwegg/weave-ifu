@@ -587,6 +587,17 @@ class OBXML:
 
             self._set_attribs(field, field_attrib_dict)
 
+            # Add the templates for sky and targets
+            field.appendChild(target_template)
+
+            sky_template = None
+            for target in target_list:
+                if target.getAttribute('targuse') == 'S':
+                    sky_template = target.cloneNode(True)
+                    break
+            assert sky_template is not None
+            field.appendChild(sky_template)
+
             # Add the field to fields
             self.fields.appendChild(field)
 

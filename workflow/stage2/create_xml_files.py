@@ -150,6 +150,8 @@ class _XMLFromFields:
         if self.mode == 'ifu':
             ifu_dither = first_entry['IFU_DITHER']
             ifu_pa_request = first_entry['IFU_PA_REQUEST']
+        else:
+            ifu_dither = 0 # Mandatory for MOS
 
         # Get some information from all the entries in the group
         if self.mode == 'ifu':
@@ -336,14 +338,13 @@ class _XMLFromFields:
 
         ob_xml.set_obsconstraints(obsconstraints_attrib_dict)
 
-        if self.mode == 'ifu':
-            # Set the attributes of the dithering element
+        # Set the attributes of the dithering element
 
-            dithering_attrib_dict = {
-                'apply_dither': ifu_dither
-            }
+        dithering_attrib_dict = {
+            'apply_dither': ifu_dither
+        }
 
-            ob_xml.set_dithering(dithering_attrib_dict)
+        ob_xml.set_dithering(dithering_attrib_dict)
 
         # Set the contents of the survey element
 
