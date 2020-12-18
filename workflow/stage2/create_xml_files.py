@@ -40,34 +40,23 @@ from workflow.utils.get_resources import (get_blank_xml_template,
                                           get_obstemp_file)
 
 
-class _IFUDriverCat:
-    """
-    Convert the target-level data from an IFU driver catalogue to a set of XMLs.
-    
-    This class provides code to take an IFU driver catalogue containing
-    information of the central fibres and convert it into XML targets that are
-    written into a supplied XML.
-    
-    Parameters
-    ----------
-    filename : str
-        A FITS file containing an IFU driver cat.
-    targcat : str, optional
-        Filename of the FITS catalogue which will be submitted to WASP (if None,
-        it will be derived from the input filename).
-    """
-
-    
-    def __init__(self, filename, targcat=None):
+class _XMLFromFields:
+    def __init__(self, filename, targcat=None, mode='ifu'):
+        assert mode in ('ifu', 'mos')
+        self.mode = mode
 
         # Save the filename
 
         self.filename = filename
 
         # Set the default prefix to be used for output XMLs
-
+        if self.mode == 'ifu':
+            default_filename_suffix = '-ifu_driver_cat'
+        elif self.mode == 'mos':
+            default_filename_suffix = '-mos_field_list'
         self.default_prefix = os.path.splitext(
-            os.path.basename(self.filename))[0].replace('-ifu_driver_cat', '')
+            os.path.basename(self.filename))[0].replace(default_filename_suffix,
+                                                        '')
 
         if self.default_prefix[-1] != '-':
             self.default_prefix = self.default_prefix + '-'
@@ -81,7 +70,7 @@ class _IFUDriverCat:
             self.targcat = targcat
 
         # Read and save the information into the IFU driver catalogue
-        
+
         logging.info('Reading {}'.format(self.filename))
 
         with fits.open(self.filename) as hdu_list:
@@ -94,7 +83,6 @@ class _IFUDriverCat:
 
             self.data = hdu_list[1].data
 
-        
     def _get_previous_files(self, output_dir='', prefix=None, suffix='-t'):
 
         if prefix is None:
@@ -102,17 +90,16 @@ class _IFUDriverCat:
 
         glob_pattern = os.path.join(output_dir, '{}*{}.xml'.format(prefix,
                                                                    suffix))
-        regex = '^{}[lm]ifu_[0-9]+{}.xml$'.format(prefix, suffix)
+        regex = '^{}[lm]{}_[0-9]+{}.xml$'.format(prefix, self.mode, suffix)
 
         candidate_list = glob.glob(glob_pattern)
         candidate_list.sort()
 
         filename_list = [filename for filename in candidate_list
-                        if re.match(regex, os.path.basename(filename))]
+                         if re.match(regex, os.path.basename(filename))]
 
         return filename_list
 
-    
     def remove_xmls(self, output_dir='', prefix=None, suffix='-t'):
 
         prev_filename_list = self._get_previous_files(output_dir=output_dir,
@@ -127,7 +114,6 @@ class _IFUDriverCat:
             for filename in prev_filename_list:
                 os.remove(filename)
 
-
     def _get_output_path(self, obsmode, output_dir='', prefix=None,
                          suffix='-t'):
 
@@ -140,9 +126,8 @@ class _IFUDriverCat:
 
         index = 0
         output_path = ''
-        
-        while (index < 1) or os.path.exists(output_path):
 
+        while (index < 1) or os.path.exists(output_path):
             index += 1
 
             output_basename = '{}{}_{:02d}{}.xml'.format(
@@ -152,7 +137,6 @@ class _IFUDriverCat:
 
         return output_path
 
-    
     def _process_ob(self, entry_group, xml_template, progtemp_dict,
                     obstemp_dict, spatial_binning, output_dir='', prefix=None,
                     suffix='-t'):
@@ -163,29 +147,39 @@ class _IFUDriverCat:
 
         progtemp = first_entry['PROGTEMP']
         obstemp = first_entry['OBSTEMP']
-        ifu_dither = first_entry['IFU_DITHER']
-        ifu_pa_request = first_entry['IFU_PA_REQUEST']
+        if self.mode == 'ifu':
+            ifu_dither = first_entry['IFU_DITHER']
+            ifu_pa_request = first_entry['IFU_PA_REQUEST']
 
         # Get some information from all the entries in the group
-
-        targsrvy_list = list(set([entry['TARGSRVY'] for entry in entry_group]))
-        targsrvy_list.sort()
+        if self.mode == 'ifu':
+            targsrvy_list = list(
+                set([entry['TARGSRVY'] for entry in entry_group]))
+            targsrvy_list.sort()
+        else:
+            # MOS mode
+            targsrvy_list = [entry['TARGSRVY'] for entry in entry_group]
+            max_fibres = [entry['MAX_FIBRES'] for entry in entry_group]
+            assert len(targsrvy_list) == len(set(targsrvy_list)), \
+                'Cant handle duplicate TARGSRVY entries for the same field.'
 
         # Guess some parameters which depends on PROGTEMP
-        
+
         chained = ('+' in progtemp)
 
         spectrograph_dict = get_progtemp_info(progtemp,
                                               progtemp_dict=progtemp_dict)
 
         obsmode = spectrograph_dict['obsmode']
-
-        assert obsmode in ['LIFU', 'mIFU']
+        if self.mode == 'ifu':
+            assert obsmode in ['LIFU', 'mIFU']
+        elif self.mode == 'mos':
+            assert obsmode in ['MOS']
 
         assert (spectrograph_dict['red_resolution'] ==
                 spectrograph_dict['blue_resolution'])
         resolution = spectrograph_dict['red_resolution']
-                
+
         red_vph = spectrograph_dict['red_vph']
         blue_vph = spectrograph_dict['blue_vph']
 
@@ -202,7 +196,7 @@ class _IFUDriverCat:
         binning_y = spectrograph_dict['red_binning_y']
 
         # Set the spatial binning from the input of this method
-        
+
         binning_x = spatial_binning
 
         # Set the some paremeters which depends on OBSMODE:
@@ -227,15 +221,24 @@ class _IFUDriverCat:
             max_sky = 73
             num_sky_fibres = 740
             max_fibres = 740
+        elif obsmode == 'MOS':
+            observation_name = first_entry['FIELD_NAME']
+            plate = 'PLATE_B'  # TODO Fix This
+            max_calibration = 25
+            max_guide = 8
+            max_sky = 100
+            num_sky_fibres = 100
+            pa = None
 
         # Guess the number of dither positions
 
         if (obsmode == 'LIFU') and (len(entry_group) > 1):
             num_dither_positions = len(entry_group)
-        else:
-            num_dither_positions = ifu_dither
+            assert (num_dither_positions % num_science_exposures == 0)
 
-        assert (num_dither_positions % num_science_exposures == 0)
+        elif self.mode == 'ifu':
+            num_dither_positions = ifu_dither
+            assert (num_dither_positions % num_science_exposures == 0)
 
         # Guess some parameters from obstemp
 
@@ -266,15 +269,15 @@ class _IFUDriverCat:
         ob_xml = OBXML(xml_template)
 
         # Remove the elements and attributes which are configure outputs
-                        
+
         ob_xml.remove_configure_outputs()
 
         # Remove the non-used elements
-                        
+
         ob_xml.remove_non_used_elements()
 
         # Set the attributes of the root element
-        
+
         root_attrib_dict = {
             'author': self.author,
             'cc_report': self.cc_report,
@@ -308,7 +311,7 @@ class _IFUDriverCat:
             observation_attrib_dict['pa'] = pa
 
         ob_xml.set_observation(observation_attrib_dict)
-            
+
         # Set the attributes of the dithering element
 
         configure_attrib_dict = {
@@ -333,13 +336,14 @@ class _IFUDriverCat:
 
         ob_xml.set_obsconstraints(obsconstraints_attrib_dict)
 
-        # Set the attributes of the dithering element
+        if self.mode == 'ifu':
+            # Set the attributes of the dithering element
 
-        dithering_attrib_dict = {
-            'apply_dither': ifu_dither
-        }
+            dithering_attrib_dict = {
+                'apply_dither': ifu_dither
+            }
 
-        ob_xml.set_dithering(dithering_attrib_dict)
+            ob_xml.set_dithering(dithering_attrib_dict)
 
         # Set the contents of the survey element
 
@@ -356,15 +360,64 @@ class _IFUDriverCat:
                                             prefix=prefix, suffix=suffix)
 
         ob_xml.write_xml(output_path)
-        
-        return output_path
-        
 
-        
+        return output_path
+
+
+    def _get_progtemp_dict(self, progtemp_file, pass_datamver=False):
+        progtemp_datamver, progtemp_dict, forbidden_dict = get_progtemp_dict(
+            filename=progtemp_file, assert_orb=True)
+
+        if self.datamver != progtemp_datamver:
+            logging.critical(
+                'DATAMVER mismatch ({} != {}) for PROGTEMP file: '.format(
+                    self.datamver, progtemp_datamver) +
+                'Stop unless you are sure!')
+
+            if pass_datamver == False:
+                raise SystemExit(2)
+        return progtemp_dict
+
+
+    def _get_obstemp_dict(self, obstemp_file, pass_datamver=False):
+        obstemp_datamver, obstemp_dict = get_obstemp_dict(
+            filename=obstemp_file)
+        if self.datamver != obstemp_datamver:
+            logging.critical(
+                'DATAMVER mismatch ({} != {}) for OBSTEMP file: '.format(
+                    self.datamver, obstemp_datamver) +
+                'Stop unless you are sure!')
+
+            if pass_datamver == False:
+                raise SystemExit(2)
+
+
+
+
+class _IFUDriverCat(_XMLFromFields):
+    """
+    Convert the target-level data from an IFU driver catalogue to a set of XMLs.
+
+    This class provides code to take an IFU driver catalogue containing
+    information of the central fibres and convert it into XML targets that are
+    written into a supplied XML.
+
+    Parameters
+    ----------
+    filename : str
+        A FITS file containing an IFU driver cat.
+    targcat : str, optional
+        Filename of the FITS catalogue which will be submitted to WASP (if None,
+        it will be derived from the input filename).
+    """
+
+    def __init__(self, filename, targcat=None):
+        super().__init__(filename, targcat, mode='ifu')
+
     def _generate_lifu_xmls(self, lifu_entry_list, xml_template, progtemp_dict,
                             obstemp_dict, spatial_binning, output_dir='',
                             prefix='', suffix='-t'):
-        
+
         output_file_list = []
 
         # How do you group entries belonging to the same OB?
@@ -375,11 +428,10 @@ class _IFUDriverCat:
         # Detect the non-custom dithers and save them into a list
 
         non_custom_dithers_list = []
-        
+
         for lifu_entry in lifu_entry_list:
 
             if lifu_entry['IFU_DITHER'] != -1:
-
                 non_custom_dithers_list.append(lifu_entry)
 
         # Generate the IFU XMLs of the non-custom dithers
@@ -389,7 +441,6 @@ class _IFUDriverCat:
                 len(non_custom_dithers_list)))
 
         for lifu_entry in non_custom_dithers_list:
-
             entry_group = [lifu_entry]
 
             output_file = self._process_ob(entry_group, xml_template,
@@ -397,7 +448,7 @@ class _IFUDriverCat:
                                            spatial_binning,
                                            output_dir=output_dir, prefix=prefix,
                                            suffix=suffix)
-            
+
             output_file_list.append(output_file)
 
         # Detect the custom dithers and save them into a dict
@@ -412,28 +463,26 @@ class _IFUDriverCat:
 
                 if key not in custom_dithers_dict.keys():
                     custom_dithers_dict[key] = []
-                
+
                 custom_dithers_dict[key].append(lifu_entry)
 
         # Process the custom dither pointing groupings
-        
+
         logging.info(
             'Processing {} custom dither OBs for LIFU'.format(
                 len(custom_dithers_dict)))
 
         for entry_group in custom_dithers_dict.values():
-        
             output_file = self._process_ob(entry_group, xml_template,
                                            progtemp_dict, obstemp_dict,
                                            spatial_binning,
                                            output_dir=output_dir, prefix=prefix,
                                            suffix=suffix)
-            
+
             output_file_list.append(output_file)
 
         return output_file_list
 
-                
     def _generate_mifu_xmls(self, mifu_entry_list, xml_template, progtemp_dict,
                             obstemp_dict, spatial_binning, mifu_mode='all',
                             mifu_num_calibs=2, mifu_num_extra=0, output_dir='',
@@ -454,7 +503,7 @@ class _IFUDriverCat:
 
         assert mifu_mode in ['all', 'aufbau', 'equipartition']
         assert (mifu_num_calibs >= 0) and (mifu_num_calibs < 20)
-        
+
         output_file_list = []
 
         # How do you group bundles belonging to the same field?
@@ -500,7 +549,7 @@ class _IFUDriverCat:
 
                     # All the OBs (except the last one) will contain the maximum
                     # number of target entries plus the amount of extra targets
-                    
+
                     num_entries_per_ob = max_entries_per_ob + mifu_num_extra
 
                 elif mifu_mode == 'equipartition':
@@ -523,17 +572,16 @@ class _IFUDriverCat:
                 # Save the targets of each OB using Python slices
                 # (do not worry, if stop is higher than the lenght of the list,
                 #  this is allowed and the trick)
-                
+
                 start = 0
 
                 while start < num_entries_in_field:
-
                     stop = start + num_entries_per_ob
 
                     ob_nested_list.append(field_entry_list[start:stop])
 
                     start = stop
-                    
+
             elif mifu_mode == 'all':
 
                 ob_nested_list.append(field_entry_list)
@@ -549,18 +597,16 @@ class _IFUDriverCat:
                 len(fields_dict), len(ob_nested_list), mifu_mode))
 
         for entry_group in ob_nested_list:
-        
             output_file = self._process_ob(entry_group, xml_template,
                                            progtemp_dict, obstemp_dict,
                                            spatial_binning,
                                            output_dir=output_dir, prefix=prefix,
                                            suffix=suffix)
-            
+
             output_file_list.append(output_file)
 
         return output_file_list
 
-                    
     def generate_xmls(self, xml_template, progtemp_file=None,
                       obstemp_file=None, mifu_mode='all', mifu_num_calibs=2,
                       mifu_num_extra=0, spatial_binning=1, output_dir='',
@@ -571,47 +617,24 @@ class _IFUDriverCat:
         xml_template_dom = xml.dom.minidom.parse(xml_template)
         xml_datamver = xml_template_dom.childNodes[0].getAttribute('datamver')
 
-        # Get the dictionaries to interpret PROGTEMP and OBSTEMP, and their
-        # DATAMVER values
-
-        progtemp_datamver, progtemp_dict, forbidden_dict = get_progtemp_dict(
-            filename=progtemp_file, assert_orb=True)
-
-        obstemp_datamver, obstemp_dict = get_obstemp_dict(
-            filename=obstemp_file)
+        # Get the dictionaries to interpret PROGTEMP and OBSTEMP
+        progtemp_dict = self._get_progtemp_dict(progtemp_file, pass_datamver)
+        obstemp_dict = self._get_obstemp_dict(obstemp_file, pass_datamver)
 
         # Check DATAMVER of the IFU driver cat, the XML template, PROGTEMP file
         # and OBSTEMP file are consistent
 
         if self.datamver != xml_datamver:
             logging.critical(
-               'DATAMVER mismatch ({} != {}) for XML template: '.format(
+                'DATAMVER mismatch ({} != {}) for XML template: '.format(
                     self.datamver, xml_datamver) +
                 'Stop unless you are sure!')
 
             if pass_datamver == False:
                 raise SystemExit(2)
 
-        if self.datamver != progtemp_datamver:
-            logging.critical(
-               'DATAMVER mismatch ({} != {}) for PROGTEMP file: '.format(
-                    self.datamver, progtemp_datamver) +
-                'Stop unless you are sure!')
-
-            if pass_datamver == False:
-                raise SystemExit(2)
-
-        if self.datamver != obstemp_datamver:
-            logging.critical(
-               'DATAMVER mismatch ({} != {}) for OBSTEMP file: '.format(
-                    self.datamver, obstemp_datamver) +
-                'Stop unless you are sure!')
-
-            if pass_datamver == False:
-                raise SystemExit(2)
-
         # Classify the entries into LIFU and mIFU
-        
+
         lifu_entry_list = []
         mifu_entry_list = []
 
@@ -634,24 +657,24 @@ class _IFUDriverCat:
                     i + 1, progtemp))
 
         # Generate the LIFU XMLs
-                
+
         lifu_output_file_list = self._generate_lifu_xmls(
             lifu_entry_list, xml_template, progtemp_dict, obstemp_dict,
             spatial_binning, output_dir=output_dir, prefix=prefix,
             suffix=suffix)
 
         # Generate the mIFU XMLs
-                
+
         mifu_output_file_list = self._generate_mifu_xmls(
             mifu_entry_list, xml_template, progtemp_dict, obstemp_dict,
             spatial_binning, mifu_mode=mifu_mode,
             mifu_num_calibs=mifu_num_calibs, mifu_num_extra=mifu_num_extra,
             output_dir=output_dir, prefix=prefix, suffix=suffix)
-        
+
         # Get the list with the output files
-        
+
         output_file_list = lifu_output_file_list + mifu_output_file_list
-        
+
         return output_file_list
 
 
@@ -710,7 +733,7 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
     ifu_driver_cat = _IFUDriverCat(ifu_driver_cat_filename)
 
     # Remove the previous files if overwriting has been requested
-    
+
     if overwrite == True:
         ifu_driver_cat.remove_xmls(output_dir=output_dir, prefix=prefix,
                                    suffix=suffix)
@@ -723,14 +746,14 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
         mifu_num_extra=mifu_num_extra, spatial_binning=spatial_binning,
         output_dir=output_dir, prefix=prefix, suffix=suffix,
         pass_datamver=pass_datamver)
-    
+
     return output_file_list
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-             description='Create XML files with targets from an IFU driver cat')
+        description='Create XML files with targets from an IFU driver cat')
 
     parser.add_argument('ifu_driver_cat',
                         help="""a FITS file containing an IFU driver cat""")
@@ -744,7 +767,6 @@ if __name__ == '__main__':
                         default=os.path.join('aux', 'progtemp.dat'),
                         help="""a progtemp.dat file with the definition of
                         PROGTEMP""")
-
 
     parser.add_argument('--obstemp_file',
                         default=os.path.join('aux', 'obstemp.dat'),
@@ -823,4 +845,3 @@ if __name__ == '__main__':
                      spatial_binning=args.spatial_binning,
                      prefix=args.prefix, pass_datamver=args.pass_datamver,
                      overwrite=args.overwrite)
-

@@ -325,13 +325,18 @@ class OBXML:
         
     def set_surveys(self, targsrvy_list, max_fibres, priority='1.0'):
 
-        # Get the survey element from the template (there should be only one)
+        # max_fibres might be a list if multiple surveys share an exposure
+        # or might be a int if not
+        if hasattr(max_fibres, '__len__') and len(max_fibres) == len(targsrvy_list):
+            max_fibres_list = max_fibres
+        else:
+            max_fibres_list = [max_fibres] * len(targsrvy_list)
 
+        # Get the survey element from the template (there should be only one)
         survey_template = self.surveys.getElementsByTagName('survey')[0]
 
         # Add the requested amount of survey elements before the template
-
-        for targsrvy in targsrvy_list:
+        for targsrvy, max_fibres in zip(targsrvy_list, max_fibres_list):
 
             survey = survey_template.cloneNode(True)
 
@@ -403,7 +408,7 @@ class OBXML:
 
         # Check the input parameters
 
-        assert obsmode in ['LIFU', 'mIFU']
+        assert obsmode in ['LIFU', 'mIFU', 'MOS']
 
         if obsmode == 'LIFU':
             assert num_science_exposures % len(entry_group) == 0
@@ -517,7 +522,6 @@ class OBXML:
                 self.fields.appendChild(field)
 
         # For mIFU: One field with sereral targets will be added
-
         elif obsmode == 'mIFU':
 
             # Create a new field
@@ -559,8 +563,31 @@ class OBXML:
 
                 field.appendChild(target)
 
-            # Add the field to fields
+                # Add the field to fields
+                self.fields.appendChild(field)
 
+        # For MOS we add targets from the catalogues in a separate step but
+        # add the field
+        elif obsmode == 'MOS':
+
+            # Create a new field
+            order = self.first_science_order
+
+            # All mos entries should share a field center
+            field_dec = entry_group[0]['FIELD_RA']
+            field_ra = entry_group[0]['FIELD_DEC']
+
+            field = field_template.cloneNode(True)
+
+            field_attrib_dict = {
+                'Dec_d': field_dec,
+                'RA_d': field_ra,
+                'order': order
+            }
+
+            self._set_attribs(field, field_attrib_dict)
+
+            # Add the field to fields
             self.fields.appendChild(field)
 
 
