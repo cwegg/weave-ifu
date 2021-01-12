@@ -693,7 +693,7 @@ class OBXML:
 
     def _get_guide_stars(self, plot_filename=None, useful_table_filename=None,
                          lifu_num_stars_request=1, mifu_num_stars_request=8,
-                         mifu_num_central_stars=1,
+                         mifu_num_central_stars=1, mos_num_stars_request=25,
                          mifu_min_cut=0.9, mifu_max_cut=1.0):
 
         obsmode = self._get_obsmode()
@@ -704,6 +704,9 @@ class OBXML:
 
         if obsmode == 'LIFU':
             num_stars_request = lifu_num_stars_request
+        elif obsmode == 'MOS':
+            num_stars_request = mos_num_stars_request
+            # TODO - How many guide stars should MOS mode get?
         else:
             num_stars_request = mifu_num_stars_request
 
@@ -838,7 +841,8 @@ class OBXML:
     def _add_guide_stars(self, plot_filename=None, useful_table_filename=None,
                          lifu_num_stars_request=1, mifu_num_stars_request=8,
                          mifu_num_central_stars=1,
-                         mifu_min_cut=0.9, mifu_max_cut=1.0):
+                         mifu_min_cut=0.9, mifu_max_cut=1.0,
+                         mos_num_stars_request=25):
 
         actual_pa, guides_table = self._get_guide_stars(
             plot_filename=plot_filename,
@@ -846,6 +850,7 @@ class OBXML:
             lifu_num_stars_request=lifu_num_stars_request,
             mifu_num_stars_request=mifu_num_stars_request,
             mifu_num_central_stars=mifu_num_central_stars,
+            mos_num_stars_request=mos_num_stars_request,
             mifu_min_cut=mifu_min_cut, mifu_max_cut=mifu_max_cut)
 
         self._set_guide_stars(actual_pa, guides_table)
@@ -910,6 +915,7 @@ class OBXML:
                                   mifu_num_central_guide_stars=1,
                                   mifu_min_guide_cut=0.9,
                                   mifu_max_guide_cut=1.0,
+                                  mos_num_guide_stars_stars_request=25,
                                   calib_plot_filename=None,
                                   calib_useful_table_filename=None,
                                   num_calib_stars_request=2,
@@ -923,7 +929,8 @@ class OBXML:
                               mifu_num_stars_request=mifu_num_guide_stars_request,
                               mifu_num_central_stars=mifu_num_central_guide_stars,
                               mifu_min_cut=mifu_min_guide_cut,
-                              mifu_max_cut=mifu_max_guide_cut)
+                              mifu_max_cut=mifu_max_guide_cut,
+                              mos_num_stars_request=mos_num_guide_stars_stars_request)
         self._add_calib_stars(plot_filename=calib_plot_filename,
                               useful_table_filename=calib_useful_table_filename,
                               num_stars_request=num_calib_stars_request,
