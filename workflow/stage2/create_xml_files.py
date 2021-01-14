@@ -658,7 +658,7 @@ class _IFUDriverCat:
 def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
                      progtemp_file=None, obstemp_file=None,
                      mifu_mode='all', mifu_num_calibs=2, mifu_num_extra=0,
-                     spatial_binning=1, prefix=None, suffix='-t',
+                     spatial_binning=1, targcat=None, prefix=None, suffix='-t',
                      pass_datamver=False, overwrite=False):
     """
     Create XML files with targets from an IFU driver cat.
@@ -685,6 +685,9 @@ def create_xml_files(ifu_driver_cat_filename, output_dir, xml_template,
         grouping mode is used.
     spatial_binning : int, optional
         Number of pixels for the spatial binning.
+    targcat : str, optional
+        Filename of the FITS catalogue which will be submitted to WASP (if None,
+        it will be derived from the input filename).
     prefix : str, optional
         Prefix to be used in the output files (it will be derived from
         ifu_driver_cat_filename if None is provided).
@@ -770,6 +773,11 @@ if __name__ == '__main__':
                         type=int,
                         help='number of pixels for the spatial binning')
 
+    parser.add_argument('--targcat', default=None, type=str,
+                        help="""filename of the FITS catalogue which will be
+                        submitted to WASP (if None, it will be derived from the
+                        input filename)""")
+
     parser.add_argument('--outdir', dest='output_dir', default='output',
                         help="""name of the directory which will containe the
                         output XML files""")
@@ -820,7 +828,7 @@ if __name__ == '__main__':
                      mifu_mode=args.mifu_mode,
                      mifu_num_calibs=args.mifu_num_calibs,
                      mifu_num_extra=args.mifu_num_extra,
-                     spatial_binning=args.spatial_binning,
+                     spatial_binning=args.spatial_binning, targcat=args.targcat,
                      prefix=args.prefix, pass_datamver=args.pass_datamver,
                      overwrite=args.overwrite)
 
