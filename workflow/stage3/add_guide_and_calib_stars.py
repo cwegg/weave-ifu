@@ -31,6 +31,7 @@ def add_guide_and_calib_stars(
         mifu_min_guide_cut=0.9, mifu_max_guide_cut=1.0,
         num_calib_stars_request=2, num_central_calib_stars=0,
         min_calib_cut=0.2, max_calib_cut=0.4, write_useful_tables=False,
+        cnames_for_guide_stars=True, cnames_for_calib_stars=False,
         overwrite=False):
     """
     Add guide and calib stars to XML files.
@@ -63,6 +64,10 @@ def add_guide_and_calib_stars(
         Write tables with the potentially useful stars, i.e. those guide or
         calib stars available for the position of the location in the sky of
         each OB XML file.
+    cnames_for_guide_stars : bool, optional
+        Add or remove CNAMEs for guide stars in the output XMLs.
+    cnames_for_calib_stars : bool, optional
+        Add or remove CNAMEs for calib stars in the output XMLs.
     overwrite : bool, optional
         Overwrite the output FITS file.
 
@@ -150,8 +155,9 @@ def add_guide_and_calib_stars(
             calib_useful_table_filename=calib_useful_table_filename,
             num_calib_stars_request=num_calib_stars_request,
             num_central_calib_stars=num_central_calib_stars,
-            min_calib_cut=min_calib_cut,
-            max_calib_cut=max_calib_cut)
+            min_calib_cut=min_calib_cut, max_calib_cut=max_calib_cut,
+            cnames_for_guide_stars=cnames_for_guide_stars,
+            cnames_for_calib_stars=cnames_for_calib_stars)
 
         ob_xml.write_xml(output_file)
 
@@ -212,6 +218,22 @@ if __name__ == '__main__':
                         position of the location in the sky of each OB XML
                         file""")
 
+    parser.add_argument('--add_cnames_for_guide_stars',
+                        dest='cnames_for_guide_stars', action='store_true',
+                        help='add CNAMEs for guide stars in the output XMLs')
+    parser.add_argument('--remove_cnames_for_guide_stars',
+                        dest='cnames_for_guide_stars', action='store_false',
+                        help='remove CNAMEs for guide stars in the output XMLs')
+    parser.set_defaults(cnames_for_guide_stars=True)
+
+    parser.add_argument('--add_cnames_for_calib_stars',
+                        dest='cnames_for_calib_stars', action='store_true',
+                        help='add CNAMEs for calib stars in the output XMLs')
+    parser.add_argument('--remove_cnames_for_calib_stars',
+                        dest='cnames_for_calib_stars', action='store_false',
+                        help='remove CNAMEs for calib stars in the output XMLs')
+    parser.set_defaults(cnames_for_calib_stars=False)
+
     parser.add_argument('--overwrite', action='store_true',
                         help='overwrite the output files')
 
@@ -254,5 +276,8 @@ if __name__ == '__main__':
         num_central_calib_stars=args.num_central_calib_stars,
         min_calib_cut=args.min_calib_cut,
         max_calib_cut=args.max_calib_cut,
-        write_useful_tables=args.write_useful_tables, overwrite=args.overwrite)
+        write_useful_tables=args.write_useful_tables,
+        cnames_for_guide_stars=args.cnames_for_guide_stars,
+        cnames_for_calib_stars=args.cnames_for_calib_stars,
+        overwrite=args.overwrite)
 

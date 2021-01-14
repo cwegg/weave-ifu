@@ -30,7 +30,8 @@ from workflow.utils import populate_fits_table_template
 from workflow.utils.get_data_from_xmls import (
     get_datamver_from_xmls,
     get_author_from_xmls, get_cc_report_from_xmls, get_trimester_from_xmls,
-    get_spa_data_of_target_random_and_sky_fibres_from_xmls)
+    get_spa_data_of_target_random_and_sky_fibres_from_xmls,
+    get_spa_data_of_target_calib_random_and_sky_fibres_from_xmls)
 
 
 def _get_col_null_dict_of_template(fits_template):
@@ -219,7 +220,7 @@ def _add_sim_extension(filename):
 
 def create_ifu_fits_cat(fits_template, xml_files, cat_nme1='', cat_nme2='',
                         gaia_dr=None, output_dir='output', output_filename=None,
-                        sim_ext=False, overwrite=False):
+                        sim_ext=False, add_calib=True, overwrite=False):
     """
     Create an IFU FITS catalogue.
     
@@ -244,6 +245,8 @@ def create_ifu_fits_cat(fits_template, xml_files, cat_nme1='', cat_nme2='',
     sim_ext : bool, optional
         Add an extra extension to the output file for the information needed to
         generate the simulations.
+    add_calib : bool, optional
+        Add fibres with targuse C to the FITS catalogue.
     overwrite : bool, optional
         Overwrite the output FITS file.
 
@@ -319,8 +322,12 @@ def create_ifu_fits_cat(fits_template, xml_files, cat_nme1='', cat_nme2='',
     
     # Get a dictionary with the SPA data from targets and skies in the XML files
     
-    spa_data_dict = get_spa_data_of_target_random_and_sky_fibres_from_xmls(
-                        xml_filename_list, sort_targets=True)
+    if add_calib is True:
+        spa_data_dict = get_spa_data_of_target_calib_random_and_sky_fibres_from_xmls(
+                            xml_filename_list, sort_targets=True)
+    else:
+        spa_data_dict = get_spa_data_of_target_random_and_sky_fibres_from_xmls(
+                            xml_filename_list, sort_targets=True)
     
     # Add missing columns of the template to the dictionary
     
@@ -382,6 +389,14 @@ if __name__ == '__main__':
                         help="""add an extra extension to the output file for
                         the information needed to generate the simulations""")
 
+    parser.add_argument('--add_calib', dest='add_calib', action='store_true',
+                        help='add fibres with targuse C to the FITS catalogue')
+    parser.add_argument('--not_add_calib', dest='add_calib',
+                        action='store_false',
+                        help="""not add fibres with targuse C to the FITS
+                        catalogue""")
+    parser.set_defaults(add_calib=True)
+
     parser.add_argument('--overwrite', action='store_true',
                         help='overwrite the output file')
 
@@ -406,5 +421,6 @@ if __name__ == '__main__':
                         cat_nme1=args.cat_nme1, cat_nme2=args.cat_nme2,
                         gaia_dr=args.gaia_dr, output_dir=args.output_dir,
                         output_filename=args.output_filename,
-                        sim_ext=args.sim_ext, overwrite=args.overwrite)
+                        sim_ext=args.sim_ext, add_calib=args.add_calib,
+                        overwrite=args.overwrite)
 
