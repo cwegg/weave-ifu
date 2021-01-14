@@ -852,6 +852,18 @@ def check_ifu_driver_cat(cat_filename, template=None, check_vs_template=True,
 
     # Write a message
 
+    if not cat_filename.endswith('-ifu_driver_cat.fits'):
+        logging.warning(
+            '{} does not follow the filename convention'.format(cat_filename) +
+            ': it should be the name of the catalogue FITS file submitted to ' +
+            'WASP with the suffix "-ifu_driver_cat.fits". Please, follow this '+
+            'convention unless you know what you are doing and its impact.' +
+            'Do not request for help for not following the convention, ' +
+            'unless you have read the whole documentation from top to bottom ' +
+            'and you have strong reasons for doing it.')
+
+    # Write a message
+
     if result == True:
         logging.info('{} has passed the checks'.format(cat_filename))
     else:
