@@ -333,6 +333,7 @@ class OBXML:
             max_fibres_list = [max_fibres] * len(targsrvy_list)
 
         # Get the survey element from the template (there should be only one)
+
         survey_template = self.surveys.getElementsByTagName('survey')[0]
 
         # Add the requested amount of survey elements before the template
@@ -522,6 +523,7 @@ class OBXML:
                 self.fields.appendChild(field)
 
         # For mIFU: One field with sereral targets will be added
+
         elif obsmode == 'mIFU':
 
             # Create a new field
@@ -599,6 +601,7 @@ class OBXML:
             field.appendChild(sky_template)
 
             # Add the field to fields
+
             self.fields.appendChild(field)
 
 
@@ -693,7 +696,7 @@ class OBXML:
 
     def _get_guide_stars(self, plot_filename=None, useful_table_filename=None,
                          lifu_num_stars_request=1, mifu_num_stars_request=8,
-                         mifu_num_central_stars=1, mos_num_stars_request=25,
+                         mifu_num_central_stars=1,
                          mifu_min_cut=0.9, mifu_max_cut=1.0):
 
         obsmode = self._get_obsmode()
@@ -704,9 +707,6 @@ class OBXML:
 
         if obsmode == 'LIFU':
             num_stars_request = lifu_num_stars_request
-        elif obsmode == 'MOS':
-            num_stars_request = mos_num_stars_request
-            # TODO - How many guide stars should MOS mode get?
         else:
             num_stars_request = mifu_num_stars_request
 
@@ -764,7 +764,6 @@ class OBXML:
         field.insertBefore(new_target, first_science_target)
 
 
-
     def _add_table_as_targets(self, table, assert_targuse=None):
 
         col_to_attrib_target_dict = {
@@ -818,7 +817,7 @@ class OBXML:
                                  assert_targuse=assert_targuse)
 
 
-    def _set_guide_stars(self, actual_pa, guides_table):
+    def _set_guide_stars(self, actual_pa, guides_table, add_cnames=True):
 
         # Update the PA value if needed
 
@@ -835,14 +834,14 @@ class OBXML:
             logging.error('There is not guide stars available')
             raise SystemExit(2)
 
-        self._add_table_as_targets(guides_table, assert_targuse='G')
+        self._add_table_as_targets(guides_table, assert_targuse='G',
+                                   add_cnames=add_cnames)
 
                 
     def _add_guide_stars(self, plot_filename=None, useful_table_filename=None,
                          lifu_num_stars_request=1, mifu_num_stars_request=8,
                          mifu_num_central_stars=1,
-                         mifu_min_cut=0.9, mifu_max_cut=1.0,
-                         mos_num_stars_request=25):
+                         mifu_min_cut=0.9, mifu_max_cut=1.0):
 
         actual_pa, guides_table = self._get_guide_stars(
             plot_filename=plot_filename,
@@ -850,10 +849,9 @@ class OBXML:
             lifu_num_stars_request=lifu_num_stars_request,
             mifu_num_stars_request=mifu_num_stars_request,
             mifu_num_central_stars=mifu_num_central_stars,
-            mos_num_stars_request=mos_num_stars_request,
             mifu_min_cut=mifu_min_cut, mifu_max_cut=mifu_max_cut)
 
-        self._set_guide_stars(actual_pa, guides_table)
+        self._set_guide_stars(actual_pa, guides_table, add_cnames=add_cnames)
 
                         
     def _get_calib_stars(self, plot_filename=None, useful_table_filename=None,
@@ -876,7 +874,7 @@ class OBXML:
         return calibs_table
 
 
-    def _set_calib_stars(self, calibs_table):
+    def _set_calib_stars(self, calibs_table, add_cnames=False):
 
         # Add the guide stars to the XML file
 
@@ -884,12 +882,13 @@ class OBXML:
             logging.error('There is not guide stars available')
             raise SystemExit(2)
 
-        self._add_table_as_targets(calibs_table, assert_targuse='C')
+        self._add_table_as_targets(calibs_table, assert_targuse='C',
+                                   add_cnames=add_cnames)
 
 
     def _add_calib_stars(self, plot_filename=None, useful_table_filename=None,
                          num_stars_request=2, num_central_stars=0, min_cut=0.2,
-                         max_cut=0.4):
+                         max_cut=0.4, add_cnames=False):
 
         obsmode = self._get_obsmode()
 
@@ -904,7 +903,7 @@ class OBXML:
             num_central_stars=num_central_stars,
             min_cut=min_cut, max_cut=max_cut)
 
-        self._set_calib_stars(calibs_table)
+        self._set_calib_stars(calibs_table, add_cnames=add_cnames)
 
         
     def add_guide_and_calib_stars(self,
@@ -915,13 +914,13 @@ class OBXML:
                                   mifu_num_central_guide_stars=1,
                                   mifu_min_guide_cut=0.9,
                                   mifu_max_guide_cut=1.0,
-                                  mos_num_guide_stars_stars_request=25,
                                   calib_plot_filename=None,
                                   calib_useful_table_filename=None,
                                   num_calib_stars_request=2,
                                   num_central_calib_stars=0,
-                                  min_calib_cut=0.2,
-                                  max_calib_cut=0.4):
+                                  min_calib_cut=0.2, max_calib_cut=0.4,
+                                  cnames_for_guide_stars=True,
+                                  cnames_for_calib_stars=False):
 
         self._add_guide_stars(plot_filename=guide_plot_filename,
                               useful_table_filename=guide_useful_table_filename,
@@ -929,14 +928,13 @@ class OBXML:
                               mifu_num_stars_request=mifu_num_guide_stars_request,
                               mifu_num_central_stars=mifu_num_central_guide_stars,
                               mifu_min_cut=mifu_min_guide_cut,
-                              mifu_max_cut=mifu_max_guide_cut,
-                              mos_num_stars_request=mos_num_guide_stars_stars_request)
+                              mifu_max_cut=mifu_max_guide_cut)
         self._add_calib_stars(plot_filename=calib_plot_filename,
                               useful_table_filename=calib_useful_table_filename,
                               num_stars_request=num_calib_stars_request,
                               num_central_stars=num_central_calib_stars,
-                              min_cut=min_calib_cut,
-                              max_cut=max_calib_cut)
+                              min_cut=min_calib_cut, max_cut=max_calib_cut,
+                              add_cnames=cnames_for_calib_stars)
 
 
     def _get_obstemp(self):
@@ -963,7 +961,7 @@ class OBXML:
     def _filter_fits_data(self, fits_data, sim_data=None, rtol=0, atol=1e-5):
     
         # Let's start creating a mask without any filter
-
+    
         mask = _np.ones(len(fits_data), dtype=bool)
     
         # Filter FITS data comparing the values of the column OBSTEMP with the

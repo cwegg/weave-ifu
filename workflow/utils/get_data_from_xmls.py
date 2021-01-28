@@ -449,7 +449,7 @@ def get_spa_data_of_target_random_and_sky_fibres_from_xmls(
         xml_filename_list, replace_triple_percent=True, post_configure=True,
         only_allocated=True, sort_targets=False):
     """
-    Get SPA data of the target and sky fibres contained in a list of XML files.
+    Get SPA data of the T/R/S fibres contained in a list of XML files.
 
     Parameters
     ----------
@@ -475,6 +475,43 @@ def get_spa_data_of_target_random_and_sky_fibres_from_xmls(
     data_dict = \
         _get_spa_data_from_targuse(
             xml_filename_list, targuse_list=['T', 'S', 'R'],
+            replace_triple_percent=replace_triple_percent,
+            post_configure=post_configure, only_allocated=only_allocated,
+            sort_targets=sort_targets)
+
+    return data_dict
+
+
+def get_spa_data_of_target_calib_random_and_sky_fibres_from_xmls(
+        xml_filename_list, replace_triple_percent=True, post_configure=True,
+        only_allocated=True, sort_targets=False):
+    """
+    Get SPA data of the T/C/R/S fibres contained in a list of XML files.
+
+    Parameters
+    ----------
+    xml_filename_list : list of str
+        A list of configure XML files.
+    replace_triple_percent : bool, optional
+        It will replace the values of '%%%' by '' also for data of type string.
+    post_configure : bool, optional
+        An option to indicate whether the input XMLs has been processed by
+        configure or not.
+    only_allocated : bool, optional
+        It will include only information from allocated fibres.
+    sort_targets : bool, optional
+        Sort the data inside each field grouping by IFU bundle.
+
+    Returns
+    -------
+    data_dict : dict
+        A dictionary with the data. Its keys are the name of the SPA columns
+        which are expected to be potencially in the configure XML files, while
+        its values are lists containing these data.
+    """
+    data_dict = \
+        _get_spa_data_from_targuse(
+            xml_filename_list, targuse_list=['C', 'T', 'S', 'R'],
             replace_triple_percent=replace_triple_percent,
             post_configure=post_configure, only_allocated=only_allocated,
             sort_targets=sort_targets)
