@@ -3,6 +3,7 @@
 *.log
 log.txt
 *#*
+.idea/
 
 # Testing files:
 workflow_test/.cache/
