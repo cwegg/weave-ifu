@@ -389,7 +389,7 @@ class OBXML:
                                                  (right_edge_ra_value + 360)])
 
                 if mid_value >= 360:
-                    midvalue -= 360
+                    mid_value -= 360
 
             else:
 

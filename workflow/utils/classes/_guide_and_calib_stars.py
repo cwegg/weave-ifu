@@ -94,7 +94,7 @@ class _AuxStars:
             raise ValueError
 
         if self.obsmode not in ['MOS', 'LIFU', 'mIFU']:
-            logging.error('invalid obsmode: {}'.format(obsmode))
+            logging.error('invalid obsmode: {}'.format(self.obsmode))
             raise ValueError
         
         
@@ -321,6 +321,7 @@ class _AuxStars:
                 _coordinates.Angle(ref_angle + 180, unit='deg')).deg
             for angle in angle_array]
 
+        min_angle_diff = 1e99
         for i, angle_i in enumerate(wrapped_angle_list):
 
             if (selected_indices is None) or (i not in selected_indices):
@@ -1116,7 +1117,7 @@ if __name__ == '__main__':
 
     elif args.type_stars == 'calib':
 
-        assert obsmode != 'LIFU'
+        assert args.obsmode != 'LIFU'
 
         calib_stars = CalibStars(args.central_ra, args.central_dec,
                                  args.obsmode)

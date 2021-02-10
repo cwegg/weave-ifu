@@ -22,6 +22,7 @@ import argparse
 import logging
 import os
 import re
+import glob
 
 import numpy as np
 from astropy.io import fits
