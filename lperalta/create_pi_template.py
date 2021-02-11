@@ -22,8 +22,8 @@ import argparse
 import logging
 import os.path
 
-from workflow.utils import create_sub_template
-from workflow.utils.get_resources import get_master_cat
+from weave_utils import create_sub_template
+from weave_utils.get_resources import get_master_cat
         
     
 def create_pi_template(catalogue_template, output_filename, col_list,

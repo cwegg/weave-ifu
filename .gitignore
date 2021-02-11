@@ -6,39 +6,39 @@ log.txt
 .idea/
 
 # Testing files:
-workflow_test/.cache/
+weave_ifu_workflow_test/.cache/
 
 # Files in the auxiliar directory:
-workflow/aux/obstemp.dat
-workflow/aux/progtemp.dat
-workflow/aux/Aladin.jar
-workflow/aux/BlankXMLTemplate.xml
+weave_ifu_workflow/aux/obstemp.dat
+weave_ifu_workflow/aux/progtemp.dat
+weave_ifu_workflow/aux/Aladin.jar
+weave_ifu_workflow/aux/BlankXMLTemplate.xml
 
 # Output files:
-workflow/output/
-workflow/stage1/output/
-workflow/stage2/output/
-workflow/stage3/output/
-workflow/stage4/output/
-workflow/stage5/output/
-workflow/stage6/output/
-workflow/stage7/output/
-workflow/stage8/output/
-workflow/stage9/output/
-workflow/stage10/output/
+weave_ifu_workflow/output/
+weave_ifu_workflow/stage1/output/
+weave_ifu_workflow/stage2/output/
+weave_ifu_workflow/stage3/output/
+weave_ifu_workflow/stage4/output/
+weave_ifu_workflow/stage5/output/
+weave_ifu_workflow/stage6/output/
+weave_ifu_workflow/stage7/output/
+weave_ifu_workflow/stage8/output/
+weave_ifu_workflow/stage9/output/
+weave_ifu_workflow/stage10/output/
 
 # Stage-1 files:
-workflow/stage1/aux/Master_CatalogueTemplate.fits
-workflow/stage1/aux/obstemp.dat
-workflow/stage1/aux/progtemp.dat
-workflow/stage1/aux/Aladin.jar
+weave_ifu_workflow/stage1/aux/Master_CatalogueTemplate.fits
+weave_ifu_workflow/stage1/aux/obstemp.dat
+weave_ifu_workflow/stage1/aux/progtemp.dat
+weave_ifu_workflow/stage1/aux/Aladin.jar
 
 # Stage-2 files:
-workflow/stage2/aux/BlankXMLTemplate.xml
-workflow/stage2/aux/obstemp.dat
-workflow/stage2/aux/progtemp.dat
+weave_ifu_workflow/stage2/aux/BlankXMLTemplate.xml
+weave_ifu_workflow/stage2/aux/obstemp.dat
+weave_ifu_workflow/stage2/aux/progtemp.dat
 
 # Stage-3 files:
-workflow/stage3/aux/Guides_*.fits
-workflow/stage3/aux/WD_*.fits
+weave_ifu_workflow/stage3/aux/Guides_*.fits
+weave_ifu_workflow/stage3/aux/WD_*.fits
 

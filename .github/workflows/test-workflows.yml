@@ -21,15 +21,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install .
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude dmurphy
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude dmurphy
-    - name: set pythonpath
-      run: |
-        echo "PYTHONPATH=/home/runner/work/weave-ifu/weave-ifu" >> $GITHUB_ENV
     - name: Test with pytest
       run: |
-        pytest --ignore=workflow_test/stage10_test.py --durations=10
+        pytest --ignore=weave_ifu_workflow_test/stage10_test.py --durations=10

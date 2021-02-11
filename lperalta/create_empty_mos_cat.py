@@ -38,10 +38,10 @@ def create_empty_mos_cat(catalogue_template, output_filename, overwrite=False):
 
 if __name__ == '__main__':
 
-    catalogue_template = os.path.join('..', 'workflow', 'stage5', 'aux',
+    catalogue_template = os.path.join('..', 'weave_ifu_workflow', 'stage5', 'aux',
                                       'WC_CatalogueTemplate.fits')
 
-    output_filename = os.path.join('..', 'workflow', 'stage7', 'input',
+    output_filename = os.path.join('..', 'weave_ifu_workflow', 'stage7', 'input',
                                    'WC_2020A1-mos.fits')
 
     create_empty_mos_cat(catalogue_template, output_filename)
